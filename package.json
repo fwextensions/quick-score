@@ -1,0 +1,21 @@
+{
+  "name": "quick-score",
+  "version": "0.0.0",
+  "description": "A JavaScript string-scoring library based on the Quicksilver algorithm",
+  "author": "John Dunning",
+  "license": "ISC",
+  "keywords": [],
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "ajv": "^6.5.2",
+    "babel": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "jest": "^23.3.0",
+    "webpack": "^4.15.1",
+    "webpack-cli": "^3.0.8"
+  }
+}
