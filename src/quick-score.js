@@ -1,8 +1,8 @@
 const Range = require("./range");
 
 
-const WhitespacePattern = "-/\\:()<>%._=&[] \t\n\r",
-	UpperCasePattern = (function() {
+const WordSeparators = "-/\\:()<>%._=&[] \t\n\r",
+	UpperCaseLetters = (function() {
 			var charCodeA = "A".charCodeAt(0),
 				uppercase = [];
 
@@ -45,23 +45,15 @@ function quickScore(
 
 	for (var i = abbreviationRange.length; i > 0; i--) {
 		var abbreviationSubstring = abbreviation.substr(abbreviationRange.location, i),
-//			matchedRange = getRangeOfSubstring(itemString, abbreviationSubstring,
-//				new Range(searchRange.location, searchRange.length - abbreviationRange.length + i));
-			matchedRange = getRangeOfSubstring(itemString, abbreviationSubstring, searchRange);
-// TODO: reduce the searchRange by abbreviation.length + i
-// ensures there'd be room at the end of the string to fit the whole abbreviation.  otherwise, we could find a match
-// of part of the abbreviation at the very end of the string
-// and then recurse, at which point we wouldn't find anything
-// further because we're at the end of the string
+				// reduce the length of the search range by the number of chars
+				// we're skipping in the query, to make sure there's enough string
+				// left to possibly contain the skipped chars
+			matchedRange = getRangeOfSubstring(itemString, abbreviationSubstring,
+				new Range(searchRange.location, searchRange.length - abbreviationRange.length + i));
 
 		/* DEBUG log(abbreviationSubstring); */
 
 		if (!matchedRange.isValid()) {
-			continue;
-		}
-
-// TODO: we don't need this if we create a reduced search range above
-		if (matchedRange.location + abbreviationRange.length > searchRange.max()) {
 			continue;
 		}
 
@@ -117,9 +109,9 @@ function quickScore(
 					// some letters were skipped when finding this match, so
 					// adjust the score based on whether spaces or capital
 					// letters were skipped
-				if (useSkipReduction && WhitespacePattern.indexOf(itemString.charAt(matchedRange.location - 1)) > -1) {
+				if (useSkipReduction && WordSeparators.indexOf(itemString.charAt(matchedRange.location - 1)) > -1) {
 					for (j = matchedRange.location - 2; j >= searchRange.location; j--) {
-						if (WhitespacePattern.indexOf(itemString.charAt(j)) > -1) {
+						if (WordSeparators.indexOf(itemString.charAt(j)) > -1) {
 							/* DEBUG matches[j] = "w"; */
 							score--;
 						} else {
@@ -127,9 +119,9 @@ function quickScore(
 							score -= SkippedScore;
 						}
 					}
-				} else if (useSkipReduction && UpperCasePattern.indexOf(itemString.charAt(matchedRange.location)) > -1) {
+				} else if (useSkipReduction && UpperCaseLetters.indexOf(itemString.charAt(matchedRange.location)) > -1) {
 					for (j = matchedRange.location - 1; j >= searchRange.location; j--) {
-						if (UpperCasePattern.indexOf(itemString.charAt(j)) > -1) {
+						if (UpperCaseLetters.indexOf(itemString.charAt(j)) > -1) {
 							/* DEBUG matches[j] = "u"; */
 							score--;
 						} else {
@@ -144,8 +136,9 @@ function quickScore(
 						// the match is in the first 10% of the string, the
 						// match range isn't too sparse and the whole string
 						// is not too long
-					score -= (matchedRange.location - searchRange.location);
+					score -= matchedRange.location - searchRange.location;
 //					score -= (matchedRange.location - searchRange.location) / 2;
+
 //					matchRangeDiscount = abbreviation.length / fullMatchedRange.length;
 //					matchRangeDiscount = (isShortString &&
 //						matchStartPercentage <= BeginningOfStringPct &&
@@ -182,7 +175,7 @@ function quickScore(
 			// the remaining abbreviation does not appear in the remaining
 			// string, so clear the hitMask, since we'll start over with a
 			// shorter piece of the abbreviation, which might match earlier
-			// in the string, making the existing match indexes invalid.
+			// in the string, making any existing match indexes invalid.
 		hitMask.length = 0;
 	}
 
