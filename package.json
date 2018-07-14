@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "A JavaScript string-scoring library based on the Quicksilver algorithm",
   "author": "John Dunning",
-  "license": "ISC",
+  "license": "MIT",
   "keywords": [],
   "main": "index.js",
   "scripts": {

@@ -8,6 +8,7 @@ test("new Range()", () => {
 	expect(r.length).toBe(0);
 	expect(r.max()).toBe(-1);
 	expect(r.toString()).toBe("invalid range");
+	expect(r + "").toBe("invalid range");
 	expect(r.isValid()).toBe(false);
 });
 
@@ -18,6 +19,7 @@ test("new Range(0, 10)", () => {
 	expect(r.length).toBe(10);
 	expect(r.max()).toBe(10);
 	expect(r.toString()).toBe("[0,10)");
+	expect(r + "").toBe("[0,10)");
 	expect(r.isValid()).toBe(true);
 });
 
