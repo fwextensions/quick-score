@@ -20,7 +20,7 @@ class Range {
 			this.length = max - this.location;
 		}
 
-// TODO: calling this max is a little weird. [0, 3) would be 0, 1, 2.  this is one past the max
+			// the NSMaxRange() function in Objective-C returns this value
 		return this.location + this.length;
 	}
 

@@ -108,6 +108,22 @@ describe("OLD Quicksilver long string", () => {
 	])("score('%s', '%s')", scoreNearly);
 });
 
+describe("Uppercase matches", function() {
+	test.each([
+		["QuicKey", "qk", .9071428571428573],
+		["WhatIsQuicKey?", "qk", .7607142857142856],
+		["QuicKey", "QuicKey", 1],
+		["quickly", "qk", .5428571428571428]
+	])("score('%s', '%s')", scoreNearly);
+});
+
+describe("Word separator matches", function() {
+	test.each([
+		["react-hot-loader", "rhl", .9124999999999999],
+		["are there walls?", "rhl", .35625]
+	])("score('%s', '%s')", scoreNearly);
+});
+
 describe("Hit indices", function() {
 	test.each([
 			// the first test ensures that hits from early partial matches don't
