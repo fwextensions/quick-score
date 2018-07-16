@@ -30,13 +30,14 @@ expect.extend({
 function scoreNearly(
 	string,
 	query,
-	expected)
+	expected,
+	maxDifference = MaxDifference)
 {
 		// the built-in .toBeCloseTo() rounds the result, so .18181818181818182
 		// rounds to .18182, which is not close to .18181 in 5 digits.  so use
 		// the helper defined above to check that the result is within .00001 of
 		// expected, which is what the Quicksilver tests look for.
-	expect(score(string, query)).toBeNearly(expected, MaxDifference);
+	expect(score(string, query)).toBeNearly(expected, maxDifference);
 }
 
 
@@ -52,7 +53,7 @@ describe("Quicksilver short string", () => {
 		[string, "str", 0.91818],
 		[string, "tstr", 0.79090],
 		[string, "ng", 0.63636]
-	])("score('%s', '%s')", scoreNearly);
+	])("score('%s', '%s')", (...args) => scoreNearly(...args, .1))
 });
 */
 

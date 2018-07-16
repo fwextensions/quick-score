@@ -51,8 +51,6 @@ function quickScore(
 			matchedRange = getRangeOfSubstring(itemString, abbreviationSubstring,
 				new Range(searchRange.location, searchRange.length - abbreviationRange.length + i));
 
-		/* DEBUG log(abbreviationSubstring); */
-
 		if (!matchedRange.isValid()) {
 			continue;
 		}
@@ -69,15 +67,11 @@ function quickScore(
 			addIndexesInRange(hitMask, matchedRange);
 		}
 
-		/* DEBUG logRanges(searchRange, hitMask, fullMatchedRange); */
-
 		var remainingSearchRange = new Range(matchedRange.max(), searchRange.max() - matchedRange.max()),
 			remainingScore = quickScore(itemString, abbreviation,
 				hitMask, noSkipReduction, remainingSearchRange,
 				new Range(abbreviationRange.location + i, abbreviationRange.length - i),
 				fullMatchedRange);
-
-		/* DEBUG log("remainingScore:", clip(remainingScore)); */
 
 		if (remainingScore) {
 			var score = remainingSearchRange.location - searchRange.location,
@@ -85,23 +79,11 @@ function quickScore(
 				isShortString = itemString.length < LongStringLength,
 				useSkipReduction = true,
 //				useSkipReduction = !noSkipReduction && (isShortString || matchStartPercentage < MaxMatchStartPct),
-//				matchStartDiscount = (1 - matchStartPercentage),
+				matchStartDiscount = (1 - matchStartPercentage),
 					// default to no match-sparseness discount, for cases
 					// where there are spaces before the matched letters or
 					// they're capitals
 				matchRangeDiscount = 1;
-
-			/* DEBUG
-				var matches = [],
-					ranges = [],
-					fromLastMatchRange = new Range(searchRange.location, score);
-
-				setIndexesInRange(ranges, fromLastMatchRange, "+");
-				log(indent(fill(ranges, "-")));
-				setIndexesInRange(matches, remainingSearchRange, "|");
-				setIndexesInRange(matches, new Range(searchRange.location, score), "-");
-				log("score:", score, "useSkipReduction:", useSkipReduction);
-			*/
 
 			if (matchedRange.location > searchRange.location) {
 				var j;
@@ -112,17 +94,14 @@ function quickScore(
 				if (useSkipReduction && WordSeparators.indexOf(itemString.charAt(matchedRange.location - 1)) > -1) {
 					for (j = matchedRange.location - 2; j >= searchRange.location; j--) {
 						if (WordSeparators.indexOf(itemString.charAt(j)) > -1) {
-							/* DEBUG matches[j] = "w"; */
 							score--;
 						} else {
-// this reduces the penalty for skipped chars when we also didn't skip over any other words
 							score -= SkippedScore;
 						}
 					}
 				} else if (useSkipReduction && UpperCaseLetters.indexOf(itemString.charAt(matchedRange.location)) > -1) {
 					for (j = matchedRange.location - 1; j >= searchRange.location; j--) {
 						if (UpperCaseLetters.indexOf(itemString.charAt(j)) > -1) {
-							/* DEBUG matches[j] = "u"; */
 							score--;
 						} else {
 							score -= SkippedScore;
@@ -139,21 +118,14 @@ function quickScore(
 					score -= matchedRange.location - searchRange.location;
 //					score -= (matchedRange.location - searchRange.location) / 2;
 
-//					matchRangeDiscount = abbreviation.length / fullMatchedRange.length;
-//					matchRangeDiscount = (isShortString &&
-//						matchStartPercentage <= BeginningOfStringPct &&
-//						matchRangeDiscount >= MinMatchDensityPct) ? 1 : matchRangeDiscount;
-//					matchStartDiscount = matchRangeDiscount >= MaxMatchDensityPct ?
-//						1 : matchStartDiscount;
+					matchRangeDiscount = abbreviation.length / fullMatchedRange.length;
+					matchRangeDiscount = (isShortString &&
+						matchStartPercentage <= BeginningOfStringPct &&
+						matchRangeDiscount >= MinMatchDensityPct) ? 1 : matchRangeDiscount;
+					matchStartDiscount = matchRangeDiscount >= MaxMatchDensityPct ?
+						1 : matchStartDiscount;
 				}
 			}
-
-			/* DEBUG
-				log(indent(fill(matches)));
-				log("score:", score, "remaining:", clip(remainingScore), remainingSearchRange + "",
-					"fullMatched: " + fullMatchedRange, "mStartPct:", clip(matchStartPercentage),
-					"mRangeDiscount:", clip(matchRangeDiscount), "mStartDiscount:", clip(matchStartDiscount));
-			*/
 
 				// discount the scores of very long strings
 			score += remainingScore * remainingSearchRange.length;
@@ -161,11 +133,7 @@ function quickScore(
 //			score += remainingScore * remainingSearchRange.length *
 //				matchRangeDiscount * matchStartDiscount;
 
-			/* DEBUG log("score:", score); */
-
 			score /= searchRange.length;
-
-			/* DEBUG log(clip(score)); */
 
 			return score;
 		}
