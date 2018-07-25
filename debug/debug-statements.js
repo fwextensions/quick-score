@@ -32,6 +32,8 @@ module.exports = [
 				"mRangeDiscount:", clip(matchRangeDiscount), "mStartDiscount:", clip(matchStartDiscount));
 `
 	],
+		// before score /= searchRange.length;
 	[136, `log("score:", score);`],
+		// before return score;
 	[138, `log(clip(score));`],
 ];

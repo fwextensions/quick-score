@@ -87,21 +87,28 @@ function quickScore(
 
 			if (matchedRange.location > searchRange.location) {
 				var j;
+// TODO: remove this, which replicates a bug in QSSense.m where the inline buffer is filled from strRange
+// instead of the whole string.  we also have to check that the chars are non-zero strings, since "foo".indexOf("") == 0 (!)
+var inlineBuffer = itemString.substr(searchRange.location, searchRange.length), prev = inlineBuffer.charAt(matchedRange.location - 1), current = inlineBuffer.charAt(matchedRange.location);
 
 					// some letters were skipped when finding this match, so
 					// adjust the score based on whether spaces or capital
 					// letters were skipped
-				if (useSkipReduction && WordSeparators.indexOf(itemString.charAt(matchedRange.location - 1)) > -1) {
+				if (useSkipReduction && prev && WordSeparators.indexOf(prev) > -1) {
+//				if (useSkipReduction && WordSeparators.indexOf(itemString.charAt(matchedRange.location - 1)) > -1) {
 					for (j = matchedRange.location - 2; j >= searchRange.location; j--) {
-						if (WordSeparators.indexOf(itemString.charAt(j)) > -1) {
+						if (WordSeparators.indexOf(inlineBuffer.charAt(j)) > -1) {
+//						if (WordSeparators.indexOf(itemString.charAt(j)) > -1) {
 							score--;
 						} else {
 							score -= SkippedScore;
 						}
 					}
-				} else if (useSkipReduction && UpperCaseLetters.indexOf(itemString.charAt(matchedRange.location)) > -1) {
+				} else if (useSkipReduction && current && UpperCaseLetters.indexOf(current) > -1) {
+//				} else if (useSkipReduction && UpperCaseLetters.indexOf(itemString.charAt(matchedRange.location)) > -1) {
 					for (j = matchedRange.location - 1; j >= searchRange.location; j--) {
-						if (UpperCaseLetters.indexOf(itemString.charAt(j)) > -1) {
+						if (UpperCaseLetters.indexOf(inlineBuffer.charAt(j)) > -1) {
+//						if (UpperCaseLetters.indexOf(itemString.charAt(j)) > -1) {
 							score--;
 						} else {
 							score -= SkippedScore;
@@ -115,8 +122,10 @@ function quickScore(
 						// the match is in the first 10% of the string, the
 						// match range isn't too sparse and the whole string
 						// is not too long
-					score -= matchedRange.location - searchRange.location;
-//					score -= (matchedRange.location - searchRange.location) / 2;
+//					score -= matchedRange.location - searchRange.location;
+//					score -= (matchedRange.location - searchRange.location) / 2.0;
+// TODO: remove this, which replicates a bug in QSSense.m, where the remainder is ignored
+					score -= Math.floor((matchedRange.location - searchRange.location) / 2);
 
 					matchRangeDiscount = abbreviation.length / fullMatchedRange.length;
 					matchRangeDiscount = (isShortString &&
@@ -144,7 +153,8 @@ function quickScore(
 			// string, so clear the hitMask, since we'll start over with a
 			// shorter piece of the abbreviation, which might match earlier
 			// in the string, making any existing match indexes invalid.
-		hitMask.length = 0;
+// TODO: uncomment this, which replicates a bug in QSSense.m, where the hitMask isn't reset when the function recurses
+//		hitMask.length = 0;
 	}
 
 	return 0;

@@ -1,4 +1,5 @@
 const score = require("../src/quick-score");
+const Range = require("../src/range");
 
 
 const MaxDifference = .00001;
@@ -41,7 +42,6 @@ function scoreNearly(
 }
 
 
-/*
 describe("Quicksilver short string", () => {
 	const string = "Test string";
 
@@ -53,11 +53,9 @@ describe("Quicksilver short string", () => {
 		[string, "str", 0.91818],
 		[string, "tstr", 0.79090],
 		[string, "ng", 0.63636]
-	])("score('%s', '%s')", (...args) => scoreNearly(...args, .1))
+	])("score('%s', '%s')", scoreNearly);
 });
-*/
 
-/*
 describe("Quicksilver long string", () => {
 	const str = "This is a really long test string for testing";
 
@@ -73,12 +71,48 @@ describe("Quicksilver long string", () => {
 		[str, "ng", 0.74666]
 	])("score('%s', '%s')", scoreNearly);
 });
-*/
+
+describe("Quicksilver hitmask", function() {
+	const str = "This excellent string tells us an interesting story";
+	const strRange = new Range(0, 27); //  ^--- range ends here initially
+	const abbr = "test";
+	const hits = [];
+	const sortNumbers = (a, b) => a - b;
+	const hitsSet = new Set();
+
+	afterEach(() => {
+		hits.length = 0;
+		strRange.length += 4;
+	});
+
+	test.each([
+		[str, abbr, 0.74074, [0, 5, 15, 16, 22, 23]],
+		[str, abbr, 0.76129, [0, 5, 15, 16, 22, 23, 26]],
+		[str, abbr, 0.77714, [0, 5, 15, 16, 22, 23, 26]],
+		[str, abbr, 0.74230, [0, 5, 15, 16, 22, 23, 26, 36]],
+		[str, abbr, 0.69883, [0, 5, 15, 16, 22, 23, 26, 36, 40, 41]],
+		[str, abbr, 0.71595, [0, 5, 15, 16, 22, 23, 26, 36, 40, 41]],
+		[str, abbr, 0.73039, [0, 5, 15, 16, 22, 23, 26, 36, 40, 41]]
+	])("score('%s', '%s', '%f', '%o')", (string, query, expectedScore, expectedHits) => {
+		expect(score(string, query, hits, true, strRange)).toBeNearly(expectedScore, MaxDifference);
+//		hits.sort(sortNumbers);
+//		expect(hits).toEqual(expectedHits);
+
+			// to simulate the bug in TestQSSense.m where the NSMutableIndexSet
+			// doesn't get reset after each test, we add each hit to a Set, so
+			// it accumulates just one instance of each index
+		hits.forEach(hit => {
+			hitsSet.add(hit);
+		});
+		expect(Array.from(hitsSet).sort(sortNumbers)).toEqual(expectedHits);
+	});
+});
 
 // these older scores, from not dividing the reduction of the remaining score
 // by half, match what the old NS Quicksilver code returns
 
-describe("OLD Quicksilver short string", () => {
+/*
+describe("Old NSString Quicksilver short string", () => {
 	const str = "Test string";
 
 	test.each([
@@ -92,7 +126,7 @@ describe("OLD Quicksilver short string", () => {
 	])("score('%s', '%s')", scoreNearly);
 });
 
-describe("OLD Quicksilver long string", () => {
+describe("Old NSString Quicksilver long string", () => {
 	const str = "This is a really long test string for testing";
 
 	test.each([
@@ -107,7 +141,9 @@ describe("OLD Quicksilver long string", () => {
 		[str, "ng", 0.52444]
 	])("score('%s', '%s')", scoreNearly);
 });
+*/
 
+/*
 describe("Uppercase matches", function() {
 	test.each([
 		["QuicKey", "qk", .9071428571428573],
@@ -139,3 +175,4 @@ describe("Hit indices", function() {
 		expect(hits).toEqual(expectedHits);
 	});
 });
+*/
