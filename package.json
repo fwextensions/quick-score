@@ -10,6 +10,9 @@
     "test": "jest",
     "coverage": "jest --coverage"
   },
+  "engines": {
+    "node": ">=8.0"
+  },
   "dependencies": {},
   "devDependencies": {
     "ajv": "^6.5.2",

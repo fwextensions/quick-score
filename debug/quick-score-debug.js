@@ -84,10 +84,11 @@ function setIndexesFromArray(
 function logScore(
 	string,
 	query,
-	hits)
+	hits,
+	...args)
 {
 	log(indent(string));
-	log("\n" + quickScore(string, query, hits || []));
+	log("\n" + quickScore(string, query, hits || [], ...args));
 	log(new Array(60).join("=") + "\n");
 }
 

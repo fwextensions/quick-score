@@ -1,8 +1,10 @@
-const score = require("../src/quick-score");
+const quickScore = require("../src/quick-score");
 const Range = require("../src/range");
 
 
 const MaxDifference = .00001;
+const ScoreTestTitle = 'quickScore("%s", "%s")';
+const HitsTestTitle = 'quickScore("%s", "%s", [])';
 
 
 expect.extend({
@@ -38,7 +40,7 @@ function scoreNearly(
 		// rounds to .18182, which is not close to .18181 in 5 digits.  so use
 		// the helper defined above to check that the result is within .00001 of
 		// expected, which is what the Quicksilver tests look for.
-	expect(score(string, query)).toBeNearly(expected, maxDifference);
+	expect(quickScore(string, query)).toBeNearly(expected, maxDifference);
 }
 
 
@@ -47,14 +49,15 @@ describe("Quicksilver short string", () => {
 
 	test.each([
 		[string, "t", 0.90909],
-		[string, "ts", 0.92727],
+		[string, "ts", 0.88182],
 		[string, "te", 0.91818],
-		[string, "tet", 0.93636],
+		[string, "tet", 0.89091],
 		[string, "str", 0.91818],
-		[string, "tstr", 0.79090],
-		[string, "ng", 0.63636]
-	])("score('%s', '%s')", scoreNearly);
+		[string, "tstr", 0.93182],
+		[string, "ng", 0.59091]
+	])(ScoreTestTitle, scoreNearly);
 });
+
 
 describe("Quicksilver long string", () => {
 	const str = "This is a really long test string for testing";
@@ -63,22 +66,21 @@ describe("Quicksilver long string", () => {
 		[str, "t", 0.90222],
 		[str, "ts", 0.88666],
 		[str, "te", 0.80777],
-		[str, "tet", 0.81222],
+		[str, "tet", 0.80111],
 		[str, "str", 0.78555],
-		[str, "tstr", 0.67777],
+		[str, "tstr", 0.78889],
 		[str, "testi", 0.74000],
 		[str, "for", 0.75888],
-		[str, "ng", 0.74666]
-	])("score('%s', '%s')", scoreNearly);
+		[str, "ng", 0.73556]
+	])(ScoreTestTitle, scoreNearly);
 });
 
-describe("Quicksilver hitmask", function() {
+
+describe("Quicksilver hit indices", function() {
 	const str = "This excellent string tells us an interesting story";
 	const strRange = new Range(0, 27); //  ^--- range ends here initially
 	const abbr = "test";
 	const hits = [];
-	const sortNumbers = (a, b) => a - b;
-	const hitsSet = new Set();
 
 	afterEach(() => {
 		hits.length = 0;
@@ -86,31 +88,81 @@ describe("Quicksilver hitmask", function() {
 	});
 
 	test.each([
-		[str, abbr, 0.74074, [0, 5, 15, 16, 22, 23]],
-		[str, abbr, 0.76129, [0, 5, 15, 16, 22, 23, 26]],
-		[str, abbr, 0.77714, [0, 5, 15, 16, 22, 23, 26]],
-		[str, abbr, 0.74230, [0, 5, 15, 16, 22, 23, 26, 36]],
-		[str, abbr, 0.69883, [0, 5, 15, 16, 22, 23, 26, 36, 40, 41]],
-		[str, abbr, 0.71595, [0, 5, 15, 16, 22, 23, 26, 36, 40, 41]],
-		[str, abbr, 0.73039, [0, 5, 15, 16, 22, 23, 26, 36, 40, 41]]
-	])("score('%s', '%s', '%f', '%o')", (string, query, expectedScore, expectedHits) => {
-		expect(score(string, query, hits, true, strRange)).toBeNearly(expectedScore, MaxDifference);
-//		hits.sort(sortNumbers);
-//		expect(hits).toEqual(expectedHits);
-
-			// to simulate the bug in TestQSSense.m where the NSMutableIndexSet
-			// doesn't get reset after each test, we add each hit to a Set, so
-			// it accumulates just one instance of each index
-		hits.forEach(hit => {
-			hitsSet.add(hit);
-		});
-		expect(Array.from(hitsSet).sort(sortNumbers)).toEqual(expectedHits);
+		[str, abbr, 0.90185, [0, 5, 15, 16]],
+		[str, abbr, 0.90161, [0, 5, 15, 16]],
+		[str, abbr, 0.90143, [0, 5, 15, 16]],
+		[str, abbr, 0.72949, [22, 23, 26, 36]],
+		[str, abbr, 0.69883, [22, 23, 40, 41]],
+		[str, abbr, 0.71595, [22, 23, 40, 41]],
+		[str, abbr, 0.73039, [22, 23, 40, 41]]
+	])(HitsTestTitle, (string, query, expectedScore, expectedHits) => {
+		expect(quickScore(string, query, hits, true, strRange)).toBeNearly(expectedScore, MaxDifference);
+		expect(hits).toEqual(expectedHits);
 	});
 });
 
-// these older scores, from not dividing the reduction of the remaining score
-// by half, match what the old NS Quicksilver code returns
 
+describe("Hit indices", function() {
+	test.each([
+			// the first test ensures that hits from early partial matches don't
+			// linger in the hits array
+		["This excellent string tells us an intes foo bar baz", "test",
+			0.76961, [22, 23, 26, 36]],
+		["This excellent string tells us an interesting story", "test",
+			0.73039, [22, 23, 40, 41]]
+	])(HitsTestTitle, (string, query, expectedScore, expectedHits) => {
+		const hits = [];
+
+		expect(quickScore(string, query, hits)).toBeNearly(expectedScore, MaxDifference);
+		expect(hits).toEqual(expectedHits);
+	});
+});
+
+
+describe("Uppercase matches", function() {
+	test.each([
+		["QuicKey", "qk", 0.90714],
+		["WhatIsQuicKey?", "qk", 0.76071],
+		["QuicKey", "QuicKey", 1],
+		["quickly", "qk", 0.75714]
+	])(ScoreTestTitle, scoreNearly);
+});
+
+
+describe("Word separator matches", function() {
+	test.each([
+		["react-hot-loader", "rhl", 0.91250],
+		["are there walls?", "rhl", 0.66875]
+	])(ScoreTestTitle, scoreNearly);
+});
+
+
+describe("Zero scores", function() {
+	test.each([
+		["foo", "foobar", 0],
+		["", "foobar", 0],
+// TODO: decide on the scores of empty queries, which are currently .9 in Quicksilver
+//		["foobar", "", 0]
+	])(ScoreTestTitle, (string, query, expectedScore) => {
+		expect(quickScore(string, query)).toBe(expectedScore);
+	});
+});
+
+
+describe("Search ranges", function() {
+	test.each([
+		["bar", "bar", new Range(0, 3), 1],
+		["bar", "bar", new Range(1, 3), 0]
+	])('quickScore("%s", "%s", null, false, %s)', (string, query, range, expectedScore) => {
+		expect(quickScore(string, query, null, false, range)).toBe(expectedScore);
+	});
+});
+
+
+// these older scores, from not dividing the reduction of the remaining score
+// by half, match what the old NS Quicksilver code returns.  the scores were
+// changed in TestQSSense.m in this commit:
+// https://github.com/quicksilver/Quicksilver/commit/0f2b4043fafbfc4b1263b7807504eb1b3baaeab8#diff-86c92ca75387e03f87312001fe115fb9
 /*
 describe("Old NSString Quicksilver short string", () => {
 	const str = "Test string";
@@ -143,36 +195,72 @@ describe("Old NSString Quicksilver long string", () => {
 });
 */
 
+
+// these tests worked when we changed quick-score.js to behave like QSSense.m as
+// of 2018-07-25, which had some subtle bugs.  the scores and hit arrays will no
+// longer exactly match, now that we've changed the code back to remove the bugs.
 /*
-describe("Uppercase matches", function() {
+describe("Buggy Quicksilver short string", () => {
+	const string = "Test string";
+
 	test.each([
-		["QuicKey", "qk", .9071428571428573],
-		["WhatIsQuicKey?", "qk", .7607142857142856],
-		["QuicKey", "QuicKey", 1],
-		["quickly", "qk", .5428571428571428]
+		[string, "t", 0.90909],
+		[string, "ts", 0.92727],
+		[string, "te", 0.91818],
+		[string, "tet", 0.93636],
+		[string, "str", 0.91818],
+		[string, "tstr", 0.79090],
+		[string, "ng", 0.63636]
 	])("score('%s', '%s')", scoreNearly);
 });
 
-describe("Word separator matches", function() {
+describe("Buggy Quicksilver long string", () => {
+	const str = "This is a really long test string for testing";
+
 	test.each([
-		["react-hot-loader", "rhl", .9124999999999999],
-		["are there walls?", "rhl", .35625]
+		[str, "t", 0.90222],
+		[str, "ts", 0.88666],
+		[str, "te", 0.80777],
+		[str, "tet", 0.81222],
+		[str, "str", 0.78555],
+		[str, "tstr", 0.67777],
+		[str, "testi", 0.74000],
+		[str, "for", 0.75888],
+		[str, "ng", 0.74666]
 	])("score('%s', '%s')", scoreNearly);
 });
 
-describe("Hit indices", function() {
-	test.each([
-			// the first test ensures that hits from early partial matches don't
-			// linger in the hits array
-		["This excellent string tells us an intes foo bar baz", "test",
-			0.6617647058823535, [22, 23, 26, 36]],
-		["This excellent string tells us an interesting story", "test",
-			0.5735294117647064, [22, 23, 40, 41]]
-	])("score('%s', '%s')", (string, query, expectedScore, expectedHits) => {
-		const hits = [];
+describe("Buggy Quicksilver hitmask", function() {
+	const str = "This excellent string tells us an interesting story";
+	const strRange = new Range(0, 27); //  ^--- range ends here initially
+	const abbr = "test";
+	const hits = [];
+	const sortNumbers = (a, b) => a - b;
+	const hitsSet = new Set();
 
-		expect(score(string, query, hits)).toBeNearly(expectedScore, MaxDifference);
-		expect(hits).toEqual(expectedHits);
+	afterEach(() => {
+		hits.length = 0;
+		strRange.length += 4;
+	});
+
+	test.each([
+		[str, abbr, 0.74074, [0, 5, 15, 16, 22, 23]],
+		[str, abbr, 0.76129, [0, 5, 15, 16, 22, 23, 26]],
+		[str, abbr, 0.77714, [0, 5, 15, 16, 22, 23, 26]],
+		[str, abbr, 0.74230, [0, 5, 15, 16, 22, 23, 26, 36]],
+		[str, abbr, 0.69883, [0, 5, 15, 16, 22, 23, 26, 36, 40, 41]],
+		[str, abbr, 0.71595, [0, 5, 15, 16, 22, 23, 26, 36, 40, 41]],
+		[str, abbr, 0.73039, [0, 5, 15, 16, 22, 23, 26, 36, 40, 41]]
+	])("score('%s', '%s', '%f', '%o')", (string, query, expectedScore, expectedHits) => {
+		expect(score(string, query, hits, true, strRange)).toBeNearly(expectedScore, MaxDifference);
+
+			// to simulate the bug in TestQSSense.m where the NSMutableIndexSet
+			// doesn't get reset after each test, we add each hit to a Set, so
+			// it accumulates just one instance of each index
+		hits.forEach(hit => {
+			hitsSet.add(hit);
+		});
+		expect(Array.from(hitsSet).sort(sortNumbers)).toEqual(expectedHits);
 	});
 });
 */
