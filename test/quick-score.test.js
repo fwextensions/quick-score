@@ -45,16 +45,16 @@ function scoreNearly(
 
 
 describe("Quicksilver short string", () => {
-	const string = "Test string";
+	const str = "Test string";
 
 	test.each([
-		[string, "t", 0.90909],
-		[string, "ts", 0.88182],
-		[string, "te", 0.91818],
-		[string, "tet", 0.89091],
-		[string, "str", 0.91818],
-		[string, "tstr", 0.93182],
-		[string, "ng", 0.59091]
+		[str, "t", 0.90909],
+		[str, "ts", 0.88182],
+		[str, "te", 0.91818],
+		[str, "tet", 0.89091],
+		[str, "str", 0.91818],
+		[str, "tstr", 0.93182],
+		[str, "ng", 0.59091]
 	])(ScoreTestTitle, scoreNearly);
 });
 
@@ -92,7 +92,7 @@ describe("Quicksilver hit indices", function() {
 		[str, abbr, 0.90161, [0, 5, 15, 16]],
 		[str, abbr, 0.90143, [0, 5, 15, 16]],
 		[str, abbr, 0.72949, [22, 23, 26, 36]],
-		[str, abbr, 0.69883, [22, 23, 40, 41]],
+		[str, abbr, 0.69884, [22, 23, 40, 41]],
 		[str, abbr, 0.71595, [22, 23, 40, 41]],
 		[str, abbr, 0.73039, [22, 23, 40, 41]]
 	])(HitsTestTitle, (string, query, expectedScore, expectedHits) => {

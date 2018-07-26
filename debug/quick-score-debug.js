@@ -12,7 +12,7 @@ function log(
 function indent(
 	string)
 {
-	return "        " + string;
+	return "         " + string;
 }
 
 
@@ -87,9 +87,12 @@ function logScore(
 	hits,
 	...args)
 {
+	const line = new Array(70).join("=");
+
+	log(line);
 	log(indent(string));
 	log("\n" + quickScore(string, query, hits || [], ...args));
-	log(new Array(60).join("=") + "\n");
+	log(line + "\n");
 }
 
 

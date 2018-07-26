@@ -16,8 +16,9 @@ module.exports = [
 			log(indent(fill(ranges, "-")));
 			setIndexesInRange(matches, remainingSearchRange, "|");
 			setIndexesInRange(matches, new Range(searchRange.location, score), "-");
-			log("score:", score, "useSkipReduction:", useSkipReduction);
+			log("score:", score);
 `
+//			log("score:", score, "useSkipReduction:", useSkipReduction);
 	],
 		// after if (WordSeparators.indexOf(itemString.charAt(j)) > -1) {
 	[97, `matches[j] = "w";`],
@@ -27,13 +28,14 @@ module.exports = [
 	[130,
 `
 			log(indent(fill(matches)));
-			log("score:", score, "remaining:", clip(remainingScore), remainingSearchRange + "",
-				"fullMatched: " + fullMatchedRange, "mStartPct:", clip(matchStartPercentage),
-				"mRangeDiscount:", clip(matchRangeDiscount), "mStartDiscount:", clip(matchStartDiscount));
+			log("score:", clip(score), "remaining:", clip(remainingScore), remainingSearchRange + "");
 `
+//			log("score:", score, "remaining:", clip(remainingScore), remainingSearchRange + "",
+//				"fullMatched: " + fullMatchedRange, "mStartPct:", clip(matchStartPercentage),
+//				"mRangeDiscount:", clip(matchRangeDiscount), "mStartDiscount:", clip(matchStartDiscount));
 	],
 		// before score /= searchRange.length;
-	[136, `log("score:", score);`],
+	[136, `log("score:", clip(score));`],
 		// before return score;
 	[138, `log(clip(score));`],
 ];

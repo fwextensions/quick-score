@@ -1,39 +1,35 @@
 const Range = require("./range");
 
 
-const WordSeparators = "-/\\:()<>%._=&[] \t\n\r",
-	UpperCaseLetters = (function() {
-			var charCodeA = "A".charCodeAt(0),
-				uppercase = [];
+const WordSeparators = "-/\\:()<>%._=&[] \t\n\r";
+const UpperCaseLetters = (function() {
+	const charCodeA = "A".charCodeAt(0);
+	const uppercase = [];
 
-			for (var i = 0; i < 26; i++) {
-				uppercase.push(String.fromCharCode(charCodeA + i));
-			}
+	for (let i = 0; i < 26; i++) {
+		uppercase.push(String.fromCharCode(charCodeA + i));
+	}
 
-			return uppercase.join("");
-		})(),
-	IgnoredScore = 0.9,
-	SkippedScore = 0.15,
-	LongStringLength = 151,
-	MaxMatchStartPct = .15,
-	MinMatchDensityPct = .75,
-	MaxMatchDensityPct = .95,
-	BeginningOfStringPct = .1;
+	return uppercase.join("");
+})();
+const IgnoredScore = 0.9;
+const SkippedScore = 0.15;
+const LongStringLength = 151;
+const MaxMatchStartPct = .15;
+const MinMatchDensityPct = .75;
+const MaxMatchDensityPct = .95;
+const BeginningOfStringPct = .1;
 
 
 function quickScore(
-	itemString,			// str
-	abbreviation,		// abbr
-	hitMask,			// mask
+	itemString,
+	abbreviation,
+	hitMask,
 	noSkipReduction,
-	searchRange,		// strRange
-	abbreviationRange,	// abbrRange
-	fullMatchedRange)
+	searchRange = new Range(0, itemString.length),
+	abbreviationRange = new Range(0, abbreviation.length),
+	fullMatchedRange = new Range())
 {
-	searchRange = searchRange || new Range(0, itemString.length);
-	abbreviationRange = abbreviationRange || new Range(0, abbreviation.length);
-	fullMatchedRange = fullMatchedRange || new Range();
-
 	if (!abbreviationRange.length) {
 			// deduct some points for all remaining characters
 		return IgnoredScore;
@@ -43,13 +39,13 @@ function quickScore(
 		return 0;
 	}
 
-	for (var i = abbreviationRange.length; i > 0; i--) {
-		var abbreviationSubstring = abbreviation.substr(abbreviationRange.location, i),
-				// reduce the length of the search range by the number of chars
-				// we're skipping in the query, to make sure there's enough string
-				// left to possibly contain the skipped chars
-			matchedRange = getRangeOfSubstring(itemString, abbreviationSubstring,
-				new Range(searchRange.location, searchRange.length - abbreviationRange.length + i));
+	for (let i = abbreviationRange.length; i > 0; i--) {
+		let abbreviationSubstring = abbreviation.substr(abbreviationRange.location, i);
+			// reduce the length of the search range by the number of chars
+			// we're skipping in the query, to make sure there's enough string
+			// left to possibly contain the skipped chars
+		let matchedRange = getRangeOfSubstring(itemString, abbreviationSubstring,
+			new Range(searchRange.location, searchRange.length - abbreviationRange.length + i));
 
 		if (!matchedRange.isValid()) {
 			continue;
@@ -67,32 +63,28 @@ function quickScore(
 			addIndexesInRange(hitMask, matchedRange);
 		}
 
-		var remainingSearchRange = new Range(matchedRange.max(), searchRange.max() - matchedRange.max()),
-			remainingScore = quickScore(itemString, abbreviation,
-				hitMask, noSkipReduction, remainingSearchRange,
-				new Range(abbreviationRange.location + i, abbreviationRange.length - i),
-				fullMatchedRange);
+		let remainingSearchRange = new Range(matchedRange.max(), searchRange.max() - matchedRange.max());
+		let remainingScore = quickScore(itemString, abbreviation, hitMask,
+			noSkipReduction, remainingSearchRange, new Range(abbreviationRange.location + i,
+			abbreviationRange.length - i), fullMatchedRange);
 
 		if (remainingScore) {
-			var score = remainingSearchRange.location - searchRange.location,
-				matchStartPercentage = fullMatchedRange.location / itemString.length,
-				isShortString = itemString.length < LongStringLength,
-				useSkipReduction = true,
-//				useSkipReduction = !noSkipReduction && (isShortString || matchStartPercentage < MaxMatchStartPct),
-				matchStartDiscount = (1 - matchStartPercentage),
-					// default to no match-sparseness discount, for cases
-					// where there are spaces before the matched letters or
-					// they're capitals
-				matchRangeDiscount = 1;
+			let score = remainingSearchRange.location - searchRange.location;
+			let matchStartPercentage = fullMatchedRange.location / itemString.length;
+			let isShortString = itemString.length < LongStringLength;
+			let useSkipReduction = true;
+//			let useSkipReduction = !noSkipReduction && (isShortString || matchStartPercentage < MaxMatchStartPct),
+			let matchStartDiscount = (1 - matchStartPercentage);
+				// default to no match-sparseness discount, for cases where there
+				// are spaces before the matched letters or they're capitals
+			let matchRangeDiscount = 1;
 
 			if (matchedRange.location > searchRange.location) {
-				var j;
-
 					// some letters were skipped when finding this match, so
 					// adjust the score based on whether spaces or capital
 					// letters were skipped
 				if (useSkipReduction && WordSeparators.indexOf(itemString.charAt(matchedRange.location - 1)) > -1) {
-					for (j = matchedRange.location - 2; j >= searchRange.location; j--) {
+					for (let j = matchedRange.location - 2; j >= searchRange.location; j--) {
 						if (WordSeparators.indexOf(itemString.charAt(j)) > -1) {
 							score--;
 						} else {
@@ -100,7 +92,7 @@ function quickScore(
 						}
 					}
 				} else if (useSkipReduction && UpperCaseLetters.indexOf(itemString.charAt(matchedRange.location)) > -1) {
-					for (j = matchedRange.location - 1; j >= searchRange.location; j--) {
+					for (let j = matchedRange.location - 1; j >= searchRange.location; j--) {
 						if (UpperCaseLetters.indexOf(itemString.charAt(j)) > -1) {
 							score--;
 						} else {
@@ -128,10 +120,10 @@ function quickScore(
 			}
 
 				// discount the scores of very long strings
-			score += remainingScore * remainingSearchRange.length;
 //			score += remainingScore * Math.min(remainingSearchRange.length, LongStringLength) *
 //			score += remainingScore * remainingSearchRange.length *
 //				matchRangeDiscount * matchStartDiscount;
+			score += remainingScore * remainingSearchRange.length;
 
 			score /= searchRange.length;
 
@@ -154,13 +146,11 @@ function quickScore(
 function getRangeOfSubstring(
 	string,
 	substring,
-	searchRange)
+	searchRange = new Range(0, string.length))
 {
-	searchRange = searchRange || new Range(0, string.length);
-
-	var stringToSearch = string.substr(searchRange.location, searchRange.length).toLocaleLowerCase(),
-		subStringIndex = stringToSearch.indexOf(substring.toLocaleLowerCase()),
-		result = new Range();
+	const stringToSearch = string.substr(searchRange.location, searchRange.length).toLocaleLowerCase();
+	const subStringIndex = stringToSearch.indexOf(substring.toLocaleLowerCase());
+	const result = new Range();
 
 	if (subStringIndex > -1) {
 		result.location = subStringIndex + searchRange.location;
@@ -175,7 +165,7 @@ function addIndexesInRange(
 	indexes,
 	range)
 {
-	for (var i = range.location; i < range.max(); i++) {
+	for (let i = range.location; i < range.max(); i++) {
 		indexes.push(i);
 	}
 
