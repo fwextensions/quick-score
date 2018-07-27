@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 const statements = require("./debug-statements");
 
 
@@ -96,13 +97,12 @@ function logScore(
 }
 
 
-// TODO: figure out the path from where the script was run, / or /debug
-//var scoreSource = fs.readFileSync("src/quick-score.js", "utf8");
-var scoreSource = fs.readFileSync("../src/quick-score.js", "utf8");
+var scoreSource = fs.readFileSync(path.resolve(__dirname, "../src/quick-score.js"), "utf8");
 
 	// fix the path to range.js
 scoreSource = scoreSource.replace('"./range"', '"../src/range"');
 
+	// insert the statements before or after the target lines
 statements.reduce((startIndex, [statement, position, target]) => {
 	const index = scoreSource.indexOf(target, startIndex);
 	const indent = target.match(/^(\s*)/)[1];

@@ -4,11 +4,12 @@
   "description": "A JavaScript string-scoring library based on the Quicksilver algorithm",
   "author": "John Dunning",
   "license": "MIT",
+  "repository": "github:fwextensions/quick-score",
   "keywords": [],
-  "main": "index.js",
   "scripts": {
     "test": "jest",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage",
+    "debug": "node debug/debug-quick-score.js"
   },
   "engines": {
     "node": ">=8.0"

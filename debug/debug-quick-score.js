@@ -1,4 +1,4 @@
-const score = require("./quick-score-debug");
+const score = require("./debug-harness");
 const Range = require("../src/range");
 
 /*
