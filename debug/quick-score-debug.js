@@ -96,21 +96,31 @@ function logScore(
 }
 
 
+// TODO: figure out the path from where the script was run, / or /debug
+//var scoreSource = fs.readFileSync("src/quick-score.js", "utf8");
 var scoreSource = fs.readFileSync("../src/quick-score.js", "utf8");
 
 	// fix the path to range.js
 scoreSource = scoreSource.replace('"./range"', '"../src/range"');
 
-const lines = scoreSource.split("\n");
+statements.reduce((startIndex, [statement, position, target]) => {
+	const index = scoreSource.indexOf(target, startIndex);
+	const indent = target.match(/^(\s*)/)[1];
+	const statementLine = indent + statement + "\n\n";
+	const replacement = (position == "before")
+		? statementLine + target
+		: target + "\n\n" + statementLine;
 
-for (let [line, statement] of statements.reverse()) {
-		// add the lines in reverse order so the line numbers don't get shifted.
-		// subtract 1 because the line numbers are 1-based.
-	lines.splice(line - 1, 0, statement);
-}
+	if (index > -1) {
+		scoreSource = scoreSource.replace(target, replacement);
+	} else {
+		throw new Error("Couldn't find target: " + target);
+	}
 
-scoreSource = lines.join("\n");
+	return startIndex + replacement.length;
+}, 0);
 
 eval(scoreSource);
+
 
 module.exports = logScore;

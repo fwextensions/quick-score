@@ -63,8 +63,8 @@ function quickScore(
 			addIndexesInRange(hitMask, matchedRange);
 		}
 
-		let remainingSearchRange = new Range(matchedRange.max(), searchRange.max() - matchedRange.max());
-		let remainingScore = quickScore(itemString, abbreviation, hitMask,
+		const remainingSearchRange = new Range(matchedRange.max(), searchRange.max() - matchedRange.max());
+		const remainingScore = quickScore(itemString, abbreviation, hitMask,
 			noSkipReduction, remainingSearchRange, new Range(abbreviationRange.location + i,
 			abbreviationRange.length - i), fullMatchedRange);
 
