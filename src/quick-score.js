@@ -40,11 +40,11 @@ function quickScore(
 	}
 
 	for (let i = abbreviationRange.length; i > 0; i--) {
-		let abbreviationSubstring = abbreviation.substr(abbreviationRange.location, i);
+		const abbreviationSubstring = abbreviation.substring(abbreviationRange.location, abbreviationRange.location + i);
 			// reduce the length of the search range by the number of chars
 			// we're skipping in the query, to make sure there's enough string
 			// left to possibly contain the skipped chars
-		let matchedRange = getRangeOfSubstring(itemString, abbreviationSubstring,
+		const matchedRange = getRangeOfSubstring(itemString, abbreviationSubstring,
 			new Range(searchRange.location, searchRange.length - abbreviationRange.length + i));
 
 		if (!matchedRange.isValid()) {
@@ -69,11 +69,11 @@ function quickScore(
 			abbreviationRange.length - i), fullMatchedRange);
 
 		if (remainingScore) {
+			const matchStartPercentage = fullMatchedRange.location / itemString.length;
+			const isShortString = itemString.length < LongStringLength;
+			const useSkipReduction = true;
+//			const useSkipReduction = !noSkipReduction && (isShortString || matchStartPercentage < MaxMatchStartPct),
 			let score = remainingSearchRange.location - searchRange.location;
-			let matchStartPercentage = fullMatchedRange.location / itemString.length;
-			let isShortString = itemString.length < LongStringLength;
-			let useSkipReduction = true;
-//			let useSkipReduction = !noSkipReduction && (isShortString || matchStartPercentage < MaxMatchStartPct),
 			let matchStartDiscount = (1 - matchStartPercentage);
 				// default to no match-sparseness discount, for cases where there
 				// are spaces before the matched letters or they're capitals
@@ -148,7 +148,7 @@ function getRangeOfSubstring(
 	substring,
 	searchRange = new Range(0, string.length))
 {
-	const stringToSearch = string.substr(searchRange.location, searchRange.length).toLocaleLowerCase();
+	const stringToSearch = string.substring(searchRange.location, searchRange.location + searchRange.length).toLocaleLowerCase();
 	const subStringIndex = stringToSearch.indexOf(substring.toLocaleLowerCase());
 	const result = new Range();
 

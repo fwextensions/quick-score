@@ -25,8 +25,8 @@ score("This excellent string tells us an interesting story", "test");
 
 (() => {
 	const str = "This excellent string tells us an interesting story";
-	const abbr = "test";
 	const strRange = new Range(0, 27); //  ^--- range ends here initially
+	const abbr = "test";
 	const hits = [];
 
 	for (let i = 0; i < 7; i++) {
