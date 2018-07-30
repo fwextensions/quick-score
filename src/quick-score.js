@@ -1,4 +1,4 @@
-const Range = require("./range");
+import Range from "./range";
 
 
 const WordSeparators = "-/\\:()<>%._=&[] \t\n\r";
@@ -173,4 +173,4 @@ function addIndexesInRange(
 }
 
 
-module.exports = quickScore;
+export default quickScore;

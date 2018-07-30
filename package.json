@@ -1,27 +1,41 @@
 {
-  "name": "quick-score",
-  "version": "0.0.0",
-  "description": "A JavaScript string-scoring and fuzzy-matching library based on the Quicksilver algorithm.",
-  "author": "John Dunning",
-  "license": "MIT",
-  "repository": "github:fwextensions/quick-score",
-  "keywords": [],
-  "scripts": {
-    "test": "jest --runInBand --env node",
-    "test-watch": "jest --watch --runInBand --env node",
-    "coverage": "jest --env node --coverage",
-    "debug": "node debug/debug-quick-score.js"
-  },
-  "engines": {
-    "node": ">=8.0"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "ajv": "^6.5.2",
-    "babel": "^6.23.0",
-    "babel-preset-env": "^1.7.0",
-    "jest": "^23.3.0",
-    "webpack": "^4.15.1",
-    "webpack-cli": "^3.0.8"
-  }
+	"name": "quick-score",
+	"version": "0.0.0",
+	"description": "A JavaScript string-scoring and fuzzy-matching library based on the Quicksilver algorithm.",
+	"keywords": [],
+	"license": "MIT",
+	"author": "John Dunning <fwextensions@gmail.com>",
+	"repository": "github:fwextensions/quick-score",
+	"homepage": "https://github.com/fwextensions/quick-score",
+	"bugs": {
+		"url": "https://github.com/fwextensions/quick-score/issues"
+	},
+	"main": "lib/index.js",
+	"module": "lib/index.esm.js",
+	"scripts": {
+		"build": "rollup -c",
+		"test": "jest --runInBand --env node",
+		"test:watch": "jest --watch --runInBand --env node",
+		"coverage": "jest --coverage --runInBand --env node",
+		"debug": "node debug/debug-quick-score.js"
+	},
+	"babel": {
+		"env": {
+			"test": {
+				"presets": [
+					"env"
+				]
+			}
+		}
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"ajv": "^6.5.2",
+		"babel": "^6.23.0",
+		"babel-preset-env": "^1.7.0",
+		"jest": "^23.3.0",
+		"rollup": "^0.63.4",
+		"rollup-plugin-babel": "^3.0.7",
+		"rollup-plugin-node-resolve": "^3.3.0"
+	}
 }

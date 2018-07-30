@@ -1,5 +1,5 @@
 const score = require("./debug-harness");
-const Range = require("../src/range");
+const Range = require("../lib").Range;
 
 /*
 var hits = [];
@@ -32,7 +32,7 @@ score("This excellent string tells us an interesting story", "test");
 	for (let i = 0; i < 7; i++) {
 		score(str, abbr, hits, false, strRange);
 		console.log("hits:", hits, "\n\n\n");
-		strRange.length += 4;
 		hits.length = 0;
+		strRange.length += 4;
 	}
 })();

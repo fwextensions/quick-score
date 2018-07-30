@@ -1,4 +1,4 @@
-const Range = require("../src/range");
+import Range from "../src/range";
 
 
 test("new Range()", () => {

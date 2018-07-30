@@ -28,7 +28,7 @@ function fill(
 	array,
 	filler)
 {
-	for (var i = 0; i < array.length; i++) {
+	for (let i = 0; i < array.length; i++) {
 		array[i] = array[i] || filler || " ";
 	}
 
@@ -41,8 +41,8 @@ function logRanges(
 	hitMask,
 	fullMatchedRange)
 {
-	var ranges = setIndexesFromArray([], hitMask || []),
-		matchedRange = [];
+	const ranges = setIndexesFromArray([], hitMask || []);
+	const matchedRange = [];
 
 	if (searchRange.isValid()) {
 		ranges[searchRange.location] = "(";
@@ -61,7 +61,7 @@ function setIndexesInRange(
 	range,
 	char)
 {
-	for (var i = range.location; i < range.max(); i++) {
+	for (let i = range.location; i < range.max(); i++) {
 		indexes[i] = char || "*";
 	}
 
@@ -97,10 +97,7 @@ function logScore(
 }
 
 
-var scoreSource = fs.readFileSync(path.resolve(__dirname, "../src/quick-score.js"), "utf8");
-
-	// fix the path to range.js
-scoreSource = scoreSource.replace('"./range"', '"../src/range"');
+let scoreSource = fs.readFileSync(path.resolve(__dirname, "../lib/index.js"), "utf8");
 
 	// insert the statements before or after the target lines
 statements.reduce((startIndex, [statement, position, target]) => {
@@ -122,5 +119,8 @@ statements.reduce((startIndex, [statement, position, target]) => {
 
 eval(scoreSource);
 
+	// save off the reference in module.exports to quickScore that was added by
+	// the eval above before we change the export
+const quickScore = module.exports.quickScore;
 
 module.exports = logScore;

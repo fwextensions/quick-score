@@ -1,5 +1,5 @@
-const quickScore = require("../src/quick-score");
-const Range = require("../src/range");
+import quickScore from "../src/quick-score";
+import Range from "../src/range";
 
 
 const MaxDifference = .00001;
