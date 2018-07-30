@@ -36,6 +36,7 @@
 		"jest": "^23.3.0",
 		"rollup": "^0.63.4",
 		"rollup-plugin-babel": "^3.0.7",
+		"rollup-plugin-babel-minify": "^5.0.0",
 		"rollup-plugin-node-resolve": "^3.3.0"
 	}
 }
