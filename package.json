@@ -10,10 +10,10 @@
 	"bugs": "https://github.com/fwextensions/quick-score/issues",
 	"main": "lib/index.js",
 	"module": "lib/index.esm.js",
-	"files": ["lib/"],
+	"files": ["lib", "src"],
 	"scripts": {
 		"build": "rollup -c",
-		"prepare": "build",
+		"prepare": "npm run build",
 		"test": "jest --runInBand --env node",
 		"test:watch": "jest --watch --runInBand --env node",
 		"coverage": "jest --coverage --runInBand --env node",
