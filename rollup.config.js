@@ -7,8 +7,8 @@ const OutputESM = (dir) => ({
 	file: `${dir}/index.esm.js`,
 	format: "esm"
 });
-const OutputUMD = (dir, minified) => ({
-	file: `${dir}/quick-score${minified ? ".min" : ""}.js`,
+const OutputUMD = (dir, filename, minified) => ({
+	file: `${dir}/${filename ? filename : "quick-score"}${minified ? ".min" : ""}.js`,
 	format: "umd",
 	exports: "named",
 	name: "quickScore"
@@ -31,7 +31,7 @@ export default [
 	},
 	{
 		input: Input,
-		output: OutputUMD("lib")
+		output: OutputUMD("lib", "index")
 	},
 	{
 		input: Input,
@@ -42,7 +42,7 @@ export default [
 	},
 	{
 		input: Input,
-		output: OutputUMD("dist", true),
+		output: OutputUMD("dist", "", true),
 		plugins: [
 			babel(BabelConfig),
 			minify({
