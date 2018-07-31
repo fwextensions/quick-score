@@ -1,4 +1,4 @@
-class Range {
+export default class Range {
 	constructor(
 		location,
 		length)
@@ -40,6 +40,3 @@ class Range {
 		}
 	}
 }
-
-
-export default Range;

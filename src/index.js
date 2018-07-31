@@ -1,5 +1,3 @@
-import quickScore from "./quick-score";
-import Range from "./range";
-
-
-export {quickScore as default, quickScore, Range};
+export {default} from "./quick-score";
+export {default as quickScore} from "./quick-score";
+export {default as Range} from "./range";
