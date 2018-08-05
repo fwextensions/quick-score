@@ -10,10 +10,14 @@
   "bugs": "https://github.com/fwextensions/quick-score/issues",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
-  "files": ["dist", "lib"],
+  "files": [
+    "dist",
+    "lib"
+  ],
   "scripts": {
     "build": "rollup -c",
     "prepare": "npm run build",
+    "pretest": "eslint src",
     "test": "jest --runInBand --env node",
     "test:watch": "jest --watch --runInBand --env node",
     "coverage": "jest --coverage --runInBand --env node",
@@ -33,6 +37,7 @@
     "ajv": "^6.5.2",
     "babel": "^6.23.0",
     "babel-preset-env": "^1.7.0",
+    "eslint": "^5.3.0",
     "jest": "^23.3.0",
     "rollup": "^0.63.4",
     "rollup-plugin-babel": "^3.0.7",

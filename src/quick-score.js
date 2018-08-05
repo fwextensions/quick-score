@@ -15,7 +15,7 @@ const UpperCaseLetters = (function() {
 const IgnoredScore = 0.9;
 const SkippedScore = 0.15;
 const LongStringLength = 151;
-const MaxMatchStartPct = .15;
+//const MaxMatchStartPct = .15;
 const MinMatchDensityPct = .75;
 const MaxMatchDensityPct = .95;
 const BeginningOfStringPct = .1;
@@ -173,4 +173,4 @@ function addIndexesInRange(
 }
 
 
-export default quickScore;
+export {quickScore as default, quickScore};
