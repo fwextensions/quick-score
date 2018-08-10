@@ -1,6 +1,6 @@
 {
   "name": "quick-score",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "A JavaScript string-scoring and fuzzy-matching library based on the Quicksilver algorithm.",
   "keywords": [],
   "license": "MIT",
@@ -20,7 +20,7 @@
     "pretest": "eslint src",
     "test": "jest --runInBand --env node",
     "test:watch": "jest --watch --runInBand --env node",
-    "coverage": "jest --coverage --runInBand --env node",
+    "test:coverage": "jest --coverage --runInBand --env node",
     "debug": "node debug/debug-quick-score.js"
   },
   "babel": {
