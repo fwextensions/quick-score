@@ -29,6 +29,7 @@ describe("Tabs scoring", function() {
 	});
 
 	test.each([
+		["qk", 6, "QuicKey – The quick tab switcher - Chrome Web Store"],
 		["dean", 11, "Bufala Negra – Garden & Gun"],
 		["face", 10, "Facebook"]
 	])('Score Tabs array for "%s"', (query, matchCount, firstTitle) => {

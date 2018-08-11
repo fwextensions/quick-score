@@ -1,6 +1,9 @@
 /* eslint no-param-reassign: 0, object-curly-spacing: 0, object-property-newline: 0 */
 
-export default function createScorer(
+import quickScore from "./quick-score";
+
+
+export function createScorer(
 	score,
 	searchKeyInfo)
 {
@@ -72,3 +75,6 @@ export default function createScorer(
 		return items;
 	};
 }
+
+
+export default createScorer(quickScore);
