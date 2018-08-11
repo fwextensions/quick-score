@@ -20,17 +20,27 @@ function compareLowercase(
 }
 
 
-// TODO: why doesn't this work as a one-off test?
-
-test("Tabs: dean", () => {
+describe("Tabs scoring", function() {
 	const score = createScorer(quickScore, ["title", "url"]);
-	const results = score(clone(Tabs), "dean");
-	const nonmatches = results.filter(({score}) => score == 0);
-	const nonmatchingTitles = nonmatches.map(({title}) => title);
+	let tabs;
 
-	expect(results.length).toBe(Tabs.length);
-	expect(Tabs.length - nonmatches.length).toBe(11);
+	beforeEach(() => {
+		tabs = clone(Tabs);
+	});
 
-		// make sure the 0-scored objects are sorted case-insensitively on their titles
-	expect([].concat(nonmatchingTitles).sort(compareLowercase)).toEqual(nonmatchingTitles);
+	test.each([
+		["dean", 11, "Bufala Negra – Garden & Gun"],
+		["face", 10, "Facebook"]
+	])('Score Tabs array for "%s"', (query, matchCount, firstTitle) => {
+		const results = score(tabs, query);
+		const nonmatches = results.filter(({score}) => score == 0);
+		const nonmatchingTitles = nonmatches.map(({title}) => title);
+
+		expect(results.length).toBe(Tabs.length);
+		expect(Tabs.length - nonmatches.length).toBe(matchCount);
+		expect(results[0].title).toBe(firstTitle);
+
+			// make sure the 0-scored objects are sorted case-insensitively on their titles
+		expect([].concat(nonmatchingTitles).sort(compareLowercase)).toEqual(nonmatchingTitles);
+	});
 });

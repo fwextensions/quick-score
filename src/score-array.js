@@ -50,8 +50,10 @@ export default function createScorer(
 		}
 
 		for (const item of items) {
+			let highScore = 0;
+
 				// find the highest score for each keyed string on this item
-			item.score = keys.reduce((currentScore, keyInfo) => {
+			for (let keyInfo of keys) {
 				const hits = [];
 				const {key} = keyInfo;
 				const newScore = keyInfo.score(item[key], query, hits);
@@ -59,8 +61,10 @@ export default function createScorer(
 				item.scores[key] = newScore;
 				item.hits[key] = hits;
 
-				return Math.max(currentScore, newScore);
-			}, 0);
+				highScore = Math.max(highScore, newScore);
+			}
+
+			item.score = highScore;
 		}
 
 		items.sort(compareScoredStrings);
