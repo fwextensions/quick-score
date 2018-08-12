@@ -1,4 +1,4 @@
-import {quickScore, createScorer} from "../src";
+import {createScorer, scoreArray} from "../src";
 import Tabs from "./tabs";
 
 
@@ -20,8 +20,17 @@ function compareLowercase(
 }
 
 
+test("Basic scoreArray() test", () => {
+	const strings = ["thought", "giraffe", "GitHub", "hello, Garth"];
+	const results = scoreArray(strings, "gh");
+
+	expect(results[0].string).toBe("GitHub");
+	expect(results[results.length - 1].score).toBe(0);
+});
+
+
 describe("Tabs scoring", function() {
-	const score = createScorer(quickScore, ["title", "url"]);
+	const score = createScorer(["title", "url"]);
 	let tabs;
 
 	beforeEach(() => {

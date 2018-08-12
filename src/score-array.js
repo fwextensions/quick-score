@@ -4,13 +4,13 @@ import quickScore from "./quick-score";
 
 
 export function createScorer(
-	score,
-	searchKeyInfo)
+	searchKeys,
+	scorer = quickScore)
 {
 		// force keyNames to be an array, then associate each key with the score
 		// function, if it isn't already
-	const keys = [].concat(searchKeyInfo || "string").map(key => (
-		(typeof key != "object") ? { key, score } : key
+	const keys = [].concat(searchKeys || "string").map(key => (
+		(typeof key != "object") ? { key, scorer } : key
 	));
 	const defaultKeyName = keys[0].key;
 
@@ -59,7 +59,7 @@ export function createScorer(
 			for (let keyInfo of keys) {
 				const hits = [];
 				const {key} = keyInfo;
-				const newScore = keyInfo.score(item[key], query, hits);
+				const newScore = keyInfo.scorer(item[key], query, hits);
 
 				item.scores[key] = newScore;
 				item.hits[key] = hits;
@@ -77,4 +77,4 @@ export function createScorer(
 }
 
 
-export default createScorer(quickScore);
+export default createScorer();
