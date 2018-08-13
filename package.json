@@ -33,7 +33,10 @@
     }
   },
   "jest": {
-    "collectCoverageFrom": ["src/*.js", "!src/index.js"]
+    "collectCoverageFrom": [
+      "src/*.js",
+      "!src/index.js"
+    ]
   },
   "engines": {
     "node": ">=6.4.0"

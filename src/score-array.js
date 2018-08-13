@@ -1,6 +1,6 @@
 /* eslint no-param-reassign: 0, object-curly-spacing: 0, object-property-newline: 0 */
 
-import quickScore from "./quick-score";
+import {quickScore} from "./quick-score";
 
 
 export function createScorer(
@@ -57,7 +57,7 @@ export function createScorer(
 			let scoreKey = "";
 
 				// find the highest score for each keyed string on this item
-			for (let keyInfo of keys) {
+			for (const keyInfo of keys) {
 				const hits = [];
 				const {key} = keyInfo;
 				const newScore = keyInfo.scorer(item[key], query, hits);
@@ -82,4 +82,4 @@ export function createScorer(
 }
 
 
-export default createScorer();
+export const scoreArray = createScorer();

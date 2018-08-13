@@ -1,4 +1,4 @@
-import Range from "./range";
+import {Range} from "./range";
 
 
 const WordSeparators = "-/\\:()<>%._=&[] \t\n\r";
@@ -21,7 +21,7 @@ const MaxMatchDensityPct = .95;
 const BeginningOfStringPct = .1;
 
 
-function quickScore(
+export function quickScore(
 	itemString,
 	abbreviation,
 	hitMask,
@@ -171,6 +171,3 @@ function addIndexesInRange(
 
 	return indexes;
 }
-
-
-export {quickScore as default, quickScore};

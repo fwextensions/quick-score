@@ -1,4 +1,3 @@
-export {default} from "./quick-score";
-export {default as quickScore} from "./quick-score";
-export {default as Range} from "./range";
-export {default as scoreArray, createScorer} from "./score-array";
+export {quickScore} from "./quick-score";
+export {Range} from "./range";
+export {scoreArray, createScorer} from "./score-array";

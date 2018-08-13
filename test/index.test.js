@@ -1,15 +1,15 @@
-import defaultQS, {quickScore, Range} from "../src";
+import {quickScore, scoreArray, createScorer, Range} from "../src";
 
 
-test("quickScore export", () => {
-	expect(typeof defaultQS).toBe("function");
-	expect(typeof quickScore).toBe("function");
-	expect(defaultQS === quickScore).toBe(true);
-	expect(quickScore.length).toBe(4);
-});
-
-
-test("Range export", () => {
-	expect(typeof Range).toBe("function");
-	expect(Range.length).toBe(2);
+describe("Exported functions test", function() {
+	test.each([
+		["quickScore", 4, quickScore],
+		["scoreArray", 2, scoreArray],
+		["createScorer", 1, createScorer],
+		["Range", 2, Range]
+	])("%s() should have %i arguments", (name, arity, fn) => {
+		expect(typeof fn).toBe("function");
+		expect(fn.length).toBe(arity);
+		expect(fn.name).toBe(name);
+	});
 });

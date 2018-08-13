@@ -1,5 +1,5 @@
-import quickScore from "../src/quick-score";
-import Range from "../src/range";
+import {quickScore} from "../src/quick-score";
+import {Range} from "../src/range";
 
 
 const MaxDifference = .00001;
