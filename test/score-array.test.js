@@ -1,4 +1,4 @@
-import {createScorer, scoreArray} from "../src";
+import {quickScore, createScorer, scoreArray} from "../src";
 import Tabs from "./tabs";
 
 
@@ -6,6 +6,12 @@ function clone(
 	obj)
 {
 	return JSON.parse(JSON.stringify(obj));
+}
+
+
+function freshTabs()
+{
+	return clone(Tabs);
 }
 
 
@@ -20,23 +26,35 @@ function compareLowercase(
 }
 
 
-test("Basic scoreArray() test", () => {
-	const strings = ["thought", "giraffe", "GitHub", "hello, Garth"];
-	const results = scoreArray(strings, "gh");
+describe("scoreArray() tests", function() {
+	const Strings = ["thought", "giraffe", "GitHub", "hello, Garth"];
 
-	expect(results[0].string).toBe("GitHub");
-	expect(results[results.length - 1].score).toBe(0);
+	test("Basic scoreArray() test", () => {
+		const strings = clone(Strings);
+		const results = scoreArray(strings, "gh");
+
+		expect(results[0].string).toBe("GitHub");
+		expect(results[0].hits.string).toEqual([0, 3]);
+		expect(results[0].score).toEqual(results[0].scores.string);
+		expect(results[results.length - 1].score).toBe(0);
+	});
+
+
+	test("Create scoreArray() equivalent", () => {
+		const qsScorer = createScorer(null, quickScore);
+		const query = "qk";
+
+		expect(qsScorer(clone(Strings), query)).toEqual(scoreArray(clone(Strings), query));
+	});
 });
 
 
 describe("Tabs scoring", function() {
 	const score = createScorer(["title", "url"]);
-	let tabs;
+	const tabs = freshTabs();
 
-	beforeEach(() => {
-		tabs = clone(Tabs);
-	});
-
+		// the tabs array will be reused after the first call adds the score, etc.
+		// keys to each item
 	test.each([
 		["qk", 6, "QuicKey – The quick tab switcher - Chrome Web Store"],
 		["dean", 11, "Bufala Negra – Garden & Gun"],
@@ -52,5 +70,27 @@ describe("Tabs scoring", function() {
 
 			// make sure the 0-scored objects are sorted case-insensitively on their titles
 		expect([].concat(nonmatchingTitles).sort(compareLowercase)).toEqual(nonmatchingTitles);
+	});
+});
+
+
+describe("Configured keys", function() {
+	test("Per-key scorer", () => {
+		const score = createScorer([
+			{
+				key: "title",
+				scorer: () => 1
+			},
+			{
+				key: "url",
+				scorer: () => 0
+			}
+		]);
+		const results = score(freshTabs(), "qk");
+
+			// since all the scores are the same, the results should be alphabetized
+		expect(results[0].title).toBe("Best Practices - Sharing");
+		expect(results[0].scores.title).toBe(1);
+		expect(results[0].scores.url).toBe(0);
 	});
 });

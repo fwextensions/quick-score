@@ -32,6 +32,12 @@
       }
     }
   },
+  "jest": {
+    "collectCoverageFrom": ["src/*.js", "!src/index.js"]
+  },
+  "engines": {
+    "node": ">=6.4.0"
+  },
   "dependencies": {},
   "devDependencies": {
     "ajv": "^6.5.2",
