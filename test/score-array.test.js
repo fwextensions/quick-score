@@ -56,10 +56,10 @@ describe("Tabs scoring", function() {
 		// the tabs array will be reused after the first call adds the score, etc.
 		// keys to each item
 	test.each([
-		["qk", 6, "QuicKey – The quick tab switcher - Chrome Web Store"],
-		["dean", 11, "Bufala Negra – Garden & Gun"],
-		["face", 10, "Facebook"]
-	])('Score Tabs array for "%s"', (query, matchCount, firstTitle) => {
+		["qk", 6, "QuicKey – The quick tab switcher - Chrome Web Store", "title"],
+		["dean", 11, "Bufala Negra – Garden & Gun", "url"],
+		["face", 10, "Facebook", "title"]
+	])('Score Tabs array for "%s"', (query, matchCount, firstTitle, scoreKey) => {
 		const results = score(tabs, query);
 		const nonmatches = results.filter(({score}) => score == 0);
 		const nonmatchingTitles = nonmatches.map(({title}) => title);
@@ -67,6 +67,7 @@ describe("Tabs scoring", function() {
 		expect(results.length).toBe(Tabs.length);
 		expect(Tabs.length - nonmatches.length).toBe(matchCount);
 		expect(results[0].title).toBe(firstTitle);
+		expect(results[0].scoreKey).toBe(scoreKey);
 
 			// make sure the 0-scored objects are sorted case-insensitively on their titles
 		expect([].concat(nonmatchingTitles).sort(compareLowercase)).toEqual(nonmatchingTitles);

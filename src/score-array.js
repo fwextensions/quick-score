@@ -54,6 +54,7 @@ export function createScorer(
 
 		for (const item of items) {
 			let highScore = 0;
+			let scoreKey = "";
 
 				// find the highest score for each keyed string on this item
 			for (let keyInfo of keys) {
@@ -64,10 +65,14 @@ export function createScorer(
 				item.scores[key] = newScore;
 				item.hits[key] = hits;
 
-				highScore = Math.max(highScore, newScore);
+				if (newScore > highScore) {
+					highScore = newScore;
+					scoreKey = key;
+				}
 			}
 
 			item.score = highScore;
+			item.scoreKey = scoreKey;
 		}
 
 		items.sort(compareScoredStrings);

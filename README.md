@@ -1,6 +1,6 @@
 # quick-score
 
-> `quick-score` is a JavaScript string-scoring and fuzzy-matching library based on the Quicksilver algorithm, which is intended for interactive matching as a user types a query.
+> `quick-score` is a JavaScript string-scoring and fuzzy-matching library based on the Quicksilver algorithm, and is perfect for interactive matching as a user types a query.
 
 intended for long strings
 return matches in a "sensible" order
@@ -15,7 +15,7 @@ npm install --save quick-score
 
 ## Usage
 
-You can import the libray as a CommonJS module:
+You can import the `quickScore` function as a CommonJS module:
 
 ```js
 const quickScore = require("quick-score");
@@ -39,16 +39,14 @@ const scoreArray = require("quick-score").scoreArray;
 ```
 
 ```js
-import {createScorer} from "quick-score";
+import {scoreArray} from "quick-score";
 
-const scoreArray = createScorer();
 const strings = ["thought", "giraffe", "GitHub", "hello, Garth"];
 const result = scoreArray(strings, "gh");
 
 console.log(result); //
 ```
 
-scoreArray()
 
 will modify array of strings passed in
 
