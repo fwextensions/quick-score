@@ -14,10 +14,10 @@ export class Range {
 
 
 	max(
-		max)
+		value)
 	{
-		if (typeof max == "number") {
-			this.length = max - this.location;
+		if (typeof value == "number") {
+			this.length = value - this.location;
 		}
 
 			// the NSMaxRange() function in Objective-C returns this value

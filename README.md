@@ -15,7 +15,7 @@ npm install --save quick-score
 
 ## Usage
 
-You can import the `quickScore` function as a property of a CommonJS module:
+You can import the `quickScore` function from a property of the CommonJS module:
 
 ```js
 const quickScore = require("quick-score").quickScore;

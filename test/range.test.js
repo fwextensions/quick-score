@@ -12,6 +12,7 @@ test("new Range()", () => {
 	expect(r.isValid()).toBe(false);
 });
 
+
 test("new Range(0, 10)", () => {
 	const r = new Range(0, 10);
 
@@ -22,6 +23,7 @@ test("new Range(0, 10)", () => {
 	expect(r + "").toBe("[0,10)");
 	expect(r.isValid()).toBe(true);
 });
+
 
 test("Setting length with max()", () => {
 	const r = new Range(0, 1);
