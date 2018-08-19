@@ -165,7 +165,7 @@ function addIndexesInRange(
 	indexes,
 	range)
 {
-	for (let i = range.location; i < range.max(); i++) {
+	for (let i = range.location, max = range.max(); i < max; i++) {
 		indexes.push(i);
 	}
 
