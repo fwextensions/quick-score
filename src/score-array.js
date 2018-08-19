@@ -41,11 +41,11 @@ export function createScorer(
 
 				item.score = 0;
 				item.scores = {};
-				item.hits = {};
+				item.matches = {};
 
 				for (const keyInfo of keys) {
 					item.scores[keyInfo.key] = 0;
-					item.hits[keyInfo.key] = [];
+					item.matches[keyInfo.key] = [];
 				}
 
 				return item;
@@ -58,12 +58,12 @@ export function createScorer(
 
 				// find the highest score for each keyed string on this item
 			for (const keyInfo of keys) {
-				const hits = [];
+				const matches = [];
 				const {key} = keyInfo;
-				const newScore = keyInfo.scorer(item[key], query, hits);
+				const newScore = keyInfo.scorer(item[key], query, matches);
 
 				item.scores[key] = newScore;
-				item.hits[key] = hits;
+				item.matches[key] = matches;
 
 				if (newScore > highScore) {
 					highScore = newScore;
