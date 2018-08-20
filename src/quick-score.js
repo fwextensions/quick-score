@@ -60,7 +60,7 @@ export function quickScore(
 		fullMatchedRange.max(matchedRange.max());
 
 		if (matches) {
-			addIndexesInRange(matches, matchedRange);
+			matches.push([matchedRange.location, matchedRange.max()]);
 		}
 
 		const remainingSearchRange = new Range(matchedRange.max(), searchRange.max() - matchedRange.max());
@@ -148,7 +148,7 @@ function getRangeOfSubstring(
 	substring,
 	searchRange = new Range(0, string.length))
 {
-	const stringToSearch = string.substring(searchRange.location, searchRange.location + searchRange.length).toLocaleLowerCase();
+	const stringToSearch = string.substring(searchRange.location, searchRange.max()).toLocaleLowerCase();
 	const subStringIndex = stringToSearch.indexOf(substring.toLocaleLowerCase());
 	const result = new Range();
 
@@ -158,16 +158,4 @@ function getRangeOfSubstring(
 	}
 
 	return result;
-}
-
-
-function addIndexesInRange(
-	indexes,
-	range)
-{
-	for (let i = range.location, max = range.max(); i < max; i++) {
-		indexes.push(i);
-	}
-
-	return indexes;
 }

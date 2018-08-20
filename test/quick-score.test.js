@@ -88,13 +88,13 @@ describe("Quicksilver hit indices", function() {
 	});
 
 	test.each([
-		[str, abbr, 0.90185, [0, 5, 15, 16]],
-		[str, abbr, 0.90161, [0, 5, 15, 16]],
-		[str, abbr, 0.90143, [0, 5, 15, 16]],
-		[str, abbr, 0.72949, [22, 23, 26, 36]],
-		[str, abbr, 0.69884, [22, 23, 40, 41]],
-		[str, abbr, 0.71595, [22, 23, 40, 41]],
-		[str, abbr, 0.73039, [22, 23, 40, 41]]
+		[str, abbr, 0.90185, [[0, 1], [5, 6], [15, 17]]],
+		[str, abbr, 0.90161, [[0, 1], [5, 6], [15, 17]]],
+		[str, abbr, 0.90143, [[0, 1], [5, 6], [15, 17]]],
+		[str, abbr, 0.72949, [[22, 24], [26, 27], [36, 37]]],
+		[str, abbr, 0.69884, [[22, 24], [40, 42]]],
+		[str, abbr, 0.71595, [[22, 24], [40, 42]]],
+		[str, abbr, 0.73039, [[22, 24], [40, 42]]]
 	])(HitsTestTitle, (string, query, expectedScore, expectedHits) => {
 		expect(quickScore(string, query, hits, true, strRange)).toBeNearly(expectedScore, MaxDifference);
 		expect(hits).toEqual(expectedHits);
@@ -105,11 +105,11 @@ describe("Quicksilver hit indices", function() {
 describe("Hit indices", function() {
 	test.each([
 			// the first test ensures that hits from early partial matches don't
-			// linger in the hits array
+			// linger in the matches array
 		["This excellent string tells us an intes foo bar baz", "test",
-			0.76961, [22, 23, 26, 36]],
+			0.76961, [[22, 24], [26, 27], [36, 37]]],
 		["This excellent string tells us an interesting story", "test",
-			0.73039, [22, 23, 40, 41]]
+			0.73039, [[22, 24], [40, 42]]]
 	])(HitsTestTitle, (string, query, expectedScore, expectedHits) => {
 		const hits = [];
 

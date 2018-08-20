@@ -34,7 +34,7 @@ describe("scoreArray() tests", function() {
 		const results = scoreArray(strings, "gh");
 
 		expect(results[0].string).toBe("GitHub");
-		expect(results[0].matches.string).toEqual([0, 3]);
+		expect(results[0].matches.string).toEqual([[0, 1], [3, 4]]);
 		expect(results[0].score).toEqual(results[0].scores.string);
 		expect(results[results.length - 1].score).toBe(0);
 	});

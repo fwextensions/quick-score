@@ -1,4 +1,4 @@
-export class Range {
+ export class Range {
 	constructor(
 		location,
 		length)
