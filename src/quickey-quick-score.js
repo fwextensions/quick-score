@@ -1,7 +1,7 @@
 import {Range} from "./range";
 
 
-const WordSeparators = "-/\\:()<>%.,_=&[] \t\n\r";
+const WordSeparators = "-/\\:()<>%._=&[] \t\n\r";
 const UpperCaseLetters = (function() {
 	const charCodeA = "A".charCodeAt(0);
 	const uppercase = [];
@@ -15,13 +15,13 @@ const UpperCaseLetters = (function() {
 const IgnoredScore = 0.9;
 const SkippedScore = 0.15;
 const LongStringLength = 151;
-//const MaxMatchStartPct = .15;
+const MaxMatchStartPct = .15;
 const MinMatchDensityPct = .75;
 const MaxMatchDensityPct = .95;
 const BeginningOfStringPct = .1;
 
 
-export function quickScore(
+export function quickeyQuickScore(
 	string,
 	query,
 	matches,
@@ -40,11 +40,11 @@ export function quickScore(
 	}
 
 	for (let i = queryRange.length; i > 0; i--) {
-		const querySubstring = query.substring(queryRange.location, queryRange.location + i);
+		const abbreviationSubstring = query.substring(queryRange.location, queryRange.location + i);
 			// reduce the length of the search range by the number of chars
 			// we're skipping in the query, to make sure there's enough string
 			// left to possibly contain the skipped chars
-		const matchedRange = getRangeOfSubstring(string, querySubstring,
+		const matchedRange = getRangeOfSubstring(string, abbreviationSubstring,
 			new Range(searchRange.location, searchRange.length - queryRange.length + i));
 
 		if (!matchedRange.isValid()) {
@@ -64,15 +64,15 @@ export function quickScore(
 		}
 
 		const remainingSearchRange = new Range(matchedRange.max(), searchRange.max() - matchedRange.max());
-		const remainingQueryRange = new Range(queryRange.location + i, queryRange.length - i);
-		const remainingScore = quickScore(string, query, matches,
-			noSkipReduction, remainingSearchRange, remainingQueryRange, fullMatchedRange);
+		const remainingScore = quickeyQuickScore(string, query, matches,
+			noSkipReduction, remainingSearchRange, new Range(queryRange.location + i,
+			queryRange.length - i), fullMatchedRange);
 
 		if (remainingScore) {
 			const matchStartPercentage = fullMatchedRange.location / string.length;
 			const isShortString = string.length < LongStringLength;
-			const useSkipReduction = true;
-//			const useSkipReduction = !noSkipReduction && (isShortString || matchStartPercentage < MaxMatchStartPct),
+//			const useSkipReduction = true;
+			const useSkipReduction = !noSkipReduction && (isShortString || matchStartPercentage < MaxMatchStartPct);
 			let score = remainingSearchRange.location - searchRange.location;
 			let matchStartDiscount = (1 - matchStartPercentage);
 				// default to no match-sparseness discount, for cases where there
@@ -107,8 +107,8 @@ export function quickScore(
 						// the match is in the first 10% of the string, the
 						// match range isn't too sparse and the whole string
 						// is not too long
-//					score -= matchedRange.location - searchRange.location;
-					score -= (matchedRange.location - searchRange.location) / 2.0;
+					score -= matchedRange.location - searchRange.location;
+//					score -= (matchedRange.location - searchRange.location) / 2.0;
 
 					matchRangeDiscount = query.length / fullMatchedRange.length;
 					matchRangeDiscount = (isShortString &&
@@ -120,10 +120,10 @@ export function quickScore(
 			}
 
 				// discount the scores of very long strings
-//			score += remainingScore * Math.min(remainingSearchRange.length, LongStringLength) *
+			score += remainingScore * Math.min(remainingSearchRange.length, LongStringLength) *
 //			score += remainingScore * remainingSearchRange.length *
-//				matchRangeDiscount * matchStartDiscount;
-			score += remainingScore * remainingSearchRange.length;
+				matchRangeDiscount * matchStartDiscount;
+//			score += remainingScore * remainingSearchRange.length;
 
 			score /= searchRange.length;
 
