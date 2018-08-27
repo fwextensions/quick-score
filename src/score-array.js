@@ -5,7 +5,8 @@ import {quickScore} from "./quick-score";
 
 export function createScorer(
 	searchKeys,
-	scorer = quickScore)
+	scorer = quickScore,
+	configOptions = null)
 {
 		// force keyNames to be an array, then associate each key with the score
 		// function, if it isn't already
@@ -60,7 +61,7 @@ export function createScorer(
 			for (const keyInfo of keys) {
 				const matches = [];
 				const {key} = keyInfo;
-				const newScore = keyInfo.scorer(item[key], query, matches);
+				const newScore = keyInfo.scorer(item[key], query, matches, configOptions);
 
 				item.scores[key] = newScore;
 				item.matches[key] = matches;
