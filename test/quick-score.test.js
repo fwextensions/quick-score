@@ -142,7 +142,9 @@ describe("Zero scores", function() {
 	test.each([
 		["foo", "foobar", 0],
 		["", "foobar", 0],
-// TODO: decide on the scores of empty queries, which are currently .9 in Quicksilver
+// TODO: decide on the scores of empty queries, which are currently .9 in Quicksilver.
+// for now, include a .9 result to get coverage of that branch.
+		["foobar", "", .9]
 //		["foobar", "", 0]
 	])(ScoreTestTitle, (string, query, expectedScore) => {
 		expect(quickScore(string, query)).toBe(expectedScore);

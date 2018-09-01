@@ -14,7 +14,7 @@ export function quickScore(
 	stringRange = new Range(0, string.length))
 {
 	if (!query) {
-		return config.skippedScore;
+		return config.ignoredScore;
 	}
 
 	const lcString = string.toLocaleLowerCase();
