@@ -6,7 +6,7 @@ import {quickScore} from "./quick-score";
 export function createScorer(
 	searchKeys,
 	scorer = quickScore,
-	configOptions = null)
+	configOptions)
 {
 		// force keyNames to be an array, then associate each key with the score
 		// function, if it isn't already

@@ -26,7 +26,7 @@ module.exports = {
 		"callback-return": "error",
 		"camelcase": "error",
 		"capitalized-comments": [
-			"error",
+			"off",
 			"never"
 		],
 		"class-methods-use-this": "error",
@@ -207,6 +207,7 @@ module.exports = {
 		"no-unmodified-loop-condition": "error",
 		"no-unneeded-ternary": "error",
 		"no-unused-expressions": "error",
+		"no-unused-vars": ["error", { "args": "none" }],
 		"no-use-before-define": "off",
 		"no-useless-call": "error",
 		"no-useless-computed-key": "error",
@@ -226,7 +227,7 @@ module.exports = {
 			"never"
 		],
 		"object-property-newline": "error",
-		"object-shorthand": "error",
+		"object-shorthand": [2, "consistent"],
 		"one-var": "off",
 		"one-var-declaration-per-line": "error",
 		"operator-assignment": [
@@ -249,7 +250,7 @@ module.exports = {
 		"prefer-rest-params": "error",
 		"prefer-spread": "error",
 		"prefer-template": "off",
-		"quote-props": "error",
+		"quote-props": "off",
 		"quotes": [
 			"error",
 			"double"
@@ -272,9 +273,9 @@ module.exports = {
 			"error",
 			"last"
 		],
-		"sort-imports": "error",
-		"sort-keys": "error",
-		"sort-vars": "error",
+		"sort-imports": "off",
+		"sort-keys": "off",
+		"sort-vars": "off",
 		"space-before-blocks": "error",
 		"space-before-function-paren": "off",
 		"space-in-parens": [

@@ -12,7 +12,7 @@ const UppercaseLetters = (function() {
 const IgnoredScore = 0.9;
 const SkippedScore = 0.15;
 const LongStringLength = 151;
-const MaxMatchStartPct = .15;
+//const MaxMatchStartPct = .15;
 const MinMatchDensityPct = .75;
 const MaxMatchDensityPct = .95;
 const BeginningOfStringPct = .1;
@@ -23,16 +23,15 @@ const ConfigDefaults = {
 	skippedScore: SkippedScore,
 	skipReduction: true,
 	adjustRemainingScore: function(
-		remainingScore,
 		string,
 		query,
+		remainingScore,
 		skippedSpecialChar,
-		matchedRange,
 		searchRange,
 		remainingSearchRange,
+		matchedRange,
 		fullMatchedRange)
 	{
-// TODO: make parameter order sensible
 		const isShortString = string.length < LongStringLength;
 		const matchStartPercentage = fullMatchedRange.location / string.length;
 		let matchRangeDiscount = 1;
@@ -79,13 +78,13 @@ export function config(
 export const DefaultConfig = config();
 export const QuicksilverConfig = config({
 	adjustRemainingScore: function(
-		remainingScore,
 		string,
 		query,
+		remainingScore,
 		skippedSpecialChar,
-		matchedRange,
 		searchRange,
 		remainingSearchRange,
+		matchedRange,
 		fullMatchedRange)
 	{
 		let score = remainingScore * remainingSearchRange.length;

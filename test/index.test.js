@@ -3,7 +3,7 @@ import {quickScore, scoreArray, createScorer, Range} from "../src";
 
 describe("Exported functions test", function() {
 	test.each([
-		["quickScore", 4, quickScore],
+		["quickScore", 3, quickScore],
 		["scoreArray", 2, scoreArray],
 		["createScorer", 1, createScorer],
 		["Range", 2, Range]
