@@ -1,4 +1,5 @@
 import {quickScore} from "../src/quick-score";
+import {QuicksilverConfig} from "../src/config";
 import {Range} from "../src/range";
 
 
@@ -40,7 +41,7 @@ function scoreNearly(
 		// rounds to .18182, which is not close to .18181 in 5 digits.  so use
 		// the helper defined above to check that the result is within .00001 of
 		// expected, which is what the Quicksilver tests look for.
-	expect(quickScore(string, query)).toBeNearly(expected, maxDifference);
+	expect(quickScore(string, query, null, QuicksilverConfig)).toBeNearly(expected, maxDifference);
 }
 
 
@@ -96,7 +97,7 @@ describe("Quicksilver hit indices", function() {
 		[str, abbr, 0.71595, [[22, 24], [40, 42]]],
 		[str, abbr, 0.73039, [[22, 24], [40, 42]]]
 	])(HitsTestTitle, (string, query, expectedScore, expectedHits) => {
-		expect(quickScore(string, query, hits, true, strRange)).toBeNearly(expectedScore, MaxDifference);
+		expect(quickScore(string, query, hits, QuicksilverConfig, strRange)).toBeNearly(expectedScore, MaxDifference);
 		expect(hits).toEqual(expectedHits);
 	});
 });
@@ -113,7 +114,7 @@ describe("Hit indices", function() {
 	])(HitsTestTitle, (string, query, expectedScore, expectedHits) => {
 		const hits = [];
 
-		expect(quickScore(string, query, hits)).toBeNearly(expectedScore, MaxDifference);
+		expect(quickScore(string, query, hits, QuicksilverConfig)).toBeNearly(expectedScore, MaxDifference);
 		expect(hits).toEqual(expectedHits);
 	});
 });
@@ -154,7 +155,7 @@ describe("Search ranges", function() {
 		["bar", "bar", new Range(0, 3), 1],
 		["bar", "bar", new Range(1, 3), 0]
 	])('quickScore("%s", "%s", null, false, %s)', (string, query, range, expectedScore) => {
-		expect(quickScore(string, query, null, false, range)).toBe(expectedScore);
+		expect(quickScore(string, query, null, QuicksilverConfig, range)).toBe(expectedScore);
 	});
 });
 
