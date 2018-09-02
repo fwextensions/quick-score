@@ -29,7 +29,7 @@ module.exports = {
 			"off",
 			"never"
 		],
-		"class-methods-use-this": "error",
+		"class-methods-use-this": "off",
 		"comma-dangle": "error",
 		"comma-spacing": [
 			"error",
@@ -88,7 +88,7 @@ module.exports = {
 			"error",
 			"always"
 		],
-		"max-classes-per-file": "error",
+		"max-classes-per-file": "off",
 		"max-depth": "off",
 		"max-len": "off",
 		"max-lines": "error",
@@ -244,7 +244,7 @@ module.exports = {
 		"prefer-const": "error",
 		"prefer-destructuring": "error",
 		"prefer-numeric-literals": "error",
-		"prefer-object-spread": "error",
+		"prefer-object-spread": "off",
 		"prefer-promise-reject-errors": "error",
 		"prefer-reflect": "error",
 		"prefer-rest-params": "error",

@@ -1,28 +1,43 @@
-const WordSeparators = "-/\\:()<>%._=&[]+ \t\n\r";
-const UppercaseLetters = (function() {
-	const charCodeA = "A".charCodeAt(0);
-	const uppercase = [];
+const BaseConfigDefaults = {
+	wordSeparators: "-/\\:()<>%._=&[]+ \t\n\r",
+	uppercaseLetters: (function() {
+		const charCodeA = "A".charCodeAt(0);
+		const uppercase = [];
 
-	for (let i = 0; i < 26; i++) {
-		uppercase.push(String.fromCharCode(charCodeA + i));
+		for (let i = 0; i < 26; i++) {
+			uppercase.push(String.fromCharCode(charCodeA + i));
+		}
+
+		return uppercase.join("");
+	})(),
+	ignoredScore: 0.9,
+	skippedScore: 0.15,
+	emptyQueryScore: 0
+};
+const QSConfigDefaults = {
+	longStringLength: 151,
+	maxMatchStartPct: 0.15,
+	minMatchDensityPct: 0.75,
+	maxMatchDensityPct: 0.95,
+	beginningOfStringPct: 0.1
+};
+
+
+class BaseConfig {
+	constructor(
+		options)
+	{
+		Object.assign(this, BaseConfigDefaults, options);
 	}
 
-	return uppercase.join("");
-})();
-const IgnoredScore = 0.9;
-const SkippedScore = 0.15;
-const LongStringLength = 151;
-//const MaxMatchStartPct = .15;
-const MinMatchDensityPct = .75;
-const MaxMatchDensityPct = .95;
-const BeginningOfStringPct = .1;
-const ConfigDefaults = {
-	wordSeparators: WordSeparators,
-	uppercaseLetters: UppercaseLetters,
-	ignoredScore: IgnoredScore,
-	skippedScore: SkippedScore,
-	skipReduction: true,
-	adjustRemainingScore: function(
+
+	useSkipReduction()
+	{
+		return true;
+	}
+
+
+	adjustRemainingScore(
 		string,
 		query,
 		remainingScore,
@@ -32,7 +47,48 @@ const ConfigDefaults = {
 		matchedRange,
 		fullMatchedRange)
 	{
-		const isShortString = string.length < LongStringLength;
+			// use the original Quicksilver expression for the remainingScore
+		return remainingScore * remainingSearchRange.length;
+	}
+}
+
+
+class QuickScoreConfig extends BaseConfig {
+	constructor(
+		options)
+	{
+		super(Object.assign({}, QSConfigDefaults, options));
+	}
+
+
+	useSkipReduction(
+		string,
+		query,
+		remainingScore,
+		searchRange,
+		remainingSearchRange,
+		matchedRange,
+		fullMatchedRange)
+	{
+		const len = string.length;
+		const isShortString = len < this.longStringLength;
+		const matchStartPercentage = fullMatchedRange.location / len;
+
+		return isShortString || matchStartPercentage < this.maxMatchStartPct;
+	}
+
+
+	adjustRemainingScore(
+		string,
+		query,
+		remainingScore,
+		skippedSpecialChar,
+		searchRange,
+		remainingSearchRange,
+		matchedRange,
+		fullMatchedRange)
+	{
+		const isShortString = string.length < this.longStringLength;
 		const matchStartPercentage = fullMatchedRange.location / string.length;
 		let matchRangeDiscount = 1;
 		let matchStartDiscount = (1 - matchStartPercentage);
@@ -45,38 +101,30 @@ const ConfigDefaults = {
 		if (!skippedSpecialChar) {
 			matchRangeDiscount = query.length / fullMatchedRange.length;
 			matchRangeDiscount = (isShortString &&
-				matchStartPercentage <= BeginningOfStringPct &&
-				matchRangeDiscount >= MinMatchDensityPct) ?
+				matchStartPercentage <= this.beginningOfStringPct &&
+				matchRangeDiscount >= this.minMatchDensityPct) ?
 				1 : matchRangeDiscount;
-			matchStartDiscount = matchRangeDiscount >= MaxMatchDensityPct ?
+			matchStartDiscount = matchRangeDiscount >= this.maxMatchDensityPct ?
 				1 : matchStartDiscount;
 		}
 
 			// discount the scores of very long strings
-		return remainingScore * Math.min(remainingSearchRange.length, LongStringLength) *
+		return remainingScore * Math.min(remainingSearchRange.length, this.longStringLength) *
 			matchRangeDiscount * matchStartDiscount;
-	}
-};
-
-
-class QuickScoreConfig {
-	constructor(
-		options)
-	{
-		Object.assign(this, ConfigDefaults, options);
 	}
 }
 
 
-export function config(
+export function createConfig(
 	options)
 {
 	return new QuickScoreConfig(options);
 }
 
 
-export const DefaultConfig = config();
-export const QuicksilverConfig = config({
+export const DefaultConfig = createConfig();
+export const QuicksilverConfig = new BaseConfig({
+	emptyQueryScore: 0.9,
 	adjustRemainingScore: function(
 		string,
 		query,

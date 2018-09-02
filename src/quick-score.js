@@ -2,10 +2,6 @@ import {Range} from "./range";
 import {DefaultConfig} from "./config";
 
 
-const LongStringLength = 151;
-const MaxMatchStartPct = .15;
-
-
 export function quickScore(
 	string,
 	query,
@@ -14,7 +10,7 @@ export function quickScore(
 	stringRange = new Range(0, string.length))
 {
 	if (!query) {
-		return config.ignoredScore;
+		return config.emptyQueryScore;
 	}
 
 	const lcString = string.toLocaleLowerCase();
@@ -66,16 +62,15 @@ export function quickScore(
 			const remainingScore = calcScore(remainingSearchRange, remainingQueryRange, fullMatchedRange);
 
 			if (remainingScore) {
-				const isShortString = string.length < LongStringLength;
-				const matchStartPercentage = fullMatchedRange.location / string.length;
-				const useSkipReduction = config.skipReduction === true &&
-					(isShortString || matchStartPercentage < MaxMatchStartPct);
 				let score = remainingSearchRange.location - searchRange.location;
 					// default to true since we only want to apply a discount if
 					// we hit the final else clause below, and we won't get to
 					// any of them if the match is right at the start of the
 					// searchRange
 				let skippedSpecialChar = true;
+				const useSkipReduction = config.useSkipReduction(string, query,
+					remainingScore, remainingSearchRange, searchRange,
+					remainingSearchRange, matchedRange, fullMatchedRange);
 
 				if (matchedRange.location > searchRange.location) {
 						// some letters were skipped when finding this match, so

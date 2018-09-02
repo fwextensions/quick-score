@@ -142,12 +142,19 @@ describe("Zero scores", function() {
 	test.each([
 		["foo", "foobar", 0],
 		["", "foobar", 0],
-// TODO: decide on the scores of empty queries, which are currently .9 in Quicksilver.
-// for now, include a .9 result to get coverage of that branch.
-		["foobar", "", .9]
-//		["foobar", "", 0]
+		["foobar", "", 0]
 	])(ScoreTestTitle, (string, query, expectedScore) => {
 		expect(quickScore(string, query)).toBe(expectedScore);
+	});
+
+		// do the same test with the QuicksilverConfig, which returns .9 for
+		// empty queries
+	test.each([
+		["foo", "foobar", 0],
+		["", "foobar", 0],
+		["foobar", "", .9]
+	])(ScoreTestTitle, (string, query, expectedScore) => {
+		expect(quickScore(string, query, null, QuicksilverConfig)).toBe(expectedScore);
 	});
 });
 
@@ -156,7 +163,7 @@ describe("Search ranges", function() {
 	test.each([
 		["bar", "bar", new Range(0, 3), 1],
 		["bar", "bar", new Range(1, 3), 0]
-	])('quickScore("%s", "%s", null, false, %s)', (string, query, range, expectedScore) => {
+	])('quickScore("%s", "%s", null, QuicksilverConfig, %s)', (string, query, range, expectedScore) => {
 		expect(quickScore(string, query, null, QuicksilverConfig, range)).toBe(expectedScore);
 	});
 });

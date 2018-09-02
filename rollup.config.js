@@ -17,9 +17,10 @@ const BabelConfig = {
 	exclude: "**/node_modules/**",
 		// tell babel to not transform modules, so that rollup can do it
 	presets: [
-		["env", {
-			modules: false
-		}]
+		["env", { modules: false }]
+	],
+	plugins: [
+		"external-helpers"
 	]
 };
 

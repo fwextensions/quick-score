@@ -1,6 +1,7 @@
 /* eslint no-param-reassign: 0, object-curly-spacing: 0, object-property-newline: 0 */
 
 import {quickScore} from "./quick-score";
+import {createConfig} from "./config";
 
 
 export function createScorer(
@@ -14,6 +15,7 @@ export function createScorer(
 		(typeof key != "object") ? { key, scorer } : key
 	));
 	const defaultKeyName = keys[0].key;
+	const config = createConfig(configOptions);
 
 
 	function compareScoredStrings(
@@ -61,7 +63,7 @@ export function createScorer(
 			for (const keyInfo of keys) {
 				const matches = [];
 				const {key} = keyInfo;
-				const newScore = keyInfo.scorer(item[key], query, matches, configOptions);
+				const newScore = keyInfo.scorer(item[key], query, matches, config);
 
 				item.scores[key] = newScore;
 				item.matches[key] = matches;
