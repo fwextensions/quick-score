@@ -124,6 +124,7 @@ export function createConfig(
 
 export const DefaultConfig = createConfig();
 export const QuicksilverConfig = new BaseConfig({
+		// the Quicksilver algorithm returns .9 for empty queries
 	emptyQueryScore: 0.9,
 	adjustRemainingScore: function(
 		string,
