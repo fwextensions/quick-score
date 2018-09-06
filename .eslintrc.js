@@ -18,7 +18,7 @@ module.exports = {
 			"consistent"
 		],
 		"arrow-body-style": "error",
-        "arrow-parens": ["error", "as-needed"],
+		"arrow-parens": ["error", "as-needed"],
 		"arrow-spacing": "error",
 		"block-scoped-var": "error",
 		"block-spacing": "error",
@@ -51,7 +51,7 @@ module.exports = {
 		"eqeqeq": "off",
 		"func-call-spacing": "error",
 		"func-name-matching": "error",
-        "func-names": "off",
+		"func-names": "off",
 		"func-style": [
 			"error",
 			"declaration"
@@ -118,7 +118,7 @@ module.exports = {
 		"no-buffer-constructor": "error",
 		"no-caller": "error",
 		"no-catch-shadow": "error",
-		"no-confusing-arrow":  [
+		"no-confusing-arrow": [
 			"error",
 			{
 				"allowParens": true
@@ -207,7 +207,7 @@ module.exports = {
 		"no-unmodified-loop-condition": "error",
 		"no-unneeded-ternary": "error",
 		"no-unused-expressions": "error",
-		"no-unused-vars": ["error", { "args": "none" }],
+		"no-unused-vars": ["error", {"args": "none"}],
 		"no-use-before-define": "off",
 		"no-useless-call": "error",
 		"no-useless-computed-key": "error",
@@ -284,7 +284,7 @@ module.exports = {
 		],
 		"space-infix-ops": "error",
 		"space-unary-ops": "error",
-        "spaced-comment": "off",
+		"spaced-comment": "error",
 		"strict": "error",
 		"switch-colon-spacing": "error",
 		"symbol-description": "error",
