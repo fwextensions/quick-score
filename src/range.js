@@ -1,4 +1,4 @@
-class Range {
+export class Range {
 	constructor(
 		location,
 		length)
@@ -14,13 +14,13 @@ class Range {
 
 
 	max(
-		max)
+		value)
 	{
-		if (typeof max == "number") {
-			this.length = max - this.location;
+		if (typeof value == "number") {
+			this.length = value - this.location;
 		}
 
-// TODO: calling this max is a little weird. [0, 3) would be 0, 1, 2.  this is one past the max
+			// the NSMaxRange() function in Objective-C returns this value
 		return this.location + this.length;
 	}
 
@@ -40,6 +40,3 @@ class Range {
 		}
 	}
 }
-
-
-module.exports = Range;

@@ -1,22 +1,58 @@
 {
   "name": "quick-score",
   "version": "0.0.0",
-  "description": "A JavaScript string-scoring library based on the Quicksilver algorithm",
-  "author": "John Dunning",
-  "license": "MIT",
+  "description": "A JavaScript string-scoring and fuzzy-matching library based on the Quicksilver algorithm.",
   "keywords": [],
-  "main": "index.js",
+  "license": "MIT",
+  "author": "John Dunning (https://github.com/fwextensions)",
+  "repository": "github:fwextensions/quick-score",
+  "homepage": "https://github.com/fwextensions/quick-score",
+  "bugs": "https://github.com/fwextensions/quick-score/issues",
+  "main": "lib/index.js",
+  "module": "lib/index.esm.js",
+  "files": [
+    "dist",
+    "lib"
+  ],
   "scripts": {
-    "test": "jest",
-    "coverage": "jest --coverage"
+    "build": "rollup -c",
+    "prepare": "npm run build",
+    "pretest": "eslint src",
+    "test": "jest --runInBand --env node",
+    "test:watch": "npm test -- --watch",
+    "test:coverage": "npm test -- --coverage",
+    "debug": "node debug/debug-quick-score.js"
+  },
+  "babel": {
+    "env": {
+      "test": {
+        "presets": [
+          "env"
+        ]
+      }
+    }
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/*.js",
+      "!src/index.js"
+    ],
+    "setupTestFrameworkScriptFile": "./test/setup.js"
+  },
+  "engines": {
+    "node": ">=6.4.0"
   },
   "dependencies": {},
   "devDependencies": {
     "ajv": "^6.5.2",
     "babel": "^6.23.0",
+    "babel-plugin-external-helpers": "^6.22.0",
     "babel-preset-env": "^1.7.0",
+    "eslint": "^5.3.0",
     "jest": "^23.3.0",
-    "webpack": "^4.15.1",
-    "webpack-cli": "^3.0.8"
+    "rollup": "^0.63.4",
+    "rollup-plugin-babel": "^3.0.7",
+    "rollup-plugin-babel-minify": "^5.0.0",
+    "rollup-plugin-node-resolve": "^3.3.0"
   }
 }
