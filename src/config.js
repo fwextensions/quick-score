@@ -23,7 +23,7 @@ const QSConfigDefaults = {
 };
 
 
-class BaseConfig {
+class Config {
 	constructor(
 		options)
 	{
@@ -53,7 +53,7 @@ class BaseConfig {
 }
 
 
-class QuickScoreConfig extends BaseConfig {
+class QuickScoreConfig extends Config {
 	constructor(
 		options)
 	{
@@ -118,12 +118,20 @@ class QuickScoreConfig extends BaseConfig {
 export function createConfig(
 	options)
 {
-	return new QuickScoreConfig(options);
+	if (options instanceof Config) {
+			// this is a full-fledged Config instance, so we don't need to do
+			// anything to it
+		return options;
+	} else {
+			// create a complete config from this
+		return new QuickScoreConfig(options);
+	}
 }
 
 
 export const DefaultConfig = createConfig();
-export const QuicksilverConfig = new BaseConfig({
+export const BaseConfig = new Config();
+export const QuicksilverConfig = new Config({
 		// the Quicksilver algorithm returns .9 for empty queries
 	emptyQueryScore: 0.9,
 	adjustRemainingScore: function(

@@ -78,10 +78,7 @@ module.exports = {
 			}
 		],
 		"line-comment-position": "error",
-		"linebreak-style": [
-			"error",
-			"windows"
-		],
+		"linebreak-style": "off",
 		"lines-around-comment": "error",
 		"lines-around-directive": "error",
 		"lines-between-class-members": [
@@ -246,7 +243,7 @@ module.exports = {
 		"prefer-numeric-literals": "error",
 		"prefer-object-spread": "off",
 		"prefer-promise-reject-errors": "error",
-		"prefer-reflect": "error",
+		"prefer-reflect": "off",
 		"prefer-rest-params": "error",
 		"prefer-spread": "error",
 		"prefer-template": "off",

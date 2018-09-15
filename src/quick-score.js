@@ -1,5 +1,5 @@
 import {Range} from "./range";
-import {DefaultConfig} from "./config";
+import {createConfig, DefaultConfig} from "./config";
 
 
 export function quickScore(
@@ -123,11 +123,15 @@ export function quickScore(
 	}
 }
 
+	// make createConfig() available on quickScore so that the QuickScore
+	// constructor has access to it
+quickScore.createConfig = createConfig;
+
 
 function getRangeOfSubstring(
 	string,
 	substring,
-	searchRange = new Range(0, string.length))
+	searchRange)
 {
 	const stringToSearch = string.substring(searchRange.location, searchRange.max());
 	const subStringIndex = stringToSearch.indexOf(substring);

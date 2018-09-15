@@ -19,15 +19,25 @@
     "prepare": "npm run build",
     "pretest": "eslint src",
     "test": "jest --runInBand --env node",
-    "test:watch": "jest --watch --runInBand --env node",
-    "test:coverage": "jest --coverage --runInBand --env node",
+    "test:watch": "npm test -- --watch",
+    "test:coverage": "npm test -- --coverage",
     "debug": "node debug/debug-quick-score.js"
+  },
+  "babel": {
+    "env": {
+      "test": {
+        "presets": [
+          "env"
+        ]
+      }
+    }
   },
   "jest": {
     "collectCoverageFrom": [
       "src/*.js",
       "!src/index.js"
-    ]
+    ],
+    "setupTestFrameworkScriptFile": "./test/setup.js"
   },
   "engines": {
     "node": ">=6.4.0"

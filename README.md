@@ -1,5 +1,7 @@
 # quick-score
 
+![travis](https://travis-ci.com/fwextensions/quick-score.svg?branch=quickscore-class) [![codecov](https://codecov.io/gh/fwextensions/quick-score/branch/quickscore-class/graph/badge.svg)](https://codecov.io/gh/fwextensions/quick-score)
+
 > `quick-score` is a JavaScript string-scoring and fuzzy-matching library based on the Quicksilver algorithm, and is perfect for interactive matching as a user types a query.
 
 intended for long strings
@@ -54,3 +56,7 @@ always case-insensitive, uses `toLocaleLowerCase()`
 
 first key in array is used for sorting strings with the same score
 
+
+## License
+
+MIT
