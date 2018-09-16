@@ -1,5 +1,3 @@
-/* eslint object-curly-spacing: 0, object-property-newline: 0 */
-
 import {quickScore} from "./quick-score";
 
 
@@ -16,7 +14,7 @@ export default class QuickScore {
 
 		const {
 			scorer = quickScore,
-			keys = ["string"],
+			keys = [],
 			config
 		} = optionsValue;
 
@@ -24,11 +22,11 @@ export default class QuickScore {
 		this.config = config;
 
 		if (typeof scorer.createConfig == "function") {
+				// let the scorer fill out the config with default values
 			this.config = scorer.createConfig(config);
 		}
 
-			// setting the keys will also initialize the items
-		this.items = items;
+		this.setItems(items);
 		this.setKeys(keys);
 
 		this.compareScoredStrings = this.compareScoredStrings.bind(this);
@@ -38,84 +36,85 @@ export default class QuickScore {
 	search(
 		query)
 	{
-		for (const item of this.items) {
-			let highScore = 0;
-			let scoreKey = "";
+		const results = [];
+		const {keys, config} = this;
 
-				// find the highest score for each keyed string on this item
-			for (const keyInfo of this.keys) {
-				const matches = [];
-				const {key} = keyInfo;
-				const newScore = keyInfo.scorer(item[key], query, matches, this.config);
+		if (keys.length) {
+			for (const item of this.items) {
+				const result = {
+					item: item,
+					scores: {},
+					matches: {}
+				};
+				let highScore = 0;
+				let scoreKey = "";
 
-				item.scores[key] = newScore;
-				item.matches[key] = matches;
+					// find the highest score for each keyed string on this item
+				for (const keyInfo of keys) {
+					const matches = [];
+					const {key} = keyInfo;
+					const newScore = keyInfo.scorer(item[key], query, matches, config);
 
-				if (newScore > highScore) {
-					highScore = newScore;
-					scoreKey = key;
+					result.scores[key] = newScore;
+					result.matches[key] = matches;
+
+					if (newScore > highScore) {
+						highScore = newScore;
+						scoreKey = key;
+					}
 				}
-			}
 
-			item.score = highScore;
-			item.scoreKey = scoreKey;
+				result.score = highScore;
+				result.scoreKey = scoreKey;
+				results.push(result);
+			}
+		} else {
+				// items is a flat array of strings
+			for (const item of this.items) {
+				const matches = [];
+				const score = this.scorer(item, query, matches, config);
+
+				results.push({
+					item,
+					score,
+					matches
+				});
+			}
 		}
 
-		this.items.sort(this.compareScoredStrings);
+		results.sort(this.compareScoredStrings);
 
-		return this.items;
+		return results;
 	}
 
 
 	setKeys(
 		keys)
 	{
-		const {scorer} = this;
+		this.keys = Array.from(keys);
 
-			// associate each key with the score function, if it isn't already
-		this.keys = Array.from(keys).map(key => (
-			(typeof key !== "object") ? { key, scorer } : key
-		));
-		this.defaultKeyName = this.keys[0].key;
+		if (this.keys.length) {
+			const {scorer} = this;
 
-			// delete the scores property of each item and then call setItems()
-			// so that the keys get updated
-		for (const item of this.items) {
-			delete item.scores;
+				// associate each key with the scorer function, if it isn't already
+				/* eslint object-curly-spacing: 0, object-property-newline: 0 */
+			this.keys = this.keys.map(key => (
+				(typeof key !== "object") ? { key, scorer } : key
+			));
+
+			this.defaultKeyName = this.keys[0].key;
+		} else {
+				// defaultKeyName will be null if items is a flat array of
+				// strings, which is handled in compareScoredStrings()
+			this.defaultKeyName = null;
 		}
-
-		this.setItems(this.items);
 	}
 
 
 	setItems(
 		items)
 	{
-		if (items.length && !items[0].scores) {
-			this.items = items.map(itemValue => {
-				let item = itemValue;
-
-				if (typeof item == "string") {
-					item = {
-						[this.defaultKeyName]: item
-					};
-				}
-
-				item.score = 0;
-				item.scoreKey = "";
-				item.scores = {};
-				item.matches = {};
-
-				for (const keyInfo of this.keys) {
-					item.scores[keyInfo.key] = 0;
-					item.matches[keyInfo.key] = [];
-				}
-
-				return item;
-			});
-		} else {
-			this.items = items;
-		}
+		this.items = items;
 	}
 
 
@@ -123,8 +122,12 @@ export default class QuickScore {
 		a,
 		b)
 	{
+		const itemA = a.item;
+		const itemB = b.item;
+
 		if (a.score == b.score) {
-			return a[this.defaultKeyName].toLocaleLowerCase() < b[this.defaultKeyName].toLocaleLowerCase() ? -1 : 1;
+			return (itemA[this.defaultKeyName] || itemA).toLocaleLowerCase() <
+				(itemB[this.defaultKeyName] || itemB).toLocaleLowerCase() ? -1 : 1;
 		} else {
 			return b.score - a.score;
 		}

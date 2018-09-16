@@ -138,6 +138,7 @@ module.exports = {
 		"no-extra-label": "error",
 		"no-extra-parens": "off",
 		"no-floating-decimal": "off",
+		"no-global-assign": "error",
 		"no-implicit-coercion": "error",
 		"no-implicit-globals": "error",
 		"no-implied-eval": "error",

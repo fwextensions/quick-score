@@ -10,9 +10,8 @@ describe("QuickScore tests", function() {
 		const strings = clone(Strings);
 		const results = new QuickScore(strings).search("gh");
 
-		expect(results[0].string).toBe("GitHub");
-		expect(results[0].matches.string).toEqual([[0, 1], [3, 4]]);
-		expect(results[0].score).toEqual(results[0].scores.string);
+		expect(results[0].item).toBe("GitHub");
+		expect(results[0].matches).toEqual([[0, 1], [3, 4]]);
 		expect(results[results.length - 1].score).toBe(0);
 	});
 
@@ -24,10 +23,28 @@ describe("QuickScore tests", function() {
 		expect(defaultScorer.search(query)).toEqual(qsScorer.search(query));
 	});
 
+	test("Empty query returns 0 scores, and sorted alphabetically", () => {
+		const strings = clone(Strings);
+		const results = new QuickScore(strings).search("");
+
+		expect(results[0].score).toBe(0);
+		strings.sort(compareLowercase);
+		expect(results.map(({item}) => item)).toEqual(strings);
+	});
+
 	test("Empty QuickScore", () => {
 		const qs = new QuickScore();
 
 		expect(qs.search("")).toEqual([]);
+	});
+
+	test("items array is not modified", () => {
+		const items = freshTabs();
+		const originalItems = clone(items);
+		const qs = new QuickScore(items, ["title", "url"]);
+
+		qs.search("qk");
+		expect(items).toEqual(originalItems);
 	});
 });
 
@@ -40,26 +57,20 @@ describe("Tabs scoring", function() {
 	test.each([
 		["qk", 6, "QuicKey – The quick tab switcher - Chrome Web Store", "title"],
 		["dean", 11, "Bufala Negra – Garden & Gun", "url"],
-		["face", 10, "Facebook", "title"]
+		["face", 10, "Facebook", "title"],
+		["", 0, "Best Practices - Sharing", ""]
 	])('Score Tabs array for "%s"', (query, matchCount, firstTitle, scoreKey) => {
 		const results = qs.search(query);
 		const nonmatches = results.filter(({score}) => score == 0);
-		const nonmatchingTitles = nonmatches.map(({title}) => title);
+		const nonmatchingTitles = nonmatches.map(({item: {title}}) => title);
 
 		expect(results.length).toBe(Tabs.length);
 		expect(Tabs.length - nonmatches.length).toBe(matchCount);
-		expect(results[0].title).toBe(firstTitle);
+		expect(results[0].item.title).toBe(firstTitle);
 		expect(results[0].scoreKey).toBe(scoreKey);
 
 			// make sure the 0-scored objects are sorted case-insensitively on their titles
 		expect([].concat(nonmatchingTitles).sort(compareLowercase)).toEqual(nonmatchingTitles);
-	});
-
-	test("Calling setItems() with items with existing scores doesn't modify the items", () => {
-		const originalItems = clone(qs.items);
-
-		qs.setItems(qs.items);
-		expect(originalItems).toEqual(qs.items);
 	});
 });
 
@@ -76,18 +87,12 @@ describe("Options", function() {
 				scorer: () => 0
 			}
 		]);
-		const results = qs.search("qk");
-		const originalItems = clone(qs.items);
+		const [firstItem] = qs.search("qk");
 
 			// since all the scores are the same, the results should be alphabetized
-		expect(results[0].title).toBe("Best Practices - Sharing");
-		expect(results[0].scores.title).toBe(1);
-		expect(results[0].scores.url).toBe(0);
-
-			// check that calling setKeys() will reset the items
-		expect(originalItems).toEqual(qs.items);
-		qs.setKeys(["title", "url"]);
-		expect(originalItems).not.toEqual(qs.items);
+		expect(firstItem.item.title).toBe("Best Practices - Sharing");
+		expect(firstItem.scores.title).toBe(1);
+		expect(firstItem.scores.url).toBe(0);
 	});
 
 	test("Passing keys in options object", () => {
@@ -99,28 +104,17 @@ describe("Options", function() {
 	});
 
 	test("Config with useSkipReduction off", () => {
-		const emptyQueryScore = 0.9;
 		const qs = new QuickScore(freshTabs(), {
 			keys: ["title", "url"],
 			config: {
-				useSkipReduction: () => false,
-				emptyQueryScore
+				useSkipReduction: () => false
 			}
 		});
-		let results;
+		let results = qs.search("qk");
+		const [firstItem] = results;
 
-			// the item scores should default to 0, but then become 0.9 when an
-			// empty query is run
-		expect(qs.items[0].score).toBe(0);
-		qs.search("");
-		expect(qs.items[0].score).toBe(emptyQueryScore);
-
-		results = qs.search("qk");
 		expect(results.filter(({score}) => score).length).toBe(6);
-
-		const firstItem = results[0];
-
-		expect(firstItem.title).toBe("Quokka.js: Configuration");
+		expect(firstItem.item.title).toBe("Quokka.js: Configuration");
 		expect(firstItem.scoreKey).toBe("title");
 		expect(firstItem.score).toBe(0.4583333333333333);
 		expect(firstItem.matches.title).toEqual([[0, 1], [3, 4]]);
@@ -134,7 +128,7 @@ describe("Options", function() {
 		const [firstItem] = qs.search("");
 
 			// since all the scores are the same, the results should be alphabetized
-		expect(firstItem.title).toBe("Best Practices - Sharing");
+		expect(firstItem.item.title).toBe("Best Practices - Sharing");
 		expect(firstItem.scores.title).toBe(1);
 		expect(firstItem.scores.url).toBe(1);
 	});
@@ -148,7 +142,7 @@ describe("Options", function() {
 		const [firstItem] = qs.search("mail");
 		const [firstItemDefault] = qsDefault.search("mail");
 
-		expect(firstItem.title).toBe("facebook/immutable-js: Immutable persistent data collections for Javascript which increase efficiency and simplicity.");
+		expect(firstItem.item.title).toBe("facebook/immutable-js: Immutable persistent data collections for Javascript which increase efficiency and simplicity.");
 		expect(firstItem.scores.title).toBeNearly(0.74060);
 		expect(firstItem.scores.url).toBeNearly(0.34250);
 		expect(firstItem.score).toBeGreaterThan(firstItemDefault.score);
