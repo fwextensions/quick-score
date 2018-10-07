@@ -1,0 +1,20 @@
+{
+    "plugins": ["plugins/markdown"],
+	"source": {
+		"include": "src"
+	},
+	"templates": {
+		"default": {
+			"layoutFile": "jsdoc/layout.tmpl",
+			"staticFiles": {
+				"include": [
+					"jsdoc/static"
+				]
+			}
+		}
+	},
+	"opts": {
+		"destination": "docs",
+		"readme": "README.md"
+	}
+}

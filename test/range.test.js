@@ -21,6 +21,7 @@ test("new Range(0, 10)", () => {
 	expect(r.toString()).toBe("[0,10)");
 	expect(r + "").toBe("[0,10)");
 	expect(r.isValid()).toBe(true);
+	expect(r.toArray()).toEqual([0, 10]);
 });
 
 test("Setting length with max()", () => {

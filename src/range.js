@@ -1,4 +1,15 @@
+/* eslint no-inline-comments: 0 */
+
+/**
+ * A class representing a half-open interval of characters.  A range's `location`
+ * property and `max()` value can be used as arguments for the `substring()`
+ * method to extract a range of characters.
+ */
 export class Range {
+	/**
+	 * @param {number} [location=-1] - Starting index of the range.
+	 * @param {number} [length=0] - Number of characters in the range.
+	 */
 	constructor(
 		location,
 		length)
@@ -13,6 +24,19 @@ export class Range {
 	}
 
 
+	/**
+	 * Gets the end index of the range, which indicates the character
+	 * immediately after the last one in the range.
+	 *
+	 * @returns {number}
+	 *//**
+	 * Sets the end index of the range, which indicates the character
+	 * immediately after the last one in the range.
+	 *
+	 * @param {number} value - End of the range.
+	 *
+	 * @returns {number}
+	 */
 	max(
 		value)
 	{
@@ -25,12 +49,33 @@ export class Range {
 	}
 
 
+	/**
+	 * Returns whether the range contains a location >= 0.
+	 *
+	 * @returns {boolean}
+	 */
 	isValid()
 	{
 		return (this.location > -1);
 	}
 
 
+	/**
+	 * Returns an array of the range's start and end indexes.
+	 *
+	 * @returns {Array<number>}
+	 */
+	toArray()
+	{
+		return [this.location, this.max()];
+	}
+
+
+	/**
+	 * Returns a string representation of the range's open interval.
+	 *
+	 * @returns {string}
+	 */
 	toString()
 	{
 		if (this.location == -1) {

@@ -1,0 +1,15 @@
+.params code, .description code, .param-desc code {
+	font-weight: bold;
+}
+
+.prettyprint {
+	tab-size: 4;
+}
+
+.prettyprint.linenums li {
+	line-height: 1.4em;
+}
+
+.prettyprint code {
+	padding: 0 12px;
+}

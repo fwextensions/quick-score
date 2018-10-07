@@ -79,7 +79,9 @@ module.exports = {
 		],
 		"line-comment-position": "error",
 		"linebreak-style": "off",
-		"lines-around-comment": "error",
+		"lines-around-comment": ["error",
+			{ "beforeBlockComment": false }
+		],
 		"lines-around-directive": "error",
 		"lines-between-class-members": [
 			"error",
@@ -292,7 +294,13 @@ module.exports = {
 			"error",
 			"never"
 		],
-		"valid-jsdoc": "error",
+		"valid-jsdoc": [2, {
+			"prefer": {
+				"return": "returns"
+			},
+			"requireReturn": false,
+			"requireReturnDescription": false
+		}],
 		"vars-on-top": "error",
 		"wrap-regex": "error",
 		"yield-star-spacing": "error",

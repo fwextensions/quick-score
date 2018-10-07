@@ -2,6 +2,25 @@ import {Range} from "./range";
 import {createConfig, DefaultConfig} from "./config";
 
 
+/**
+ * Scores a string against a query.
+ *
+ * @param {string} string - The string to score.
+ *
+ * @param {string} query - The query string to score the `string` parameter against.
+ *
+ * @param {Array<Array>} [matches] - If supplied, the function will push onto
+ * `matches` an array with start and end indexes for each substring range
+ * of `string` that matches `query`.
+ *
+ * @param {object} [config] - A configuration object that can modify how the
+ * `quickScore` algorithm behaves.
+ *
+ * @param {Range} [stringRange] - The range of characters in `string` that should
+ * be checked for matches against `query`.  Defaults to all of `string`.
+ *
+ * @returns {number}
+ */
 export function quickScore(
 	string,
 	query,
