@@ -104,10 +104,10 @@ export class QuickScore {
 		query)
 	{
 		const results = [];
-		const {keys, config} = this;
+		const {items, keys, config} = this;
 
 		if (keys.length) {
-			for (const item of this.items) {
+			for (const item of items) {
 				const result = {
 					item: item,
 					scores: {},
@@ -137,7 +137,7 @@ export class QuickScore {
 			}
 		} else {
 				// items is a flat array of strings
-			for (const item of this.items) {
+			for (const item of items) {
 				const matches = [];
 				const score = this.scorer(item, query, matches, config);
 
@@ -203,6 +203,8 @@ export class QuickScore {
 		const itemB = b.item;
 
 		if (a.score == b.score) {
+				// if there's no defaultKeyName, then item will be a string, so
+				// fallback to lowercasing that
 			return (itemA[this.defaultKeyName] || itemA).toLocaleLowerCase() <
 				(itemB[this.defaultKeyName] || itemB).toLocaleLowerCase() ? -1 : 1;
 		} else {

@@ -3,8 +3,8 @@ import minify from "rollup-plugin-babel-minify";
 
 
 const Input = "src/index.js";
-const OutputESM = (dir) => ({
-	file: `${dir}/index.esm.js`,
+const OutputESM = (dir, filename, minified) => ({
+	file: `${dir}/${filename ? filename : "index"}.esm${minified ? ".min" : ""}.js`,
 	format: "esm"
 });
 const OutputUMD = (dir, filename, minified) => ({
@@ -44,6 +44,16 @@ export default [
 	{
 		input: Input,
 		output: OutputUMD("dist", "", true),
+		plugins: [
+			babel(BabelConfig),
+			minify({
+				comments: false
+			})
+		]
+	},
+	{
+		input: Input,
+		output: OutputESM("dist", "quick-score", true),
 		plugins: [
 			babel(BabelConfig),
 			minify({

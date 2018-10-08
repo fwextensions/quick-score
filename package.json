@@ -2,7 +2,14 @@
   "name": "quick-score",
   "version": "0.0.0",
   "description": "A JavaScript string-scoring and fuzzy-matching library based on the Quicksilver algorithm.",
-  "keywords": [],
+  "keywords": [
+    "string",
+    "score",
+    "sort",
+    "search",
+    "fuzzy",
+    "quicksilver"
+  ],
   "license": "MIT",
   "author": "John Dunning (https://github.com/fwextensions)",
   "repository": "github:fwextensions/quick-score",
