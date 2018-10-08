@@ -156,73 +156,7 @@ function highglight(string, matches) {
 
 ## API
 
-### new QuickScore(items, [options])
-
-Returns a `QuickScore` instance that can be used to score the strings or objects in the `items` array.
-
-
-* `items` : Array
-
-    An array of strings or objects containing strings that will be scored against a query.  The `items` array is not modified by QuickScore.
-
-
-* `options` : Array or Object
-
-    If the `items` parameter is an array of flat strings, the `options` parameter can be left out.  If it is a list of objects containing keys that should be scored, the `options` parameter should either be an array of key names or an object containing a `keys` property.
-
-    If `options` is an object, it can contain include the following optional keys:
-
-    * `keys`: In the simplest case, an array of key names to score on the objects in the `items` array.  The first item in this array is considered the primary key, which is used to sort items when they have the same score.  The keys should be top-level properties of the items to be scored.
-
-        Each key item can instead be an object containing `key` and `scorer` properties, which lets you specify a different scoring function for each key.  The scoring function should behave as described next.
-
-    * `scorer`: An optional function with the signature `fn(string, query, [matches], [config])`.  Given `string` and `query` parameters, the function should return a floating point number between `0` and `1` that represents how well the `query` matches the `string`.
-
-        If the function takes the `matches` parameter, it should fill the passed in array with indexes corresponding to where the `query` matches the `string`, as described in the `search()` method below.
-
-    * `config`: An optional object that can be passed to the `scorer` function to further customize it's behavior.  If the `scorer` function has a `createConfig()` method on it, the `QuickScore` instance will call that with the `config` value and store the result.  This can be used to extend the `config` parameter with default values.
-
-
-#### .search(query)
-
-Returns an array of results that include the score of each item for the given `query` string.  When the instance's `items` are flat strings, the result objects contain:
-
-* `item`: the string that was scored
-* `score`: the floating point score of the string for the current query
-* `matches`: an array of arrays that specifies the character ranges where the query matched the string
-
-When the `items` are objects, the result objects contain:
-
-* `item`: the object that was scored
-* `score`: the highest score from among the individual key scores
-* `scoreKey`: the name of the key with the highest score, which will be an empty string if they're all zero
-* `scores`: a hash of the individual scores for each key
-* `matches`: a hash of arrays that specify the character ranges of the query match for each key
-
-The results array is sorted high to low on each item's score.  Items with identical scores are sorted alphabetically and case-insensitively.  Items with scores of zero are returned in the array, sorted to the end.
-
-
-* `query` : String
-
-    The string to score each item against.
-
-
-#### .setItems(items)
-
-Updates a `QuickScore` instance with a new list of items to score.  Changing the items without calling this method may lead to unpredictable results.
-
-* `items` : Array
-
-    The new list of items to score.
-
-
-#### .setKeys(keys)
-
-Updates a `QuickScore` instance with a new list of keys to score.
-
-* `keys` : Array
-
-    The new list of keys to score on each object.
+See the [API docs](https://fwextensions.github.io/quick-score/) for a full description of the [QuickScore class](https://fwextensions.github.io/quick-score/QuickScore.html) and the [quickScore function](https://fwextensions.github.io/quick-score/global.html#quickScore).
 
 
 ## Algorithm

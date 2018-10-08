@@ -22,8 +22,8 @@ import {createConfig, DefaultConfig} from "./config";
  * @returns {number}
  */
 export function quickScore(
-	string,
-	query,
+	string = "",
+	query = "",
 	matches,
 	config = DefaultConfig,
 	stringRange = new Range(0, string.length))

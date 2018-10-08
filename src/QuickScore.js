@@ -34,11 +34,13 @@ export class QuickScore {
 	 *
 	 * If the function gets a `matches` parameter, it should fill the
 	 * passed in array with indexes corresponding to where the query
-	 * matches the string, as described in the QuickScore#search() method.
+	 * matches the string, as described in the [search()]{@link QuickScore#search}
+	 * method.
 	 *
 	 * @param {object} [options.config] - An optional object that can be passed
 	 * to the scorer function to further customize it's behavior. If the
 	 * `scorer` function has a `createConfig()` method on it, the `QuickScore`
+	 * instance will call that with the `config` value and store the result.
 	 * This can be used to extend the `config` parameter with default values.
 	 */
 	constructor(
@@ -78,8 +80,8 @@ export class QuickScore {
 	 *
 	 * @param {string} query - The string to score each item against.
 	 *
-	 * @returns {Array<object>} - When the instance's `items` are flat strings,
-	 * the result objects contain:
+	 * @returns {Array<object>} When the instance's `items` are flat strings,
+	 * the result objects contain the following properties:
 	 *
 	 * - `item`: the string that was scored
 	 * - `score`: the floating point score of the string for the current query
@@ -98,7 +100,12 @@ export class QuickScore {
 	 *
 	 * The results array is sorted high to low on each item's score.  Items with
 	 * identical scores are sorted alphabetically and case-insensitively.  Items
-	 * with scores of zero are returned in the array, sorted to the end.
+	 * with scores of zero are also returned in the array, sorted alphabetically
+	 * at the end of the list.
+	 *
+	 * The arrays of start and end indices in the `matches` array can be used as
+	 * parameters to the `substring()` method to extract the characters from
+	 * each string that match the query.
 	 */
 	search(
 		query)
@@ -158,7 +165,8 @@ export class QuickScore {
 	/**
 	 * Sets the `keys` configuration.
 	 *
-	 * @param {Array<string> | Array<object>} keys - List of keys to score.
+	 * @param {Array<string> | Array<object>} keys - List of keys to score, as
+	 * either flat strings or `{key, scorer}` objects.
 	 */
 	setKeys(
 		keys)
@@ -201,12 +209,16 @@ export class QuickScore {
 	{
 		const itemA = a.item;
 		const itemB = b.item;
+			// if there's no defaultKeyName, then item will be a string, so
+			// fallback to lowercasing that
+		const itemAString = typeof itemA == "string" ? itemA :
+			itemA[this.defaultKeyName] || "";
+		const itemBString = typeof itemB == "string" ? itemB :
+			itemB[this.defaultKeyName] || "";
 
 		if (a.score == b.score) {
-				// if there's no defaultKeyName, then item will be a string, so
-				// fallback to lowercasing that
-			return (itemA[this.defaultKeyName] || itemA).toLocaleLowerCase() <
-				(itemB[this.defaultKeyName] || itemB).toLocaleLowerCase() ? -1 : 1;
+			return itemAString && itemAString.toLocaleLowerCase() <
+				itemBString.toLocaleLowerCase() ? -1 : 1;
 		} else {
 			return b.score - a.score;
 		}

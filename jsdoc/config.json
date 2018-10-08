@@ -8,7 +8,8 @@
 			"layoutFile": "jsdoc/layout.tmpl",
 			"staticFiles": {
 				"include": [
-					"jsdoc/static"
+					"jsdoc/static",
+					"LICENSE"
 				]
 			}
 		}

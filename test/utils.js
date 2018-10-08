@@ -15,11 +15,11 @@ export function freshTabs()
 
 
 export function compareLowercase(
-	a,
-	b)
+	a = "",
+	b = "")
 {
 	const lcA = a.toLocaleLowerCase();
 	const lcB = b.toLocaleLowerCase();
 
-	return lcA == lcB ? 0 : lcA < lcB ? -1 : 1;
+	return lcA == lcB ? 0 : (lcA && lcA < lcB) ? -1 : 1;
 }
