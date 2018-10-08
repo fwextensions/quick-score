@@ -1,5 +1,3 @@
-/* eslint no-inline-comments: 0 */
-
 /**
  * A class representing a half-open interval of characters.  A range's `location`
  * property and `max()` value can be used as arguments for the `substring()`
@@ -24,6 +22,7 @@ export class Range {
 	}
 
 
+	/* eslint no-inline-comments: 0 */
 	/**
 	 * Gets the end index of the range, which indicates the character
 	 * immediately after the last one in the range.

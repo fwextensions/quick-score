@@ -1,4 +1,5 @@
 export default [
+// TODO: add tests to handle missing properties
 //	{
 //		"title": "No URL"
 //	},

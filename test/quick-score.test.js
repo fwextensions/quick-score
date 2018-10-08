@@ -119,6 +119,7 @@ describe("Zero scores", function() {
 	test.each([
 		["foo", "foobar", 0],
 		["", "foobar", 0],
+		[undefined, undefined, 0],
 		["foobar", "", 0]
 	])(ScoreTestTitle, (string, query, expectedScore) => {
 		expect(quickScore(string, query)).toBe(expectedScore);
@@ -129,6 +130,7 @@ describe("Zero scores", function() {
 	test.each([
 		["foo", "foobar", 0],
 		["", "foobar", 0],
+		[undefined, undefined, .9],
 		["foobar", "", .9]
 	])(ScoreTestTitle, (string, query, expectedScore) => {
 		expect(quickScore(string, query, null, QuicksilverConfig)).toBe(expectedScore);

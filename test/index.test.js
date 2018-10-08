@@ -1,11 +1,9 @@
-import {quickScore, scoreArray, createScorer, Range} from "../src";
+import {quickScore, Range} from "../src";
 
 
 describe("Exported functions test", function() {
 	test.each([
 		["quickScore", 0, quickScore],
-		["scoreArray", 2, scoreArray],
-		["createScorer", 1, createScorer],
 		["Range", 2, Range]
 	])("%s() should have %i arguments", (name, arity, fn) => {
 		expect(typeof fn).toBe("function");
