@@ -17,7 +17,8 @@ import {createConfig, DefaultConfig} from "./config";
  * `quickScore` algorithm behaves.
  *
  * @param {Range} [stringRange] - The range of characters in `string` that should
- * be checked for matches against `query`.  Defaults to all of `string`.
+ * be checked for matches against `query`.  Defaults to all of the `string`
+ * parameter.
  *
  * @returns {number}
  */

@@ -12,7 +12,9 @@ describe("QuickScore tests", function() {
 
 		expect(results[0].item).toBe("GitHub");
 		expect(results[0].matches).toEqual([[0, 1], [3, 4]]);
-		expect(results[results.length - 1].score).toBe(0);
+
+			// by default, zero-scored items should not be returned
+		expect(results[results.length - 1].score).toBeGreaterThan(0);
 	});
 
 	test("Default scorer vs. options", () => {
@@ -50,7 +52,12 @@ describe("QuickScore tests", function() {
 
 
 describe("Tabs scoring", function() {
-	const qs = new QuickScore(freshTabs(), ["title", "url"]);
+	const qs = new QuickScore(freshTabs(), {
+		keys: ["title", "url"],
+			// pass -1 to allow non-matching items to be returned, which was the
+			// original behavior before adding the minimumScore option
+		minimumScore: -1
+	});
 
 		// use one QuickScore for all the tests, which is how it would typically
 		// be used

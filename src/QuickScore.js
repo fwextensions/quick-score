@@ -9,7 +9,8 @@ export class QuickScore {
 	/**
 	 * @param {Array<string> | Array<object>} [items] - The list of items to
 	 * score.  If the list is not a flat array of strings, a `keys` array must
-	 * be supplied via the second parameter.  This array is not modified.
+	 * be supplied via the second parameter.  The `items` array is not modified
+	 * by QuickScore.
 	 *
 	 * @param {Array<string> | object} [options] - If the `items` parameter is
 	 * an array of flat strings, the `options` parameter can be left out.  If
@@ -42,6 +43,13 @@ export class QuickScore {
 	 * `scorer` function has a `createConfig()` method on it, the `QuickScore`
 	 * instance will call that with the `config` value and store the result.
 	 * This can be used to extend the `config` parameter with default values.
+	 *
+	 * @param {number} [options.minimumScore=0] - An optional value that
+	 * specifies the minimum score an item must have to appear in the results
+	 * array returned from [search()]{@link QuickScore#search}.  Defaults to `0`,
+	 * so items that don't match the full `query` will not be returned.  This
+	 * value is ignored if the `query` is empty or undefined, in which case all
+	 * items are returned, sorted alphabetically.
 	 */
 	constructor(
 		items = [],
@@ -56,10 +64,12 @@ export class QuickScore {
 		const {
 			scorer = quickScore,
 			keys = [],
+			minimumScore = 0,
 			config
 		} = optionsValue;
 
 		this.scorer = scorer;
+		this.minimumScore = minimumScore;
 		this.config = config;
 
 		if (typeof scorer.createConfig == "function") {
@@ -99,9 +109,10 @@ export class QuickScore {
 	 *   query match for each key
 	 *
 	 * The results array is sorted high to low on each item's score.  Items with
-	 * identical scores are sorted alphabetically and case-insensitively.  Items
-	 * with scores of zero are also returned in the array, sorted alphabetically
-	 * at the end of the list.
+	 * identical scores are sorted alphabetically and case-insensitively on the
+	 * primary key.  Items with scores that are <= the `minimumScore` option
+	 * (defaults to `0`) are not returned, unless the `query` is falsy, in which
+	 * case all of the items are returned, sorted alphabetically.
 	 *
 	 * The arrays of start and end indices in the `matches` array can be used as
 	 * parameters to the `substring()` method to extract the characters from
@@ -112,6 +123,9 @@ export class QuickScore {
 	{
 		const results = [];
 		const {items, keys, config} = this;
+			// if the query is empty, we want to return all items, so make the
+			// minimum score less than 0
+		const minScore = query ? this.minimumScore : -1;
 
 		if (keys.length) {
 			for (const item of items) {
@@ -138,9 +152,11 @@ export class QuickScore {
 					}
 				}
 
-				result.score = highScore;
-				result.scoreKey = scoreKey;
-				results.push(result);
+				if (highScore > minScore) {
+					result.score = highScore;
+					result.scoreKey = scoreKey;
+					results.push(result);
+				}
 			}
 		} else {
 				// items is a flat array of strings
@@ -148,11 +164,13 @@ export class QuickScore {
 				const matches = [];
 				const score = this.scorer(item, query, matches, config);
 
-				results.push({
-					item,
-					score,
-					matches
-				});
+				if (score > minScore) {
+					results.push({
+						item,
+						score,
+						matches
+					});
+				}
 			}
 		}
 

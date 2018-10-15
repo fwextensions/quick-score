@@ -32,7 +32,7 @@ export class Range {
 	 * Sets the end index of the range, which indicates the character
 	 * immediately after the last one in the range.
 	 *
-	 * @param {number} value - End of the range.
+	 * @param {number} [value] - End of the range.
 	 *
 	 * @returns {number}
 	 */

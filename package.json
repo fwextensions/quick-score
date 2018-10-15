@@ -24,7 +24,7 @@
   "scripts": {
     "build": "npm run build:lib && npm run build:docs",
     "build:lib": "rollup -c",
-    "build:docs": "npx jsdoc -c jsdoc/config.json",
+    "build:docs": "rimraf docs && jsdoc -c jsdoc/config.json",
     "prepare": "npm run build",
     "pretest": "eslint src",
     "test": "jest --runInBand --env node",
@@ -60,6 +60,7 @@
     "eslint": "^5.3.0",
     "jest": "^23.3.0",
     "jsdoc": "^3.5.5",
+    "rimraf": "^2.6.2",
     "rollup": "^0.63.4",
     "rollup-plugin-babel": "^3.0.7",
     "rollup-plugin-babel-minify": "^5.0.0",
