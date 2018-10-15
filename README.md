@@ -4,10 +4,14 @@
 
 > `quick-score` is a JavaScript string-scoring and fuzzy-matching library based on the Quicksilver algorithm, and is ideal for interactive matching as a user types a query.
 
-intended for long strings
-return matches in a "sensible" order
-2.85KB minified and gzipped
-used by the [QuicKey extension for Chrome](https://chrome.google.com/webstore/detail/quickey-%E2%80%93-the-quick-tab-s/ldlghkoiihaelfnggonhjnfiabmaficg) for quickly searching through the open tabs
+QuickScore improves on the original Quicksilver algorithm by tuning the scoring for long strings, such as webpage titles or URLs, so that the order of the search results makes more sense.  It's used by the [QuicKey extension for Chrome](https://chrome.google.com/webstore/detail/quickey-%E2%80%93-the-quick-tab-s/ldlghkoiihaelfnggonhjnfiabmaficg) to enable users to quickly search through their open tabs.
+
+QuickScore is fast, dependency-free, and is only 2.5KB when minified and gzipped.
+
+
+## Demo
+
+[See QuickScore in action](https://fwextensions.github.io/quick-score-demo/), and compare its results to other scoring and matching libraries.
 
 
 ## Install
@@ -21,7 +25,7 @@ npm install --save quick-score
 
 ### Calling `quickScore()` directly
 
-You can import the `quickScore` function as an ES6 module
+You can import the `quickScore()` function from the ES6 module:
 
 ```js
 import {quickScore} from "quick-score";
@@ -33,7 +37,7 @@ Or from a property of the CommonJS module:
 const quickScore = require("quick-score").quickScore;
 ```
 
-You can then call `quickScore()` with a `string` and a `query` to score against that string.  It will return a floating point score between `0` and `1`.  A higher score means that string is a better match for the query.  A `1` means the string and the query are identical.
+You can then call `quickScore()` with a `string` and a `query` to score against that string.  It will return a floating point score between `0` and `1`.  A higher score means that string is a better match for the query.  A `1` means the query is the highest match for the string, though the two strings may still differ in case and whitespace characters.
 
 ```js
 quickScore("thought", "gh");   // 0.7000000000000001
@@ -53,7 +57,7 @@ import {QuickScore} from "quick-score";
 const qs = new QuickScore(["thought", "giraffe", "GitHub", "hello, Garth"]);
 const results = qs.search("gh");
 
-//->
+//=>
 [
     {
         "item": "GitHub",
@@ -96,7 +100,7 @@ const bookmarks = [
 const qs = new QuickScore(bookmarks, ["title", "url"]);
 const results = qs.search("devel");
 
-//->
+//=>
 [
     {
         "item": {
@@ -132,16 +136,16 @@ When two items have the same score, they're sorted alphabetically and case-insen
 
 Many search interfaces highlight the letters in each item that match what the user has typed.  The `matches` property of each item in the results array contains information that can be used to highlight those matching letters.
 
-This function is an example of how an item could be highlighted using React.  It surrounds each sequence of matching letters in a `<strong>` tag to make them bold and then returns the full string in a `<span>`.  (Something similar could be done by concatenating plain strings of HTML tags, though you'll need to be careful to escape the substrings.)
+This function is an example of how an item could be highlighted using React.  It surrounds each sequence of matching letters in a `<mark>` tag and then returns the full string in a `<span>`.  You could then style the `<mark>` tag to be bold or a different color to highlight the matches.  (Something similar could be done by concatenating plain strings of HTML tags, though you'll need to be careful to escape the substrings.)
 
-```js
+```jsx
 function highglight(string, matches) {
     const substrings = [];
     let previousEnd = 0;
 
     for (let [start, end] of matches) {
         const prefix = string.substring(previousEnd, start);
-        const match = <strong>{string.substring(start, end)}</strong>;
+        const match = <mark>{string.substring(start, end)}</mark>;
 
         substrings.push(prefix, match);
         previousEnd = end;
@@ -159,6 +163,7 @@ function highglight(string, matches) {
 See the [API docs](https://fwextensions.github.io/quick-score/) for a full description of the [QuickScore class](https://fwextensions.github.io/quick-score/QuickScore.html) and the [quickScore function](https://fwextensions.github.io/quick-score/global.html#quickScore).
 
 
+<!--
 ## Algorithm
 
 returns highest score, because averaging usually doesn't make sense
@@ -180,6 +185,17 @@ lowering the threshold reduces some of the noise, but then may miss reasonable m
 QuicKey doesn't notice recently opened tabs?
 stop rescoring on every render, memoize may work now
 enable per-key configs
+
+use localeCompare() to sort same scored strings
+also for matching the query?
+don't require new?
+function FunkyParser (opt) {
+  // hide "new"
+  if (!(this instanceof FunkyParser))
+    return new FunkyParser(opt)
+  opt = opt || {}
+}
+-->
 
 
 ## License
