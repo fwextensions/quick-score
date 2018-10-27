@@ -230,13 +230,23 @@ export class QuickScore {
 			// if there's no defaultKeyName, then item will be a string, so
 			// fallback to lowercasing that
 		const itemAString = typeof itemA == "string" ? itemA :
-			itemA[this.defaultKeyName] || "";
+			itemA[this.defaultKeyName];
 		const itemBString = typeof itemB == "string" ? itemB :
-			itemB[this.defaultKeyName] || "";
+			itemB[this.defaultKeyName];
 
 		if (a.score == b.score) {
-			return itemAString && itemAString.toLocaleLowerCase() <
-				itemBString.toLocaleLowerCase() ? -1 : 1;
+				// sort undefineds to the end of the array
+			if (itemAString === undefined || itemBString === undefined) {
+				if (itemAString === undefined && itemBString === undefined) {
+					return 0;
+				} else if (itemAString == undefined) {
+					return 1;
+				} else {
+					return -1;
+				}
+			}
+
+			return itemAString.toLocaleLowerCase() < itemBString.toLocaleLowerCase() ? -1 : 1;
 		} else {
 			return b.score - a.score;
 		}

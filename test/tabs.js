@@ -1,14 +1,13 @@
 export default [
-// TODO: add tests to handle missing properties
-//	{
-//		"title": "No URL"
-//	},
-//	{
-//		"url": "http://no-title.com"
-//	},
-//	{
-//
-//	},
+	{
+		"title": "No URL"
+	},
+	{
+		"url": "http://no-title.com"
+	},
+	{
+
+	},
 	{
 		title: "Bufala Negra – Garden & Gun",
 		url: "gardenandgun.com/recipe/bufala-negra/?utm_source=twitter&utm_medium=socialmedia&utm_campaign=july2017_twitter"

@@ -1,16 +1,7 @@
-import Tabs from "./tabs";
-
-
 export function clone(
 	obj)
 {
 	return JSON.parse(JSON.stringify(obj));
-}
-
-
-export function freshTabs()
-{
-	return clone(Tabs);
 }
 
 

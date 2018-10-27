@@ -1,14 +1,17 @@
 import {QuickScore, BaseConfig, quickScore} from "../src";
-import {clone, freshTabs, compareLowercase} from "./utils";
+import {clone, compareLowercase} from "./utils";
 import Tabs from "./tabs";
+
+
+const originalTabs = clone(Tabs);
 
 
 describe("QuickScore tests", function() {
 	const Strings = ["thought", "giraffe", "GitHub", "hello, Garth"];
+	const originalStrings = clone(Strings);
 
 	test("Basic QuickScore.search() test", () => {
-		const strings = clone(Strings);
-		const results = new QuickScore(strings).search("gh");
+		const results = new QuickScore(Strings).search("gh");
 
 		expect(results[0].item).toBe("GitHub");
 		expect(results[0].matches).toEqual([[0, 1], [3, 4]]);
@@ -18,20 +21,19 @@ describe("QuickScore tests", function() {
 	});
 
 	test("Default scorer vs. options", () => {
-		const defaultScorer = new QuickScore(clone(Strings));
-		const qsScorer = new QuickScore(clone(Strings), { scorer: quickScore });
+		const defaultScorer = new QuickScore(Strings);
+		const qsScorer = new QuickScore(Strings, { scorer: quickScore });
 		const query = "qk";
 
 		expect(defaultScorer.search(query)).toEqual(qsScorer.search(query));
 	});
 
 	test("Empty query returns 0 scores, and sorted alphabetically", () => {
-		const strings = clone(Strings);
-		const results = new QuickScore(strings).search("");
+		const results = new QuickScore(Strings).search("");
+		const sortedStrings = clone(Strings).sort(compareLowercase);
 
 		expect(results[0].score).toBe(0);
-		strings.sort(compareLowercase);
-		expect(results.map(({item}) => item)).toEqual(strings);
+		expect(results.map(({item}) => item)).toEqual(sortedStrings);
 	});
 
 	test("Empty QuickScore", () => {
@@ -40,24 +42,20 @@ describe("QuickScore tests", function() {
 		expect(qs.search("")).toEqual([]);
 	});
 
-	test("items array is not modified", () => {
-		const items = freshTabs();
-		const originalItems = clone(items);
-		const qs = new QuickScore(items, ["title", "url"]);
-
-		qs.search("qk");
-		expect(items).toEqual(originalItems);
-	});
+	test("Strings is unmodified", () => {
+		expect(Strings).toEqual(originalStrings);
+	})
 });
 
 
 describe("Tabs scoring", function() {
-	const qs = new QuickScore(freshTabs(), {
+	const qs = new QuickScore(Tabs, {
 		keys: ["title", "url"],
 			// pass -1 to allow non-matching items to be returned, which was the
 			// original behavior before adding the minimumScore option
 		minimumScore: -1
 	});
+	const tabCount = Tabs.length;
 
 		// use one QuickScore for all the tests, which is how it would typically
 		// be used
@@ -71,20 +69,23 @@ describe("Tabs scoring", function() {
 		const nonmatches = results.filter(({score}) => score == 0);
 		const nonmatchingTitles = nonmatches.map(({item: {title}}) => title);
 
-		expect(results.length).toBe(Tabs.length);
-		expect(Tabs.length - nonmatches.length).toBe(matchCount);
+		expect(results.length).toBe(tabCount);
+		expect(tabCount - nonmatches.length).toBe(matchCount);
 		expect(results[0].item.title).toBe(firstTitle);
 		expect(results[0].scoreKey).toBe(scoreKey);
 
 			// make sure the 0-scored objects are sorted case-insensitively on their titles
-		expect([].concat(nonmatchingTitles).sort(compareLowercase)).toEqual(nonmatchingTitles);
+		expect(nonmatchingTitles).toEqual([].concat(nonmatchingTitles).sort(compareLowercase));
+
+			// make sure items with an undefined default key are sorted to the end
+		expect(nonmatchingTitles[nonmatchingTitles.length - 1]).toBe(undefined);
 	});
 });
 
 
 describe("Options", function() {
 	test("Per-key scorer", () => {
-		const qs = new QuickScore(freshTabs(), [
+		const qs = new QuickScore(Tabs, [
 			{
 				key: "title",
 				scorer: () => 1
@@ -104,14 +105,14 @@ describe("Options", function() {
 
 	test("Passing keys in options object", () => {
 		const query = "qk";
-		const qs = new QuickScore(freshTabs(), ["title", "url"]);
-		const qsOptions = new QuickScore(freshTabs(), { keys: ["title", "url"] });
+		const qs = new QuickScore(Tabs, ["title", "url"]);
+		const qsOptions = new QuickScore(Tabs, { keys: ["title", "url"] });
 
 		expect(qs.search(query)).toEqual(qsOptions.search(query));
 	});
 
 	test("Config with useSkipReduction off", () => {
-		const qs = new QuickScore(freshTabs(), {
+		const qs = new QuickScore(Tabs, {
 			keys: ["title", "url"],
 			config: {
 				useSkipReduction: () => false
@@ -128,7 +129,7 @@ describe("Options", function() {
 	});
 
 	test("scorer with no createConfig()", () => {
-		const qs = new QuickScore(freshTabs(), {
+		const qs = new QuickScore(Tabs, {
 			keys: ["title", "url"],
 			scorer: () => 1
 		});
@@ -141,11 +142,11 @@ describe("Options", function() {
 	});
 
 	test("BaseConfig", () => {
-		const qs = new QuickScore(freshTabs(), {
+		const qs = new QuickScore(Tabs, {
 			keys: ["title", "url"],
 			config: BaseConfig
 		});
-		const qsDefault = new QuickScore(freshTabs(), ["title", "url"]);
+		const qsDefault = new QuickScore(Tabs, ["title", "url"]);
 		const [firstItem] = qs.search("mail");
 		const [firstItemDefault] = qsDefault.search("mail");
 
@@ -154,4 +155,10 @@ describe("Options", function() {
 		expect(firstItem.scores.url).toBeNearly(0.34250);
 		expect(firstItem.score).toBeGreaterThan(firstItemDefault.score);
 	});
+});
+
+
+test("Tabs is unmodified", () => {
+		// across all of the tests above, Tabs should remain unmodified
+	expect(Tabs).toEqual(originalTabs);
 });
