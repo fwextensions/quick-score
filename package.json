@@ -31,7 +31,6 @@
     "test": "jest --runInBand",
     "test:watch": "npm test -- --watch",
     "test:coverage": "npm test -- --coverage",
-    "debug": "node debug/debug-quick-score.js"
   },
   "babel": {
     "env": {
