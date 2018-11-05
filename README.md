@@ -2,9 +2,9 @@
 
 ![travis](https://travis-ci.com/fwextensions/quick-score.svg) [![codecov](https://codecov.io/gh/fwextensions/quick-score/graph/badge.svg)](https://codecov.io/gh/fwextensions/quick-score)
 
-> `quick-score` is a JavaScript string-scoring and fuzzy-matching library based on the Quicksilver algorithm, and is ideal for interactive matching as a user types a query.
+> `quick-score` is a JavaScript string-scoring and fuzzy-matching library based on the Quicksilver algorithm, designed for smart auto-complete.
 
-QuickScore improves on the original Quicksilver algorithm by tuning the scoring for long strings, such as webpage titles or URLs, so that the order of the search results makes more sense.  It's used by the [QuicKey extension for Chrome](https://chrome.google.com/webstore/detail/quickey-%E2%80%93-the-quick-tab-s/ldlghkoiihaelfnggonhjnfiabmaficg) to enable users to quickly search through their open tabs.
+QuickScore improves on the original Quicksilver algorithm by tuning the scoring for long strings, such as webpage titles or URLs, so that the order of the search results makes more sense.  It's used by the [QuicKey extension for Chrome](https://chrome.google.com/webstore/detail/quickey-%E2%80%93-the-quick-tab-s/ldlghkoiihaelfnggonhjnfiabmaficg) to enable users to easily find an open tab via search.
 
 QuickScore is fast, dependency-free, and is only 2.5KB when minified and gzipped.
 
@@ -107,6 +107,8 @@ const results = qs.search("devel");
             "title": "Supplying Images - Google Chrome",
             "url": "developer.chrome.com/webstore/images"
         },
+        "score": 0.9138888888888891,
+        "scoreKey": "url",
         "scores": {
             "title": 0,
             "url": 0.9138888888888891
@@ -114,9 +116,7 @@ const results = qs.search("devel");
         "matches": {
             "title": [],
             "url": [[0, 5]]
-        },
-        "score": 0.9138888888888891,
-        "scoreKey": "url"
+        }
     },
     ...
 ```
@@ -175,26 +175,6 @@ doesn't modify items array
 algorithm discounts sparse matches, matches later in the string, very long strings
 always case-insensitive, uses `toLocaleLowerCase()`
 
-searching `jqu` shows all the jquery results in QS, but fuzzy matches push others down in the Fuse results
-searching `real` shows relevant "realtime" QS results, but crazy Fuse results.  RethinkDB is 5 pages down
-or `reake` shows react key down on second page
-fuse search `jqz` doesn't put jQuery Zoom first, matches against a random z in param
-`libr` when using Quicksilver algo doesn't list a lot of library items at the top
-accidentally typing `zom` instead of `zoom` still puts `jQuery Zoom` at the top with QuickScore, but fuzzysort matches `phonegap.com`, since the letters are in the long token at the end
-lowering the threshold reduces some of the noise, but then may miss reasonable matches
-QuicKey doesn't notice recently opened tabs?
-stop rescoring on every render, memoize may work now
-enable per-key configs
-
-use localeCompare() to sort same scored strings
-also for matching the query?
-don't require new?
-function FunkyParser (opt) {
-  // hide "new"
-  if (!(this instanceof FunkyParser))
-    return new FunkyParser(opt)
-  opt = opt || {}
-}
 -->
 
 

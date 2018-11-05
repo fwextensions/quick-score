@@ -18,20 +18,21 @@ export class QuickScore {
 	 * `options` parameter must either be an array of key names or an object
 	 * containing a `keys` property.
 	 *
-	 * @param {Array<string> | Array<{key: string, scorer: function}>} [options.keys] -
+	 * @param {Array<string> | Array<{name: string, scorer: function}>} [options.keys] -
 	 * In the simplest case, an array of key names to score on the objects
 	 * in the `items` array. The first item in this array is considered the
 	 * primary key, which is used to sort items when they have the same
 	 * score. The keys should be top-level properties of the items to be scored.
 	 *
-	 * Each item in `keys` can instead be a `{key, scorer}` object, which
+	 * Each item in `keys` can instead be a `{name, scorer}` object, which
 	 * lets you specify a different scoring function for each key. The
 	 * scoring function should behave as described next.
 	 *
-	 * @param {function(string, string, array?, object?): number} [options.scorer] -
+	 * @param {function(string, string, array?): number} [options.scorer] -
 	 * An optional function that takes `string` and `query` parameters and
 	 * returns a floating point number between 0 and 1 that represents how
-	 * well the `query` matches the `string`.
+	 * well the `query` matches the `string`.  It defaults to the
+	 * [quickScore()]{@link quickScore} function in this library.
 	 *
 	 * If the function gets a `matches` parameter, it should fill the
 	 * passed in array with indexes corresponding to where the query
@@ -49,7 +50,7 @@ export class QuickScore {
 	 * array returned from [search()]{@link QuickScore#search}.  Defaults to `0`,
 	 * so items that don't match the full `query` will not be returned.  This
 	 * value is ignored if the `query` is empty or undefined, in which case all
-	 * items are returned, sorted alphabetically.
+	 * items are returned, sorted alphabetically and case-insensitively.
 	 */
 	constructor(
 		items = [],
@@ -77,9 +78,10 @@ export class QuickScore {
 			this.config = scorer.createConfig(config);
 		}
 
-		this.setItems(items);
 		this.setKeys(keys);
+		this.setItems(items);
 
+			// the scoring function needs access to this.defaultKeyName
 		this.compareScoredStrings = this.compareScoredStrings.bind(this);
 	}
 
@@ -117,38 +119,50 @@ export class QuickScore {
 	 * The arrays of start and end indices in the `matches` array can be used as
 	 * parameters to the `substring()` method to extract the characters from
 	 * each string that match the query.
+	 *
+	 * Each result item also contains a `_` property, which contains lowercase
+	 * versions of the item's strings, and might contain additional internal
+	 * metadata in the future.  It can be ignored.
 	 */
 	search(
 		query)
 	{
 		const results = [];
-		const {items, keys, config} = this;
+		const {items, lcItems, keys, config} = this;
 			// if the query is empty, we want to return all items, so make the
 			// minimum score less than 0
 		const minScore = query ? this.minimumScore : -1;
+		const lcQuery = query.toLocaleLowerCase();
 
 		if (keys.length) {
-			for (const item of items) {
+			for (let i = 0, len = items.length; i < len; i++) {
+				const item = items[i];
+				const lc = lcItems[i];
 				const result = {
-					item: item,
+					item,
+					score: 0,
+					scoreKey: "",
 					scores: {},
-					matches: {}
+					matches: {},
+					_: lc
 				};
 				let highScore = 0;
 				let scoreKey = "";
 
 					// find the highest score for each keyed string on this item
-				for (const keyInfo of keys) {
+				for (let j = 0, jlen = keys.length; j < jlen; j++) {
+					const key = keys[j];
+					const {name} = key;
 					const matches = [];
-					const {key} = keyInfo;
-					const newScore = keyInfo.scorer(item[key], query, matches, config);
+					const newScore = key.scorer(item[name], query, matches,
+						lc[name], lcQuery, config);
 
-					result.scores[key] = newScore;
-					result.matches[key] = matches;
+					result.scores[name] = newScore;
+					result.matches[name] = matches;
 
 					if (newScore > highScore) {
 						highScore = newScore;
-						scoreKey = key;
+						scoreKey = name;
 					}
 				}
 
@@ -160,15 +174,18 @@ export class QuickScore {
 			}
 		} else {
 				// items is a flat array of strings
-			for (const item of items) {
+			for (let i = 0, len = items.length; i < len; i++) {
+				const item = items[i];
+				const lc = lcItems[i];
 				const matches = [];
-				const score = this.scorer(item, query, matches, config);
+				const score = this.scorer(item, query, matches, lc, lcQuery, config);
 
 				if (score > minScore) {
 					results.push({
 						item,
 						score,
-						matches
+						matches,
+						_: lc
 					});
 				}
 			}
@@ -197,10 +214,9 @@ export class QuickScore {
 				// associate each key with the scorer function, if it isn't already
 				/* eslint object-curly-spacing: 0, object-property-newline: 0 */
 			this.keys = this.keys.map(key => (
-				(typeof key !== "object") ? { key, scorer } : key
+				(typeof key !== "object") ? { name: key, scorer } : key
 			));
-
-			this.defaultKeyName = this.keys[0].key;
+			this.defaultKeyName = this.keys[0].name;
 		} else {
 				// defaultKeyName will be null if items is a flat array of
 				// strings, which is handled in compareScoredStrings()
@@ -210,14 +226,40 @@ export class QuickScore {
 
 
 	/**
-	 * Sets the `items` array.
+	 * Sets the `items` array and caches a lowercase copy of all the item
+	 * strings specified by the `keys` parameter to the constructor.
 	 *
 	 * @param {Array<string> | Array<object>} items - List of items to score.
 	 */
 	setItems(
 		items)
 	{
+		const keyNames = this.keys.map(({name}) => name);
+		const lcItems = [];
+
 		this.items = items;
+		this.lcItems = lcItems;
+
+		if (keyNames.length) {
+			for (let i = 0, len = items.length; i < len; i++) {
+				const item = items[i];
+				const lc = {};
+
+				for (let j = 0, jlen = keyNames.length; j < jlen; j++) {
+					const key = keyNames[j];
+
+					if (item[key]) {
+						lc[key] = item[key].toLocaleLowerCase();
+					}
+				}
+
+				lcItems.push(lc);
+			}
+		} else {
+			for (let i = 0, len = items.length; i < len; i++) {
+				lcItems.push(items[i].toLocaleLowerCase());
+			}
+		}
 	}
 
 
@@ -225,17 +267,15 @@ export class QuickScore {
 		a,
 		b)
 	{
-		const itemA = a.item;
-		const itemB = b.item;
-			// if there's no defaultKeyName, then item will be a string, so
-			// fallback to lowercasing that
+		const itemA = a._;
+		const itemB = b._;
 		const itemAString = typeof itemA == "string" ? itemA :
 			itemA[this.defaultKeyName];
 		const itemBString = typeof itemB == "string" ? itemB :
 			itemB[this.defaultKeyName];
 
 		if (a.score == b.score) {
-				// sort undefineds to the end of the array
+				// sort undefineds to the end of the array, as per the ES spec
 			if (itemAString === undefined || itemBString === undefined) {
 				if (itemAString === undefined && itemBString === undefined) {
 					return 0;
@@ -244,9 +284,13 @@ export class QuickScore {
 				} else {
 					return -1;
 				}
+			} else if (itemAString == itemBString) {
+				return 0;
+			} else if (itemAString < itemBString) {
+				return -1;
+			} else {
+				return 1;
 			}
-
-			return itemAString.toLocaleLowerCase() < itemBString.toLocaleLowerCase() ? -1 : 1;
 		} else {
 			return b.score - a.score;
 		}

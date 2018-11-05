@@ -90,7 +90,7 @@ module.exports = {
 		"max-classes-per-file": "off",
 		"max-depth": "off",
 		"max-len": "off",
-		"max-lines": "error",
+		"max-lines": ["error", { "skipComments": true, "skipBlankLines": true }],
 		"max-lines-per-function": "off",
 		"max-nested-callbacks": "error",
 		"max-params": "off",
@@ -227,7 +227,7 @@ module.exports = {
 			"never"
 		],
 		"object-property-newline": "error",
-		"object-shorthand": [2, "consistent"],
+		"object-shorthand": [2, "properties"],
 		"one-var": "off",
 		"one-var-declaration-per-line": "error",
 		"operator-assignment": [

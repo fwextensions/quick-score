@@ -14,6 +14,7 @@ describe("QuickScore tests", function() {
 		const results = new QuickScore(Strings).search("gh");
 
 		expect(results[0].item).toBe("GitHub");
+		expect(results[0]._).toBe("github");
 		expect(results[0].matches).toEqual([[0, 1], [3, 4]]);
 
 			// by default, zero-scored items should not be returned
@@ -23,7 +24,7 @@ describe("QuickScore tests", function() {
 	test("Default scorer vs. options", () => {
 		const defaultScorer = new QuickScore(Strings);
 		const qsScorer = new QuickScore(Strings, { scorer: quickScore });
-		const query = "qk";
+		const query = "gh";
 
 		expect(defaultScorer.search(query)).toEqual(qsScorer.search(query));
 	});
@@ -60,8 +61,8 @@ describe("Tabs scoring", function() {
 		// use one QuickScore for all the tests, which is how it would typically
 		// be used
 	test.each([
-		["qk", 6, "QuicKey – The quick tab switcher - Chrome Web Store", "title"],
-		["dean", 11, "Bufala Negra – Garden & Gun", "url"],
+		["qk", 7, "QuicKey – The quick tab switcher - Chrome Web Store", "title"],
+		["dean", 12, "Bufala Negra – Garden & Gun", "url"],
 		["face", 10, "Facebook", "title"],
 		["", 0, "Best Practices - Sharing", ""]
 	])('Score Tabs array for "%s"', (query, matchCount, firstTitle, scoreKey) => {
@@ -75,7 +76,7 @@ describe("Tabs scoring", function() {
 		expect(results[0].scoreKey).toBe(scoreKey);
 
 			// make sure the 0-scored objects are sorted case-insensitively on their titles
-		expect(nonmatchingTitles).toEqual([].concat(nonmatchingTitles).sort(compareLowercase));
+		expect(nonmatchingTitles).toEqual(nonmatchingTitles.slice().sort(compareLowercase));
 
 			// make sure items with an undefined default key are sorted to the end
 		expect(nonmatchingTitles[nonmatchingTitles.length - 1]).toBe(undefined);
@@ -87,11 +88,11 @@ describe("Options", function() {
 	test("Per-key scorer", () => {
 		const qs = new QuickScore(Tabs, [
 			{
-				key: "title",
+				name: "title",
 				scorer: () => 1
 			},
 			{
-				key: "url",
+				name: "url",
 				scorer: () => 0
 			}
 		]);
@@ -121,7 +122,7 @@ describe("Options", function() {
 		let results = qs.search("qk");
 		const [firstItem] = results;
 
-		expect(results.filter(({score}) => score).length).toBe(6);
+		expect(results.filter(({score}) => score).length).toBe(7);
 		expect(firstItem.item.title).toBe("Quokka.js: Configuration");
 		expect(firstItem.scoreKey).toBe("title");
 		expect(firstItem.score).toBe(0.4583333333333333);

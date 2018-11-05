@@ -15,7 +15,7 @@ const BaseConfigDefaults = {
 	emptyQueryScore: 0
 };
 const QSConfigDefaults = {
-	longStringLength: 151,
+	longStringLength: 150,
 	maxMatchStartPct: 0.15,
 	minMatchDensityPct: 0.75,
 	maxMatchDensityPct: 0.95,
@@ -71,7 +71,7 @@ class QuickScoreConfig extends Config {
 		fullMatchedRange)
 	{
 		const len = string.length;
-		const isShortString = len < this.longStringLength;
+		const isShortString = len <= this.longStringLength;
 		const matchStartPercentage = fullMatchedRange.location / len;
 
 		return isShortString || matchStartPercentage < this.maxMatchStartPct;
@@ -88,7 +88,7 @@ class QuickScoreConfig extends Config {
 		matchedRange,
 		fullMatchedRange)
 	{
-		const isShortString = string.length < this.longStringLength;
+		const isShortString = string.length <= this.longStringLength;
 		const matchStartPercentage = fullMatchedRange.location / string.length;
 		let matchRangeDiscount = 1;
 		let matchStartDiscount = (1 - matchStartPercentage);
@@ -109,7 +109,8 @@ class QuickScoreConfig extends Config {
 		}
 
 			// discount the scores of very long strings
-		return remainingScore * Math.min(remainingSearchRange.length, this.longStringLength) *
+		return remainingScore *
+			Math.min(remainingSearchRange.length, this.longStringLength) *
 			matchRangeDiscount * matchStartDiscount;
 	}
 }

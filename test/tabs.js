@@ -1,3 +1,6 @@
+	// include some objects that are missing one or both keys, to test that
+	// handling.  also include the QuicKey one twice to check for duplicate
+	// handling when sorting.
 export default [
 	{
 		"title": "No URL"
@@ -7,6 +10,14 @@ export default [
 	},
 	{
 
+	},
+	{
+		title: "QuicKey – The quick tab switcher - Chrome Web Store",
+		url: "chrome.google.com/webstore/detail/quickey-–-the-quick-tab-s/ldlghkoiihaelfnggonhjnfiabmaficg"
+	},
+	{
+		title: "QuicKey – The quick tab switcher - Chrome Web Store",
+		url: "chrome.google.com/webstore/detail/quickey-–-the-quick-tab-s/ldlghkoiihaelfnggonhjnfiabmaficg"
 	},
 	{
 		title: "Bufala Negra – Garden & Gun",
@@ -48,10 +59,6 @@ export default [
 	{
 		title: "On high-DPI screens, onRowsRendered fires twice with an incorrect startIndex when scrolling via scrollToIndex · Issue #1015 · bvaughn/react-virtualized",
 		url: "github.com/bvaughn/react-virtualized/issues/1015"
-	},
-	{
-		title: "QuicKey – The quick tab switcher - Chrome Web Store",
-		url: "chrome.google.com/webstore/detail/quickey-–-the-quick-tab-s/ldlghkoiihaelfnggonhjnfiabmaficg"
 	},
 	{
 		title: "view-source:https://fwextensions.github.io/QuicKey/ctrl-tab/",

@@ -9,9 +9,14 @@ import {createConfig, DefaultConfig} from "./config";
  *
  * @param {string} query - The query string to score the `string` parameter against.
  *
- * @param {Array<Array>} [matches] - If supplied, the function will push onto
- * `matches` an array with start and end indexes for each substring range
- * of `string` that matches `query`.
+ * @param {Array} [matches] - If supplied, the `quickScore()` will push
+ * onto `matches` an array with start and end indexes for each substring range
+ * of `string` that matches `query`.  These indexes can be used to highlight the
+ * matching characters in an auto-complete UI.
+ *
+ * @param {string} [lcString] - A lowercase version of `string`.
+ *
+ * @param {string} [lcQuery] - A lowercase version of `query`.
  *
  * @param {object} [config] - A configuration object that can modify how the
  * `quickScore` algorithm behaves.
@@ -26,15 +31,14 @@ export function quickScore(
 	string = "",
 	query = "",
 	matches,
+	lcString = string.toLocaleLowerCase(),
+	lcQuery = query.toLocaleLowerCase(),
 	config = DefaultConfig,
 	stringRange = new Range(0, string.length))
 {
 	if (!query) {
 		return config.emptyQueryScore;
 	}
-
-	const lcString = string.toLocaleLowerCase();
-	const lcQuery = query.toLocaleLowerCase();
 
 	return calcScore(stringRange, new Range(0, query.length), new Range());
 
