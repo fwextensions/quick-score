@@ -25,7 +25,7 @@ npm install --save quick-score
 
 ### Calling `quickScore()` directly
 
-You can import the `quickScore()` function from the ES6 module:
+You can import the [`quickScore()`](https://fwextensions.github.io/quick-score/global.html#quickScore) function from the ES6 module:
 
 ```js
 import {quickScore} from "quick-score";
@@ -49,7 +49,7 @@ Matching `gh` against `GitHub` returns a higher score than `thought`, because it
 
 ### Sorting lists of strings with a `QuickScore` instance
 
-A common use-case is sorting and filtering lists of items in real time as the user types a query.  Instead of calling `quickScore()` directly for every item in the list and then sorting, it's simpler to use an instance of the `QuickScore` class:
+Auto-completion against a list of available items is a typical use-case for string scoring, where you want the user to get to the desired result by typing as few characters as possible.  Instead of calling `quickScore()` directly for every item in the list and then sorting, it's simpler to use an instance of the [`QuickScore`](https://fwextensions.github.io/quick-score/QuickScore.html) class:
 
 ```js
 import {QuickScore} from "quick-score";
@@ -78,7 +78,7 @@ The `results` array is a list of objects that represent the results of matching 
 * `score`: the floating point score of the string for the current query
 * `matches`: an array of arrays that specifies the character ranges where the query matched the string
 
-This array could then be used to render a list of matching results as the user types a query.  By default, items with scores of zero are returned in the array.
+This array could then be used to render a list of matching results as the user types a query.
 
 
 ### Sorting lists of objects
@@ -157,25 +157,12 @@ function highglight(string, matches) {
 }
 ```
 
+The [QuickScore demo](https://fwextensions.github.io/quick-score-demo/) uses this approach to highlight the matches, via the [MatchedString](https://github.com/fwextensions/quick-score-demo/blob/master/src/js/MatchedString.js) component.
+
 
 ## API
 
 See the [API docs](https://fwextensions.github.io/quick-score/) for a full description of the [QuickScore class](https://fwextensions.github.io/quick-score/QuickScore.html) and the [quickScore function](https://fwextensions.github.io/quick-score/global.html#quickScore).
-
-
-<!--
-## Algorithm
-
-returns highest score, because averaging usually doesn't make sense
-
-setItems()
-setKeys()
-doesn't modify items array
-
-algorithm discounts sparse matches, matches later in the string, very long strings
-always case-insensitive, uses `toLocaleLowerCase()`
-
--->
 
 
 ## License

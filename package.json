@@ -30,7 +30,7 @@
     "pretest": "eslint src",
     "test": "jest --runInBand",
     "test:watch": "npm test -- --watch",
-    "test:coverage": "npm test -- --coverage",
+    "test:coverage": "npm test -- --coverage"
   },
   "babel": {
     "env": {
