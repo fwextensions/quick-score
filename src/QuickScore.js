@@ -20,12 +20,14 @@ export class QuickScore {
 	 *
 	 * @param {Array<string> | Array<{name: string, scorer: function}>} [options.keys] -
 	 * In the simplest case, an array of key names to score on the objects
-	 * in the `items` array. The first item in this array is considered the
+	 * in the `items` array.  The first item in this array is considered the
 	 * primary key, which is used to sort items when they have the same
-	 * score. The keys should be top-level properties of the items to be scored.
+	 * score.  The key name strings can point to a nested key by specifying a
+	 * dot-delimited path to the value.  So a key `name` of `"foo.bar"` would
+	 * evaluate to `"baz"` given an object like `{ foo: { bar: "baz" } }`.
 	 *
 	 * Each item in `keys` can instead be a `{name, scorer}` object, which
-	 * lets you specify a different scoring function for each key. The
+	 * lets you specify a different scoring function for each key.  The
 	 * scoring function should behave as described next.
 	 *
 	 * @param {function(string, string, array?): number} [options.scorer] -
@@ -40,7 +42,7 @@ export class QuickScore {
 	 * method.
 	 *
 	 * @param {object} [options.config] - An optional object that can be passed
-	 * to the scorer function to further customize it's behavior. If the
+	 * to the scorer function to further customize it's behavior.  If the
 	 * `scorer` function has a `createConfig()` method on it, the `QuickScore`
 	 * instance will call that with the `config` value and store the result.
 	 * This can be used to extend the `config` parameter with default values.
@@ -118,7 +120,8 @@ export class QuickScore {
 	 *
 	 * The arrays of start and end indices in the `matches` array can be used as
 	 * parameters to the `substring()` method to extract the characters from
-	 * each string that match the query.
+	 * each string that match the query.  This can then be used to format the
+	 * matching characters with a different color or style.
 	 *
 	 * Each result item also contains a `_` property, which contains lowercase
 	 * versions of the item's strings, and might contain additional internal
@@ -153,16 +156,24 @@ export class QuickScore {
 				for (let j = 0, jlen = keys.length; j < jlen; j++) {
 					const key = keys[j];
 					const {name} = key;
-					const matches = [];
-					const newScore = key.scorer(item[name], query, matches,
-						lc[name], lcQuery, config);
+					const lcString = lc[name];
 
-					result.scores[name] = newScore;
-					result.matches[name] = matches;
+						// setItems() checks for non-strings and empty strings
+						// when creating the lc objects, so if the key doesn't
+						// exist there, we can ignore it for this item
+					if (lcString) {
+						const string = this.getItemString(item, key);
+						const matches = [];
+						const newScore = key.scorer(string, query, matches,
+							lcString, lcQuery, config);
 
-					if (newScore > highScore) {
-						highScore = newScore;
-						scoreKey = name;
+						result.scores[name] = newScore;
+						result.matches[name] = matches;
+
+						if (newScore > highScore) {
+							highScore = newScore;
+							scoreKey = name;
+						}
 					}
 				}
 
@@ -213,9 +224,16 @@ export class QuickScore {
 
 				// associate each key with the scorer function, if it isn't already
 				/* eslint object-curly-spacing: 0, object-property-newline: 0 */
-			this.keys = this.keys.map(key => (
-				(typeof key !== "object") ? { name: key, scorer } : key
-			));
+			this.keys = this.keys.map(keyItem => {
+				const key = (typeof keyItem == "string") ?
+					{ name: keyItem, scorer } : keyItem;
+
+				if (key.name.indexOf(".") > -1) {
+					key.path = key.name.split(".");
+				}
+
+				return key;
+			});
 			this.defaultKeyName = this.keys[0].name;
 		} else {
 				// defaultKeyName will be null if items is a flat array of
@@ -234,22 +252,23 @@ export class QuickScore {
 	setItems(
 		items)
 	{
-		const keyNames = this.keys.map(({name}) => name);
+		const {keys} = this;
 		const lcItems = [];
 
 		this.items = items;
 		this.lcItems = lcItems;
 
-		if (keyNames.length) {
+		if (keys.length) {
 			for (let i = 0, len = items.length; i < len; i++) {
 				const item = items[i];
 				const lc = {};
 
-				for (let j = 0, jlen = keyNames.length; j < jlen; j++) {
-					const key = keyNames[j];
+				for (let j = 0, jlen = keys.length; j < jlen; j++) {
+					const key = keys[j];
+					const string = this.getItemString(item, key);
 
-					if (item[key]) {
-						lc[key] = item[key].toLocaleLowerCase();
+					if (string && typeof string == "string") {
+						lc[key.name] = string.toLocaleLowerCase();
 					}
 				}
 
@@ -263,10 +282,25 @@ export class QuickScore {
 	}
 
 
+	getItemString(
+		item,
+		key)
+	{
+		const {name, path} = key;
+
+		if (path) {
+			return path.reduce((value, prop) => value && value[prop], item);
+		} else {
+			return item[name];
+		}
+	}
+
+
 	compareScoredStrings(
 		a,
 		b)
 	{
+			// use the lowercase versions of the strings for sorting
 		const itemA = a._;
 		const itemB = b._;
 		const itemAString = typeof itemA == "string" ? itemA :

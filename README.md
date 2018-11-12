@@ -1,12 +1,17 @@
 # QuickScore
 
-![travis](https://travis-ci.com/fwextensions/quick-score.svg) [![codecov](https://codecov.io/gh/fwextensions/quick-score/graph/badge.svg)](https://codecov.io/gh/fwextensions/quick-score)
+[![Build Status][build-badge]][build]
+[![Code Coverage][coverage-badge]][coverage]
+[![Dependencies][dependencies-badge]][dependencies]
+[![Minzip Size][size-badge]][size]
+[![MIT License][license-badge]][license]
+<!--[![Package][package-badge]][package]-->
 
 > `quick-score` is a JavaScript string-scoring and fuzzy-matching library based on the Quicksilver algorithm, designed for smart auto-complete.
 
 QuickScore improves on the original Quicksilver algorithm by tuning the scoring for long strings, such as webpage titles or URLs, so that the order of the search results makes more sense.  It's used by the [QuicKey extension for Chrome](https://chrome.google.com/webstore/detail/quickey-%E2%80%93-the-quick-tab-s/ldlghkoiihaelfnggonhjnfiabmaficg) to enable users to easily find an open tab via search.
 
-QuickScore is fast, dependency-free, and is only 2.5KB when minified and gzipped.
+QuickScore is fast, dependency-free, and is less than 2KB when minified and gzipped.
 
 
 ## Demo
@@ -49,7 +54,7 @@ Matching `gh` against `GitHub` returns a higher score than `thought`, because it
 
 ### Sorting lists of strings with a `QuickScore` instance
 
-Auto-completion against a list of available items is a typical use-case for string scoring, where you want the user to get to the desired result by typing as few characters as possible.  Instead of calling `quickScore()` directly for every item in the list and then sorting, it's simpler to use an instance of the [`QuickScore`](https://fwextensions.github.io/quick-score/QuickScore.html) class:
+A typical use-case for string scoring is auto-completion, where you want the user to get to the desired result by typing as few characters as possible.  Instead of calling `quickScore()` directly for every item in a list and then sorting it based on the score, it's simpler to use an instance of the [`QuickScore`](https://fwextensions.github.io/quick-score/QuickScore.html) class:
 
 ```js
 import {QuickScore} from "quick-score";
@@ -72,7 +77,7 @@ const results = qs.search("gh");
     ...
 ```
 
-The `results` array is a list of objects that represent the results of matching the query against each string that was passed to the constructor.  It's sorted high to low on each item's score.  Strings with identical scores are sorted alphabetically and case-insensitively.  In the simple case of scoring bare strings, each item has three properties:
+The `results` array is a list of objects that represent the results of matching the query against each string that was passed to the constructor.  It's sorted high to low on each item's score.  Strings with identical scores are sorted alphabetically and case-insensitively.  In the simple case of scoring bare strings, each item in the results array has three properties:
 
 * `item`: the string that was scored
 * `score`: the floating point score of the string for the current query
@@ -83,7 +88,7 @@ This array could then be used to render a list of matching results as the user t
 
 ### Sorting lists of objects
 
-Typically, you'll be sorting items more complex than a bare string.  To tell QuickScore which of an object's keys to score a query against, pass an array of keys as the second parameter to the `QuickScore()` constructor:
+Typically, you'll be sorting items more complex than a bare string.  To tell QuickScore which of an object's keys to score a query against, pass an array of key names or dot-delimited paths as the second parameter to the `QuickScore()` constructor:
 
 ```js
 const bookmarks = [
@@ -168,3 +173,17 @@ See the [API docs](https://fwextensions.github.io/quick-score/) for a full descr
 ## License
 
 [MIT](./LICENSE) © John Dunning
+
+
+[build-badge]: https://travis-ci.com/fwextensions/quick-score.svg
+[build]: https://travis-ci.com/fwextensions/quick-score
+[coverage-badge]: https://codecov.io/gh/fwextensions/quick-score/graph/badge.svg
+[coverage]: https://codecov.io/gh/fwextensions/quick-score
+[dependencies-badge]: https://img.shields.io/david/fwextensions/quick-score.svg
+[dependencies]: https://www.npmjs.com/package/quick-score
+[license-badge]: https://img.shields.io/npm/l/quick-score.svg
+[license]: https://github.com/fwextensions/quick-score/blob/master/LICENSE
+[size-badge]: https://img.shields.io/bundlephobia/minzip/quick-score.svg
+[size]: https://www.npmjs.com/package/quick-score
+[package-badge]: https://img.shields.io/npm/v/quick-score.svg
+[package]: https://www.npmjs.com/package/quick-score

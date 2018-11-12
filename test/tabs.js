@@ -30,7 +30,6 @@ export default [
 	{
 		title: "Mac Rumors: Apple Mac iOS Rumors and News You Care About",
 		url: "macrumors.com/"
-
 	},
 	{
 		title: "minimal/styles.css at master · orderedlist/minimal",
@@ -61,22 +60,6 @@ export default [
 		url: "github.com/bvaughn/react-virtualized/issues/1015"
 	},
 	{
-		title: "view-source:https://fwextensions.github.io/QuicKey/ctrl-tab/",
-		url: "view-source:https://fwextensions.github.io/QuicKey/ctrl-tab/"
-	},
-	{
-		title: "QuicKey | Jump between recent tabs in Chrome via keyboard or menu",
-		url: "fwextensions.github.io/QuicKey/ctrl-tab/"
-	},
-	{
-		title: "Quokka.js: Configuration",
-		url: "https://quokkajs.com/docs/configuration.html"
-	},
-	{
-		title: "kaleido trays - Google Search",
-		url: "https://www.google.com/search?q=kaleido+trays&rlz=1C1GGRV_enUS749US749&oq=kaleido+trays&aqs=chrome..69i64j0j5j0j5j0.3589j0j4&sourceid=chrome&ie=UTF-8"
-	},
-	{
 		title: "electron/electron: Build cross platform desktop apps with JavaScript, HTML, and CSS",
 		url: "https://github.com/electron/electron"
 	},
@@ -93,11 +76,27 @@ export default [
 		url: "https://github.com/facebook/immutable-js"
 	},
 	{
+		title: "Best Practices - Sharing",
+		url: "https://developers.facebook.com/docs/sharing/best-practices/"
+	},
+	{
+		title: "view-source:https://fwextensions.github.io/QuicKey/ctrl-tab/",
+		url: "view-source:https://fwextensions.github.io/QuicKey/ctrl-tab/"
+	},
+	{
+		title: "QuicKey | Jump between recent tabs in Chrome via keyboard or menu",
+		url: "fwextensions.github.io/QuicKey/ctrl-tab/"
+	},
+	{
+		title: "Quokka.js: Configuration",
+		url: "https://quokkajs.com/docs/configuration.html"
+	},
+	{
 		title: "Sharing Debugger - Facebook for Developers",
 		url: "https://developers.facebook.com/tools/debug/sharing/?q=https%3A%2F%2Ffwextensions.github.io%2FQuicKey%2F"
 	},
 	{
-		title: "Best Practices - Sharing",
-		url: "https://developers.facebook.com/docs/sharing/best-practices/"
+		title: "kaleido trays - Google Search",
+		url: "https://www.google.com/search?q=kaleido+trays&rlz=1C1GGRV_enUS749US749&oq=kaleido+trays&aqs=chrome..69i64j0j5j0j5j0.3589j0j4&sourceid=chrome&ie=UTF-8"
 	}
 ];

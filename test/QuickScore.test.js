@@ -50,37 +50,54 @@ describe("QuickScore tests", function() {
 
 
 describe("Tabs scoring", function() {
-	const qs = new QuickScore(Tabs, {
-		keys: ["title", "url"],
-			// pass -1 to allow non-matching items to be returned, which was the
-			// original behavior before adding the minimumScore option
-		minimumScore: -1
-	});
-	const tabCount = Tabs.length;
+	function createValidator(
+		scorer)
+	{
+		return function validator(query, matchCount, firstTitle, scoreKey)
+		{
+			const results = scorer.search(query);
+			const nonmatches = results.filter(({score}) => score == 0);
+			const nonmatchingTitles = nonmatches.map(({item: {title}}) => title);
 
-		// use one QuickScore for all the tests, which is how it would typically
-		// be used
-	test.each([
+			expect(results.length).toBe(tabCount);
+			expect(tabCount - nonmatches.length).toBe(matchCount);
+			expect(results[0].item.title).toBe(firstTitle);
+			expect(results[0].scoreKey).toBe(scoreKey);
+
+				// make sure the 0-scored objects are sorted case-insensitively on their titles
+				// make sure the 0-scored objects are sorted case-insensitively on their titles
+			expect(nonmatchingTitles).toEqual(nonmatchingTitles.slice().sort(compareLowercase));
+
+				// make sure items with an undefined default key are sorted to the end
+			expect(nonmatchingTitles[nonmatchingTitles.length - 1]).toBe(undefined);
+		}
+	}
+
+	const expectedResults = [
 		["qk", 7, "QuicKey – The quick tab switcher - Chrome Web Store", "title"],
 		["dean", 12, "Bufala Negra – Garden & Gun", "url"],
 		["face", 10, "Facebook", "title"],
 		["", 0, "Best Practices - Sharing", ""]
-	])('Score Tabs array for "%s"', (query, matchCount, firstTitle, scoreKey) => {
-		const results = qs.search(query);
-		const nonmatches = results.filter(({score}) => score == 0);
-		const nonmatchingTitles = nonmatches.map(({item: {title}}) => title);
-
-		expect(results.length).toBe(tabCount);
-		expect(tabCount - nonmatches.length).toBe(matchCount);
-		expect(results[0].item.title).toBe(firstTitle);
-		expect(results[0].scoreKey).toBe(scoreKey);
-
-			// make sure the 0-scored objects are sorted case-insensitively on their titles
-		expect(nonmatchingTitles).toEqual(nonmatchingTitles.slice().sort(compareLowercase));
-
-			// make sure items with an undefined default key are sorted to the end
-		expect(nonmatchingTitles[nonmatchingTitles.length - 1]).toBe(undefined);
+	];
+	const nestedExpectedResults = clone(expectedResults);
+	const tabCount = Tabs.length;
+	const nestedTabs = Tabs.map(({title, url}) => ({ title, nested: { path: { url } } }));
+		// pass -1 to allow non-matching items to be returned, which was the
+		// original behavior before adding the minimumScore option
+	const qs = new QuickScore(Tabs, {
+		keys: ["title", "url"],
+		minimumScore: -1
 	});
+	const qsNested = new QuickScore(nestedTabs, {
+		keys: ["title", "nested.path.url"],
+		minimumScore: -1
+	});
+
+		// change the expected scoreKey to "nested.path.url"
+	nestedExpectedResults[1][3] = qsNested.keys[1].name;
+
+	test.each(expectedResults)('Score Tabs array for "%s"', createValidator(qs));
+	test.each(nestedExpectedResults)('Score nested Tabs array for "%s"', createValidator(qsNested));
 });
 
 
@@ -156,6 +173,54 @@ describe("Options", function() {
 		expect(firstItem.scores.url).toBeNearly(0.34250);
 		expect(firstItem.score).toBeGreaterThan(firstItemDefault.score);
 	});
+});
+
+
+test("Nested keys edge cases", () => {
+	const items = [
+		{
+			title: "zero",
+			nested: 0
+		},
+		{
+			title: "one",
+			nested: 1
+		},
+		{
+			title: "null",
+			nested: null
+		},
+		{
+			title: "object",
+			nested: {}
+		},
+		{
+			title: "undefined"
+		},
+		{
+			title: "empty string",
+			nested: {
+				value: ""
+			}
+		},
+		{
+			title: "filled string",
+			nested: {
+				value: "foo"
+			}
+		}
+	];
+	const qs = new QuickScore(items, {
+		keys: ["title", "nested.value"],
+		minimumScore: -1
+	});
+	const results = qs.search("filled");
+	const nonMatchingResults = results.filter(item => typeof item._["nested.value"] == "undefined");
+
+		// make sure the lowercase versions of all the empty or undefined string
+		// values are undefined
+	expect(nonMatchingResults.length).toBe(items.length - 1);
+	expect(results[0].item.title).toBe("filled string");
 });
 
 
