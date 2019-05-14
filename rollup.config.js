@@ -18,6 +18,9 @@ const BabelConfig = {
 		// tell babel to not transform modules, so that rollup can do it
 	presets: [
 		["@babel/preset-env", { modules: false }]
+	],
+	plugins: [
+		"external-helpers"
 	]
 };
 
