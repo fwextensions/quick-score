@@ -62,16 +62,16 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@babel/core": "^7.4.4",
-    "@babel/preset-env": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
     "benchmark": "^2.1.4",
     "eslint": "^5.16.0",
     "jest": "^24.8.0",
     "jsdoc": "^3.6.2",
     "rimraf": "^2.6.3",
-    "rollup": "^1.11.3",
+    "rollup": "^1.12.3",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-babel-minify": "^8.0.0",
-    "rollup-plugin-node-resolve": "^4.2.4"
+    "rollup-plugin-node-resolve": "^5.0.0"
   }
 }
