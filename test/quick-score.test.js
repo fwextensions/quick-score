@@ -82,14 +82,19 @@ describe("Quicksilver hit indices", function() {
 });
 
 
-describe("Hit indices", function() {
+describe("Match indices", function() {
 	test.each([
 			// the first test ensures that hits from early partial matches don't
 			// linger in the matches array
 		["This excellent string tells us an intes foo bar baz", "test",
 			0.76961, [[22, 24], [26, 27], [36, 37]]],
 		["This excellent string tells us an interesting story", "test",
-			0.73039, [[22, 24], [40, 42]]]
+			0.73039, [[22, 24], [40, 42]]],
+			// v0.0.5 was incorrectly throwing away earlier matches when a zero
+			// remainingScore was found, so the match indices were wrong.  this
+			// test verifies that the right indices are returned.
+		["https://raw.githubusercontent.com/gaearon/react-hot-loader/master/README.md", "release",
+			0.76333, [[42, 44], [52, 53], [56, 57], [60, 62], [63, 64]]]
 	])(HitsTestTitle, (string, query, expectedScore, expectedHits) => {
 		const hits = [];
 

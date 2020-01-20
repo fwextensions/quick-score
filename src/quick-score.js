@@ -57,6 +57,8 @@ export function quickScore(
 			return 0;
 		}
 
+		const initialMatchesLength = matches && matches.length;
+
 		for (let i = queryRange.length; i > 0; i--) {
 			const querySubstring = lcQuery.substring(queryRange.location, queryRange.location + i);
 				// reduce the length of the search range by the number of chars
@@ -66,6 +68,8 @@ export function quickScore(
 				new Range(searchRange.location, searchRange.length - queryRange.length + i));
 
 			if (!matchedRange.isValid()) {
+					// we didn't find the query substring, so try again with a
+					// shorter substring
 				continue;
 			}
 
@@ -132,15 +136,13 @@ export function quickScore(
 				score /= searchRange.length;
 
 				return score;
+			} else if (matches) {
+					// the remaining query does not appear in the remaining
+					// string, so strip off any matches we've added during the
+					// current call, as they'll be invalid when we start over
+					// with a shorter piece of the query
+				matches.length = initialMatchesLength;
 			}
-		}
-
-		if (matches) {
-				// the remaining query does not appear in the remaining
-				// string, so clear the matches, since we'll start over with a
-				// shorter piece of the query, which might match earlier
-				// in the string, making any existing match indexes invalid.
-			matches.length = 0;
 		}
 
 		return 0;

@@ -1,6 +1,6 @@
 const BaseConfigDefaults = {
 	wordSeparators: "-/\\:()<>%._=&[]+ \t\n\r",
-	uppercaseLetters: (function() {
+	uppercaseLetters: (() => {
 		const charCodeA = "A".charCodeAt(0);
 		const uppercase = [];
 
