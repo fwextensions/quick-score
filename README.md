@@ -25,6 +25,18 @@ QuickScore is fast, dependency-free, and is less than 2KB when minified and gzip
 npm install --save quick-score
 ```
 
+If you prefer to use the built library files directly instead of using `npm`, you can download them from [https://unpkg.com/browse/quick-score/dist/](https://unpkg.com/browse/quick-score/dist/).
+
+Or you can load a particular release of the minified script directly from unpkg:
+
+```html
+<script src="https://unpkg.com/browse/quick-score@0.0.6/dist/quick-score.min.js"></script>
+<script type="text/javascript">
+    const qs = new quickScore.QuickScore(...);
+    const results = qs.search("test");
+</script>
+```
+ 
 
 ## Usage
 
