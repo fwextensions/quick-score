@@ -1,15 +1,26 @@
 # Changelog
 
+## [0.0.8] - 2020-05-07
+
+### Fixed
+
+- Use the correct unpkg.com CDN URL in the readme.
+- Highlight needing to access the methods through a global when loading the library via a `<script>` tag.  
+
+
 ## [0.0.7] - 2020-05-03
 
 ### Added
 
 - Info about loading built files from unpkg.com to the readme.
+- Add a test that doesn't pass a matches array to get the branch coverage to 100%.
 - Added CHANGELOG.md.
 
 ### Fixed
 
 - Update `devDependencies` to latest packages.
+- Update node version in .travis.yml to latest.
+- Update to rollup 2.0.
 
 
 ## [0.0.6] - 2020-01-19
