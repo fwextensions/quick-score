@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.8] - 2020-05-07
+
+### Fixed
+
+- Use the correct unpkg.com CDN URL in the readme.
+- Highlight needing to access the methods through a global when loading the library via a `<script>` tag.  
+
+
 ## [0.0.7] - 2020-05-03
 
 ### Added

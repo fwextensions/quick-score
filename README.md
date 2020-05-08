@@ -27,13 +27,12 @@ npm install --save quick-score
 
 If you prefer to use the built library files directly instead of using `npm`, you can download them from [https://unpkg.com/browse/quick-score/dist/](https://unpkg.com/browse/quick-score/dist/).
 
-Or you can load a particular release of the minified script directly from unpkg:
+Or you can load a particular release of the minified script directly from `unpkg.com`, and then access the library via the `quickScore` global:
 
 ```html
-<script src="https://unpkg.com/browse/quick-score@0.0.6/dist/quick-score.min.js"></script>
+<script src="https://unpkg.com/quick-score@0.0.7/dist/quick-score.min.js"></script>
 <script type="text/javascript">
-    const qs = new quickScore.QuickScore(...);
-    const results = qs.search("test");
+    console.log(quickScore.quickScore("thought", "gh"));
 </script>
 ```
  
@@ -57,8 +56,9 @@ const quickScore = require("quick-score").quickScore;
 You can then call `quickScore()` with a `string` and a `query` to score against that string.  It will return a floating point score between `0` and `1`.  A higher score means that string is a better match for the query.  A `1` means the query is the highest match for the string, though the two strings may still differ in case and whitespace characters.
 
 ```js
-quickScore("thought", "gh");   // 0.7000000000000001
+quickScore("thought", "gh");   // 0.4142857142857143
 quickScore("GitHub", "gh");    // 0.9166666666666666
+
 ```
 
 Matching `gh` against `GitHub` returns a higher score than `thought`, because it matches the capital letters in `GitHub`, which are weighted more highly.
