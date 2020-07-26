@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.9] - 2020-07-25
+
+### Fixed
+
+- Update `devDependencies` to latest packages.
+
+
 ## [0.0.8] - 2020-05-07
 
 ### Fixed
