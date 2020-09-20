@@ -41,6 +41,21 @@ export class QuickScore {
 	 * matches the string, as described in the [search()]{@link QuickScore#search}
 	 * method.
 	 *
+	 * @param {function(string): string} [options.preprocessString] -
+	 * An optional function that takes a `string` parameter and returns a
+	 * processed version of that string.  This function will be called on all of
+	 * the searchable keys in the `items` array as well as on the `query`
+	 * parameter to the `search()` method.  The default function calls
+	 * `toLocaleLowerCase()` on each string, for a case-insensitive search.
+	 *
+	 * You can pass a function here to do other kinds of preprocessing, such as
+	 * removing diacritics from all the strings or converting Chinese characters
+	 * to pinyin.  For example, you could use the `latinize` npm package to
+	 * convert characters with diacritics to the base character so that your
+	 * users can type an unaccented character in the query while still matching
+	 * items that have accents or diacritics:
+	 * `{ preprocessString: s => latinize(s.toLocaleLowerCase()) }`
+	 *
 	 * @param {object} [options.config] - An optional object that can be passed
 	 * to the scorer function to further customize it's behavior.  If the
 	 * `scorer` function has a `createConfig()` method on it, the `QuickScore`
@@ -66,6 +81,7 @@ export class QuickScore {
 
 		const {
 			scorer = quickScore,
+			preprocessString = this.preprocessString,
 			keys = [],
 			minimumScore = 0,
 			config
@@ -74,6 +90,7 @@ export class QuickScore {
 		this.scorer = scorer;
 		this.minimumScore = minimumScore;
 		this.config = config;
+		this.preprocessString = preprocessString;
 
 		if (typeof scorer.createConfig == "function") {
 				// let the scorer fill out the config with default values
@@ -135,7 +152,7 @@ export class QuickScore {
 			// if the query is empty, we want to return all items, so make the
 			// minimum score less than 0
 		const minScore = query ? this.minimumScore : -1;
-		const lcQuery = query.toLocaleLowerCase();
+		const lcQuery = this.preprocessString(query);
 
 		if (keys.length) {
 			for (let i = 0, len = items.length; i < len; i++) {
@@ -267,8 +284,8 @@ export class QuickScore {
 					const key = keys[j];
 					const string = this.getItemString(item, key);
 
-					if (string && typeof string == "string") {
-						lc[key.name] = string.toLocaleLowerCase();
+					if (string && typeof string === "string") {
+						lc[key.name] = this.preprocessString(string);
 					}
 				}
 
@@ -276,7 +293,7 @@ export class QuickScore {
 			}
 		} else {
 			for (let i = 0, len = items.length; i < len; i++) {
-				lcItems.push(items[i].toLocaleLowerCase());
+				lcItems.push(this.preprocessString(items[i]));
 			}
 		}
 	}
@@ -296,6 +313,13 @@ export class QuickScore {
 	}
 
 
+	preprocessString(
+		string)
+	{
+		return string.toLocaleLowerCase();
+	}
+
+
 	compareScoredStrings(
 		a,
 		b)
@@ -303,9 +327,9 @@ export class QuickScore {
 			// use the lowercase versions of the strings for sorting
 		const itemA = a._;
 		const itemB = b._;
-		const itemAString = typeof itemA == "string" ? itemA :
+		const itemAString = typeof itemA === "string" ? itemA :
 			itemA[this.defaultKeyName];
-		const itemBString = typeof itemB == "string" ? itemB :
+		const itemBString = typeof itemB === "string" ? itemB :
 			itemB[this.defaultKeyName];
 
 		if (a.score == b.score) {
