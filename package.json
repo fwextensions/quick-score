@@ -32,7 +32,7 @@
     "build": "npm run build:lib && npm run build:docs",
     "build:lib": "rimraf dist lib && rollup -c",
     "build:docs": "rimraf docs && jsdoc -c jsdoc/config.json",
-    "prepublishOnly": "npm run build",
+    "prepare": "npm run build",
     "pretest": "eslint src",
     "test": "jest",
     "test:watch": "npm test -- --watch",
