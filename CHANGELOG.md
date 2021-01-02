@@ -1,13 +1,20 @@
 # Changelog
 
-## [0.0.9] - 2020-07-25
+## [0.0.10](https://github.com/fwextensions/quick-score/releases/tag/v0.0.10) - 2020-07-25
+
+### Added
+
+- A new `transformString` option to the `QuickScore` constructor can be used to ignore diacritics and accents when searching.
+
+
+## [0.0.9](https://github.com/fwextensions/quick-score/releases/tag/v0.0.9) - 2020-07-25
 
 ### Fixed
 
 - Update `devDependencies` to latest packages.
 
 
-## [0.0.8] - 2020-05-07
+## [0.0.8](https://github.com/fwextensions/quick-score/releases/tag/v0.0.8) - 2020-05-07
 
 ### Fixed
 
@@ -15,7 +22,7 @@
 - Highlight needing to access the methods through a global when loading the library via a `<script>` tag.  
 
 
-## [0.0.7] - 2020-05-03
+## [0.0.7](https://github.com/fwextensions/quick-score/releases/tag/v0.0.7) - 2020-05-03
 
 ### Added
 
@@ -26,11 +33,11 @@
 ### Fixed
 
 - Update `devDependencies` to latest packages.
-- Update node version in .travis.yml to latest.
+- Update node version in `.travis.yml` to latest.
 - Update to rollup 2.0.
 
 
-## [0.0.6] - 2020-01-19
+## [0.0.6](https://github.com/fwextensions/quick-score/releases/tag/v0.0.6) - 2020-01-19
 
 ### Fixed
 
@@ -38,14 +45,14 @@
 - Update `devDependencies` to latest packages.
 
 
-## [0.0.5] - 2019-10-19
+## [0.0.5](https://github.com/fwextensions/quick-score/releases/tag/v0.0.5) - 2019-10-19
 
 ### Fixed
 
 - Update `devDependencies` to latest packages.
 
 
-## [0.0.4] - 2019-05-27
+## [0.0.4](https://github.com/fwextensions/quick-score/releases/tag/v0.0.4) - 2019-05-27
 
 ### Fixed
 
@@ -53,21 +60,21 @@
 - Update `devDependencies` to latest packages.
 
 
-## [0.0.3] - 2019-05-27
+## [0.0.3](https://github.com/fwextensions/quick-score/releases/tag/v0.0.3) - 2019-05-27
 
 ### Added
 
 - Support searching nested keys on objects use dot-delimited key names, like `"foo.bar"`.
 
 
-## [0.0.2] - 2018-11-05
+## [0.0.2](https://github.com/fwextensions/quick-score/releases/tag/v0.0.2) - 2018-11-05
 
 ### Fixed
 
 - Changed `prepare` script to `prepublishOnly`.
 
 
-## [0.0.1] - 2018-11-05
+## [0.0.1](https://github.com/fwextensions/quick-score/releases/tag/v0.0.1) - 2018-11-05
 
 ### Added
 

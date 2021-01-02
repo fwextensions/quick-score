@@ -41,20 +41,22 @@ export class QuickScore {
 	 * matches the string, as described in the [search()]{@link QuickScore#search}
 	 * method.
 	 *
-	 * @param {function(string): string} [options.preprocessString] -
+	 * @param {function(string): string} [options.transformString] -
 	 * An optional function that takes a `string` parameter and returns a
-	 * processed version of that string.  This function will be called on all of
-	 * the searchable keys in the `items` array as well as on the `query`
+	 * transformed version of that string.  This function will be called on each
+	 * of the searchable keys in the `items` array as well as on the `query`
 	 * parameter to the `search()` method.  The default function calls
 	 * `toLocaleLowerCase()` on each string, for a case-insensitive search.
 	 *
 	 * You can pass a function here to do other kinds of preprocessing, such as
 	 * removing diacritics from all the strings or converting Chinese characters
-	 * to pinyin.  For example, you could use the `latinize` npm package to
+	 * to pinyin.  For example, you could use the
+	 * [`latinize`](https://www.npmjs.com/package/latinize) npm package to
 	 * convert characters with diacritics to the base character so that your
 	 * users can type an unaccented character in the query while still matching
-	 * items that have accents or diacritics:
-	 * `{ preprocessString: s => latinize(s.toLocaleLowerCase()) }`
+	 * items that have accents or diacritics.  Pass in an `options` object like
+	 * this to use a custom `transformString()` function:
+	 * `{ transformString: s => latinize(s.toLocaleLowerCase()) }`
 	 *
 	 * @param {object} [options.config] - An optional object that can be passed
 	 * to the scorer function to further customize it's behavior.  If the
@@ -81,7 +83,7 @@ export class QuickScore {
 
 		const {
 			scorer = quickScore,
-			preprocessString = this.preprocessString,
+			transformString = this.transformString,
 			keys = [],
 			minimumScore = 0,
 			config
@@ -90,7 +92,7 @@ export class QuickScore {
 		this.scorer = scorer;
 		this.minimumScore = minimumScore;
 		this.config = config;
-		this.preprocessString = preprocessString;
+		this.transformString = transformString;
 
 		if (typeof scorer.createConfig == "function") {
 				// let the scorer fill out the config with default values
@@ -140,7 +142,7 @@ export class QuickScore {
 	 * each string that match the query.  This can then be used to format the
 	 * matching characters with a different color or style.
 	 *
-	 * Each result item also contains a `_` property, which contains lowercase
+	 * Each result item also has a `_` property, which caches transformed
 	 * versions of the item's strings, and might contain additional internal
 	 * metadata in the future.  It can be ignored.
 	 */
@@ -148,23 +150,23 @@ export class QuickScore {
 		query)
 	{
 		const results = [];
-		const {items, lcItems, keys, config} = this;
+		const {items, transformedItems, keys, config} = this;
 			// if the query is empty, we want to return all items, so make the
 			// minimum score less than 0
 		const minScore = query ? this.minimumScore : -1;
-		const lcQuery = this.preprocessString(query);
+		const transformedQuery = this.transformString(query);
 
 		if (keys.length) {
 			for (let i = 0, len = items.length; i < len; i++) {
 				const item = items[i];
-				const lc = lcItems[i];
+				const transformedItem = transformedItems[i];
 				const result = {
 					item,
 					score: 0,
 					scoreKey: "",
 					scores: {},
 					matches: {},
-					_: lc
+					_: transformedItem
 				};
 				let highScore = 0;
 				let scoreKey = "";
@@ -173,16 +175,16 @@ export class QuickScore {
 				for (let j = 0, jlen = keys.length; j < jlen; j++) {
 					const key = keys[j];
 					const {name} = key;
-					const lcString = lc[name];
+					const transformedString = transformedItem[name];
 
 						// setItems() checks for non-strings and empty strings
-						// when creating the lc objects, so if the key doesn't
-						// exist there, we can ignore it for this item
-					if (lcString) {
+						// when creating the transformed objects, so if the key
+						// doesn't exist there, we can ignore it for this item
+					if (transformedString) {
 						const string = this.getItemString(item, key);
 						const matches = [];
 						const newScore = key.scorer(string, query, matches,
-							lcString, lcQuery, config);
+							transformedString, transformedQuery, config);
 
 						result.scores[name] = newScore;
 						result.matches[name] = matches;
@@ -204,16 +206,17 @@ export class QuickScore {
 				// items is a flat array of strings
 			for (let i = 0, len = items.length; i < len; i++) {
 				const item = items[i];
-				const lc = lcItems[i];
+				const transformedItem = transformedItems[i];
 				const matches = [];
-				const score = this.scorer(item, query, matches, lc, lcQuery, config);
+				const score = this.scorer(item, query, matches, transformedItem,
+					transformedQuery, config);
 
 				if (score > minScore) {
 					results.push({
 						item,
 						score,
 						matches,
-						_: lc
+						_: transformedItem
 					});
 				}
 			}
@@ -234,7 +237,7 @@ export class QuickScore {
 	setKeys(
 		keys)
 	{
-		this.keys = Array.from(keys);
+		this.keys = [].concat(keys);
 
 		if (this.keys.length) {
 			const {scorer} = this;
@@ -261,8 +264,9 @@ export class QuickScore {
 
 
 	/**
-	 * Sets the `items` array and caches a lowercase copy of all the item
-	 * strings specified by the `keys` parameter to the constructor.
+	 * Sets the `items` array and caches a transformed copy of all the item
+	 * strings specified by the `keys` parameter to the constructor, using the
+	 * `transformString` option (which defaults to `toLocaleLowerCase()`).
 	 *
 	 * @param {Array<string> | Array<object>} items - List of items to score.
 	 */
@@ -270,30 +274,30 @@ export class QuickScore {
 		items)
 	{
 		const {keys} = this;
-		const lcItems = [];
+		const transformedItems = [];
 
-		this.items = items;
-		this.lcItems = lcItems;
+		this.items = [].concat(items);
+		this.transformedItems = transformedItems;
 
 		if (keys.length) {
 			for (let i = 0, len = items.length; i < len; i++) {
 				const item = items[i];
-				const lc = {};
+				const transformedItem = {};
 
 				for (let j = 0, jlen = keys.length; j < jlen; j++) {
 					const key = keys[j];
 					const string = this.getItemString(item, key);
 
 					if (string && typeof string === "string") {
-						lc[key.name] = this.preprocessString(string);
+						transformedItem[key.name] = this.transformString(string);
 					}
 				}
 
-				lcItems.push(lc);
+				transformedItems.push(transformedItem);
 			}
 		} else {
 			for (let i = 0, len = items.length; i < len; i++) {
-				lcItems.push(this.preprocessString(items[i]));
+				transformedItems.push(this.transformString(items[i]));
 			}
 		}
 	}
@@ -313,7 +317,7 @@ export class QuickScore {
 	}
 
 
-	preprocessString(
+	transformString(
 		string)
 	{
 		return string.toLocaleLowerCase();
@@ -332,17 +336,17 @@ export class QuickScore {
 		const itemBString = typeof itemB === "string" ? itemB :
 			itemB[this.defaultKeyName];
 
-		if (a.score == b.score) {
+		if (a.score === b.score) {
 				// sort undefineds to the end of the array, as per the ES spec
 			if (itemAString === undefined || itemBString === undefined) {
 				if (itemAString === undefined && itemBString === undefined) {
 					return 0;
-				} else if (itemAString == undefined) {
+				} else if (itemAString === undefined) {
 					return 1;
 				} else {
 					return -1;
 				}
-			} else if (itemAString == itemBString) {
+			} else if (itemAString === itemBString) {
 				return 0;
 			} else if (itemAString < itemBString) {
 				return -1;
