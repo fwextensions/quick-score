@@ -1,10 +1,14 @@
 # Changelog
 
-## [0.0.10](https://github.com/fwextensions/quick-score/releases/tag/v0.0.10) - 2020-07-25
+## [0.0.10](https://github.com/fwextensions/quick-score/releases/tag/v0.0.10) - 2021-01-02
 
 ### Added
 
 - A new `transformString` option to the `QuickScore` constructor can be used to ignore diacritics and accents when searching.
+
+### Fixed
+
+- Update `devDependencies` to latest packages, fixing a vulnerability in jest.
 
 
 ## [0.0.9](https://github.com/fwextensions/quick-score/releases/tag/v0.0.9) - 2020-07-25
