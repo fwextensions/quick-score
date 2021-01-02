@@ -1,6 +1,6 @@
 {
   "name": "quick-score",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A JavaScript string-scoring and fuzzy-matching library based on the Quicksilver algorithm, designed for smart auto-complete.",
   "keywords": [
     "string",
@@ -32,7 +32,7 @@
     "build": "npm run build:lib && npm run build:docs",
     "build:lib": "rimraf dist lib && rollup -c",
     "build:docs": "rimraf docs && jsdoc -c jsdoc/config.json",
-    "prepublishOnly": "npm run build",
+    "prepare": "npm run build:lib",
     "pretest": "eslint src",
     "test": "jest",
     "test:watch": "npm test -- --watch",
@@ -59,14 +59,14 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@babel/core": "^7.10.5",
-    "@babel/preset-env": "^7.10.4",
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
     "benchmark": "^2.1.4",
-    "eslint": "^7.5.0",
-    "jest": "^26.1.0",
-    "jsdoc": "^3.6.5",
+    "eslint": "^7.17.0",
+    "jest": "^26.6.3",
+    "jsdoc": "^3.6.6",
     "rimraf": "^3.0.2",
-    "rollup": "^2.23.0",
+    "rollup": "^2.35.1",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-babel-minify": "^10.0.0",
     "rollup-plugin-node-resolve": "^5.2.0"

@@ -14,9 +14,16 @@ import {createConfig, DefaultConfig} from "./config";
  * of `string` that matches `query`.  These indexes can be used to highlight the
  * matching characters in an auto-complete UI.
  *
- * @param {string} [lcString] - A lowercase version of `string`.
+ * @param {string} [transformedString] - A transformed version of the string that
+ * will be used for matching.  This defaults to a lowercase version of `string`,
+ * but it could also be used to match against a string with all the diacritics
+ * removed, so an unaccented character in the query would match an accented one
+ * in the string.
  *
- * @param {string} [lcQuery] - A lowercase version of `query`.
+ * @param {string} [transformedQuery] - A transformed version of `query`.  The
+ * same transformation applied to `transformedString` should be applied to this
+ * parameter, or both can be left as `undefined` for the default lowercase
+ * transformation.
  *
  * @param {object} [config] - A configuration object that can modify how the
  * `quickScore` algorithm behaves.
@@ -31,8 +38,8 @@ export function quickScore(
 	string = "",
 	query = "",
 	matches,
-	lcString = string.toLocaleLowerCase(),
-	lcQuery = query.toLocaleLowerCase(),
+	transformedString = string.toLocaleLowerCase(),
+	transformedQuery = query.toLocaleLowerCase(),
 	config = DefaultConfig,
 	stringRange = new Range(0, string.length))
 {
@@ -60,11 +67,11 @@ export function quickScore(
 		const initialMatchesLength = matches && matches.length;
 
 		for (let i = queryRange.length; i > 0; i--) {
-			const querySubstring = lcQuery.substring(queryRange.location, queryRange.location + i);
+			const querySubstring = transformedQuery.substring(queryRange.location, queryRange.location + i);
 				// reduce the length of the search range by the number of chars
 				// we're skipping in the query, to make sure there's enough string
 				// left to possibly contain the skipped chars
-			const matchedRange = getRangeOfSubstring(lcString, querySubstring,
+			const matchedRange = getRangeOfSubstring(transformedString, querySubstring,
 				new Range(searchRange.location, searchRange.length - queryRange.length + i));
 
 			if (!matchedRange.isValid()) {

@@ -22,4 +22,4 @@ deploy:
   skip-cleanup: true
   github-token: $GITHUB_TOKEN
   on:
-    branch: develop
+    branch: master

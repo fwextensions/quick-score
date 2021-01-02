@@ -58,7 +58,6 @@ You can then call `quickScore()` with a `string` and a `query` to score against 
 ```js
 quickScore("thought", "gh");   // 0.4142857142857143
 quickScore("GitHub", "gh");    // 0.9166666666666666
-
 ```
 
 Matching `gh` against `GitHub` returns a higher score than `thought`, because it matches the capital letters in `GitHub`, which are weighted more highly.
@@ -147,6 +146,36 @@ Each item in the results array has a few more properties when matching against o
 * `matches`: a hash of arrays that specify the character ranges of the query match for each key
 
 When two items have the same score, they're sorted alphabetically and case-insensitively on the first key in the keys array.  In the example above, that would be `title`.
+
+Each result item also has a `_` property, which caches transformed versions of the item's strings, and might contain additional internal metadata in the future.  It can be ignored.
+
+
+### Ignoring diacritics and accents when scoring
+
+If the strings you're matching against contain diacritics on some of the letters, like `à` or `ç`, you may want to count a match even when the query string contains the unaccented forms of those letters.  The QuickScore library doesn't contain support for this by default, since it's only needed with certain strings and the code to remove accents would triple its size.  But it's easy to combine  QuickScore with other libraries to ignore diacritics. 
+
+One example is the [latinize](https://github.com/dundalek/latinize) [npm package](https://www.npmjs.com/package/latinize), which will strip accents from a string and can be used in a `transformString()` function that's passed as an option to the [QuickScore constructor](https://fwextensions.github.io/quick-score/QuickScore.html#QuickScore).  This function takes a `string` parameter and returns a transformed version of that string:
+
+```js
+// including latinize.js on the page creates a global latinize() function 
+import {QuickScore} from "quick-score";
+
+const items = ["Café", "Cafeteria"];
+const qs = new QuickScore(items, { transformString: s => latinize(s).toLowerCase() });
+const results = qs.search("cafe");
+
+//=>
+[
+    {
+        "item": "Café",
+        "score": 1,
+        "matches": [[0, 4]],
+        "_": "cafe"
+    },
+    ...
+```
+
+`transformString()` will be called on each of the searchable keys in the `items` array as well as on the `query` parameter to the `search()` method.  The default function calls `toLocaleLowerCase()` on each string, for a case-insensitive search.  In the example above, the basic `toLowerCase()` call is sufficient, since `latinize()` will have already stripped the accents.
 
 
 ### Highlighting matched letters
