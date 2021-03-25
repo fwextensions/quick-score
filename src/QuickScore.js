@@ -7,28 +7,37 @@ import {quickScore} from "./quick-score";
  */
 export class QuickScore {
 	/**
-	 * @param {Array<string> | Array<object>} [items] - The list of items to
-	 * score.  If the list is not a flat array of strings, a `keys` array must
-	 * be supplied via the second parameter.  The `items` array is not modified
-	 * by QuickScore.
+	 * @param {Array<string|object>} [items] - The list of items to score.  If
+	 * the list is not a flat array of strings, a `keys` array must be supplied
+	 * via the second parameter.  The `items` array is not modified by QuickScore.
 	 *
-	 * @param {Array<string> | object} [options] - If the `items` parameter is
-	 * an array of flat strings, the `options` parameter can be left out.  If
+	 * @param {Array<string|object> | object} [options] - If the `items` parameter
+	 * is an array of flat strings, the `options` parameter can be left out.  If
 	 * it is a list of objects containing keys that should be scored, the
 	 * `options` parameter must either be an array of key names or an object
 	 * containing a `keys` property.
 	 *
-	 * @param {Array<string> | Array<{name: string, scorer: function}>} [options.keys] -
-	 * In the simplest case, an array of key names to score on the objects
-	 * in the `items` array.  The first item in this array is considered the
-	 * primary key, which is used to sort items when they have the same
-	 * score.  The key name strings can point to a nested key by specifying a
-	 * dot-delimited path to the value.  So a key `name` of `"foo.bar"` would
-	 * evaluate to `"baz"` given an object like `{ foo: { bar: "baz" } }`.
+	 * @param {Array<string|string[]|{name: string, scorer: function}>} [options.keys] -
+	 * In the simplest case, an array of key names to score on the objects in
+	 * the `items` array.
 	 *
-	 * Each item in `keys` can instead be a `{name, scorer}` object, which
-	 * lets you specify a different scoring function for each key.  The
-	 * scoring function should behave as described next.
+	 * The key names can point to a nested key by passing either a dot-delimited
+	 * string or an array of sub-keys that specify the path to the value.  So a
+	 * key `name` of `"foo.bar"` would evaluate to `"baz"` given an object like
+	 * `{ foo: { bar: "baz" } }`.  Alternatively, that path could be passed as
+	 * an array, like `["foo", "bar"]`.  In either case, if this sub-key's match
+	 * produces the highest score for an item in the search results, its
+	 * `scoreKey` name will be `"foo.bar"`.
+	 *
+	 * If your items have keys that contain periods, e.g., `"first.name"`, but
+	 * you don't want these names to be treated as paths to nested keys, simply
+	 * wrap the name in an array, like `{ keys: ["ssn", ["first.name"],
+	 * ["last.name"]] }`.
+	 *
+	 * Instead of a string or string array, an item in `keys` can also be passed
+	 * as a `{name, scorer}` object, which lets you specify a different scoring
+	 * function for each key.  The scoring function should behave as described
+	 * next.
 	 *
 	 * @param {function(string, string, array?): number} [options.scorer] -
 	 * An optional function that takes `string` and `query` parameters and
@@ -36,17 +45,32 @@ export class QuickScore {
 	 * well the `query` matches the `string`.  It defaults to the
 	 * [quickScore()]{@link quickScore} function in this library.
 	 *
-	 * If the function gets a `matches` parameter, it should fill the
-	 * passed in array with indexes corresponding to where the query
+	 * If the function gets a third `matches` parameter, it should fill the
+	 * passed-in array with indexes corresponding to where the query
 	 * matches the string, as described in the [search()]{@link QuickScore#search}
 	 * method.
+	 *
+	 * @param {string} [options.sortKey=options.keys[0]] - An optional key name
+	 * that will be used to sort items with identical scores.  Defaults to the
+	 * name of the first item in the `keys` parameter.  If `sortKey` points to
+	 * a nested key, use a dot-delimited string instead of an array to specify
+	 * the path.
+	 *
+	 * @param {number} [options.minimumScore=0] - An optional value that
+	 * specifies the minimum score an item must have to appear in the results
+	 * array returned from [search()]{@link QuickScore#search}.  Defaults to `0`,
+	 * so items that don't match the full `query` will not be returned.  This
+	 * value is ignored if the `query` is empty or undefined, in which case all
+	 * items are returned, sorted alphabetically and case-insensitively on the
+	 * `sortKey`, if any.
 	 *
 	 * @param {function(string): string} [options.transformString] -
 	 * An optional function that takes a `string` parameter and returns a
 	 * transformed version of that string.  This function will be called on each
 	 * of the searchable keys in the `items` array as well as on the `query`
 	 * parameter to the `search()` method.  The default function calls
-	 * `toLocaleLowerCase()` on each string, for a case-insensitive search.
+	 * `toLocaleLowerCase()` on each string, for a case-insensitive search.  The
+	 * result of this function is cached for each searchable key on each item.
 	 *
 	 * You can pass a function here to do other kinds of preprocessing, such as
 	 * removing diacritics from all the strings or converting Chinese characters
@@ -63,13 +87,6 @@ export class QuickScore {
 	 * `scorer` function has a `createConfig()` method on it, the `QuickScore`
 	 * instance will call that with the `config` value and store the result.
 	 * This can be used to extend the `config` parameter with default values.
-	 *
-	 * @param {number} [options.minimumScore=0] - An optional value that
-	 * specifies the minimum score an item must have to appear in the results
-	 * array returned from [search()]{@link QuickScore#search}.  Defaults to `0`,
-	 * so items that don't match the full `query` will not be returned.  This
-	 * value is ignored if the `query` is empty or undefined, in which case all
-	 * items are returned, sorted alphabetically and case-insensitively.
 	 */
 	constructor(
 		items = [],
@@ -77,14 +94,17 @@ export class QuickScore {
 	{
 		let optionsValue = options;
 
-		if (options instanceof Array) {
-			optionsValue = { keys: options };
+		if (Array.isArray(options)) {
+			optionsValue = {
+				keys: options
+			};
 		}
 
 		const {
 			scorer = quickScore,
 			transformString = this.transformString,
 			keys = [],
+			sortKey = "",
 			minimumScore = 0,
 			config
 		} = optionsValue;
@@ -99,10 +119,10 @@ export class QuickScore {
 			this.config = scorer.createConfig(config);
 		}
 
-		this.setKeys(keys);
+		this.setKeys(keys, sortKey);
 		this.setItems(items);
 
-			// the scoring function needs access to this.defaultKeyName
+			// the scoring function needs access to this.sortKey
 		this.compareScoredStrings = this.compareScoredStrings.bind(this);
 	}
 
@@ -127,13 +147,14 @@ export class QuickScore {
 	 * - `score`: the highest score from among the individual key scores
 	 * - `scoreKey`: the name of the key with the highest score, which will be
 	 *   an empty string if they're all zero
+	 * - `scoreValue`: the value of the key with the highest score
 	 * - `scores`: a hash of the individual scores for each key
 	 * - `matches`: a hash of arrays that specify the character ranges of the
 	 *   query match for each key
 	 *
 	 * The results array is sorted high to low on each item's score.  Items with
 	 * identical scores are sorted alphabetically and case-insensitively on the
-	 * primary key.  Items with scores that are <= the `minimumScore` option
+	 * `sortKey` option.  Items with scores that are <= the `minimumScore` option
 	 * (defaults to `0`) are not returned, unless the `query` is falsy, in which
 	 * case all of the items are returned, sorted alphabetically.
 	 *
@@ -150,61 +171,17 @@ export class QuickScore {
 		query)
 	{
 		const results = [];
-		const {items, transformedItems, keys, config} = this;
+		const {items, transformedItems, keys: sharedKeys, config} = this;
 			// if the query is empty, we want to return all items, so make the
 			// minimum score less than 0
 		const minScore = query ? this.minimumScore : -1;
 		const transformedQuery = this.transformString(query);
+		const itemCount = items.length;
+		const sharedKeyCount = sharedKeys.length;
 
-		if (keys.length) {
-			for (let i = 0, len = items.length; i < len; i++) {
-				const item = items[i];
-				const transformedItem = transformedItems[i];
-				const result = {
-					item,
-					score: 0,
-					scoreKey: "",
-					scores: {},
-					matches: {},
-					_: transformedItem
-				};
-				let highScore = 0;
-				let scoreKey = "";
-
-					// find the highest score for each keyed string on this item
-				for (let j = 0, jlen = keys.length; j < jlen; j++) {
-					const key = keys[j];
-					const {name} = key;
-					const transformedString = transformedItem[name];
-
-						// setItems() checks for non-strings and empty strings
-						// when creating the transformed objects, so if the key
-						// doesn't exist there, we can ignore it for this item
-					if (transformedString) {
-						const string = this.getItemString(item, key);
-						const matches = [];
-						const newScore = key.scorer(string, query, matches,
-							transformedString, transformedQuery, config);
-
-						result.scores[name] = newScore;
-						result.matches[name] = matches;
-
-						if (newScore > highScore) {
-							highScore = newScore;
-							scoreKey = name;
-						}
-					}
-				}
-
-				if (highScore > minScore) {
-					result.score = highScore;
-					result.scoreKey = scoreKey;
-					results.push(result);
-				}
-			}
-		} else {
-				// items is a flat array of strings
-			for (let i = 0, len = items.length; i < len; i++) {
+		if (typeof items[0] === "string") {
+				// items is an array of strings
+			for (let i = 0; i < itemCount; i++) {
 				const item = items[i];
 				const transformedItem = transformedItems[i];
 				const matches = [];
@@ -220,6 +197,63 @@ export class QuickScore {
 					});
 				}
 			}
+		} else {
+			for (let i = 0; i < itemCount; i++) {
+				const item = items[i];
+				const transformedItem = transformedItems[i];
+				const result = {
+					item,
+					score: 0,
+					scoreKey: "",
+					scoreValue: "",
+					scores: {},
+					matches: {},
+					_: transformedItem
+				};
+					// if an empty keys array was passed into the constructor,
+					// score all of the non-empty string keys on the object
+				const keys = sharedKeyCount ? sharedKeys : Object.keys(transformedItem);
+				const keyCount = keys.length;
+				let highScore = 0;
+				let scoreKey = "";
+				let scoreValue = "";
+
+					// find the highest score for each keyed string on this item
+				for (let j = 0; j < keyCount; j++) {
+					const key = keys[j];
+						// use the key as the name if it's just a string, and
+						// default to the instance's scorer function
+					const {name = key, scorer = this.scorer} = key;
+					const transformedString = transformedItem[name];
+
+						// setItems() checks for non-strings and empty strings
+						// when creating the transformed objects, so if the key
+						// doesn't exist there, we can skip the processing
+						// below for this key in this item
+					if (transformedString) {
+						const string = this.getItemString(item, key);
+						const matches = [];
+						const newScore = scorer(string, query, matches,
+							transformedString, transformedQuery, config);
+
+						result.scores[name] = newScore;
+						result.matches[name] = matches;
+
+						if (newScore > highScore) {
+							highScore = newScore;
+							scoreKey = name;
+							scoreValue = string;
+						}
+					}
+				}
+
+				if (highScore > minScore) {
+					result.score = highScore;
+					result.scoreKey = scoreKey;
+					result.scoreValue = scoreValue;
+					results.push(result);
+				}
+			}
 		}
 
 		results.sort(this.compareScoredStrings);
@@ -229,36 +263,53 @@ export class QuickScore {
 
 
 	/**
-	 * Sets the `keys` configuration.
+	 * Sets the `keys` configuration.  `setItems()` must be called after changing
+	 * the keys so that the items' transformed strings get cached.
 	 *
 	 * @param {Array<string> | Array<object>} keys - List of keys to score, as
-	 * either flat strings or `{key, scorer}` objects.
+	 * either strings or `{name, scorer}` objects.
+	 *
+	 * @param {string} [sortKey=keys[0]] - Name of key on which to sort
+	 * identically scored items.  Defaults to the first `keys` item.
 	 */
 	setKeys(
-		keys)
+		keys,
+		sortKey = "")
 	{
 		this.keys = [].concat(keys);
+		this.sortKey = sortKey;
 
 		if (this.keys.length) {
 			const {scorer} = this;
 
 				// associate each key with the scorer function, if it isn't already
-				/* eslint object-curly-spacing: 0, object-property-newline: 0 */
 			this.keys = this.keys.map(keyItem => {
-				const key = (typeof keyItem == "string") ?
-					{ name: keyItem, scorer } : keyItem;
+					// items in the keys array should either be a string or
+					// array specifying a key name, or a { name, scorer } object
+				const key = keyItem.length
+					? { name: keyItem, scorer }
+					: keyItem;
 
-				if (key.name.indexOf(".") > -1) {
+				if (Array.isArray(key.name)) {
+					if (key.name.length > 1) {
+						key.path = key.name;
+						key.name = key.path.join(".");
+					} else {
+							// this path consists of just one key name, which was
+							// probably wrapped in an array because it contains
+							// dots but isn't intended as a key path.  so don't
+							// create a path array on this key, so that we're not
+							// constantly calling reduce() to get this one key.
+						[key.name] = key.name;
+					}
+				} else if (key.name.indexOf(".") > -1) {
 					key.path = key.name.split(".");
 				}
 
 				return key;
 			});
-			this.defaultKeyName = this.keys[0].name;
-		} else {
-				// defaultKeyName will be null if items is a flat array of
-				// strings, which is handled in compareScoredStrings()
-			this.defaultKeyName = null;
+
+			this.sortKey = this.sortKey || this.keys[0].name;
 		}
 	}
 
@@ -273,33 +324,39 @@ export class QuickScore {
 	setItems(
 		items)
 	{
-		const {keys} = this;
+		const itemArray = [].concat(items);
+		const itemCount = itemArray.length;
 		const transformedItems = [];
+		const sharedKeys = this.keys;
+		const sharedKeyCount = sharedKeys.length;
 
-		this.items = [].concat(items);
-		this.transformedItems = transformedItems;
-
-		if (keys.length) {
-			for (let i = 0, len = items.length; i < len; i++) {
-				const item = items[i];
+		if (typeof itemArray[0] === "string") {
+			for (let i = 0; i < itemCount; i++) {
+				transformedItems.push(this.transformString(itemArray[i]));
+			}
+		} else {
+			for (let i = 0; i < itemCount; i++) {
+				const item = itemArray[i];
 				const transformedItem = {};
+				const keys = sharedKeyCount ? sharedKeys : Object.keys(item);
+				const keyCount = keys.length;
 
-				for (let j = 0, jlen = keys.length; j < jlen; j++) {
+				for (let j = 0; j < keyCount; j++) {
 					const key = keys[j];
 					const string = this.getItemString(item, key);
 
 					if (string && typeof string === "string") {
-						transformedItem[key.name] = this.transformString(string);
+						transformedItem[key.name || key] =
+							this.transformString(string);
 					}
 				}
 
 				transformedItems.push(transformedItem);
 			}
-		} else {
-			for (let i = 0, len = items.length; i < len; i++) {
-				transformedItems.push(this.transformString(items[i]));
-			}
 		}
+
+		this.items = itemArray;
+		this.transformedItems = transformedItems;
 	}
 
 
@@ -312,7 +369,9 @@ export class QuickScore {
 		if (path) {
 			return path.reduce((value, prop) => value && value[prop], item);
 		} else {
-			return item[name];
+				// if this instance is scoring all the keys on each item, key
+				// will just be a string, not a { name, scorer } object
+			return item[name || key];
 		}
 	}
 
@@ -328,13 +387,15 @@ export class QuickScore {
 		a,
 		b)
 	{
-			// use the lowercase versions of the strings for sorting
+			// use the transformed versions of the strings for sorting
 		const itemA = a._;
 		const itemB = b._;
-		const itemAString = typeof itemA === "string" ? itemA :
-			itemA[this.defaultKeyName];
-		const itemBString = typeof itemB === "string" ? itemB :
-			itemB[this.defaultKeyName];
+		const itemAString = typeof itemA === "string"
+			? itemA
+			: itemA[this.sortKey];
+		const itemBString = typeof itemB === "string"
+			? itemB
+			: itemB[this.sortKey];
 
 		if (a.score === b.score) {
 				// sort undefineds to the end of the array, as per the ES spec
