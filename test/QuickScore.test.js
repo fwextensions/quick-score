@@ -217,10 +217,11 @@ describe("Options", function() {
 		expect(firstItem.matches[firstItem.scoreKey]).toEqual([[0, 2]]);
 	});
 
-	test("Call setKeys() after constructor", () => {
-		const qs = new QuickScore(Tabs);
+	test("Call setKeys() and setItems() after constructor", () => {
+		const qs = new QuickScore();
 
 		qs.setKeys(["title", "url"]);
+		qs.setItems(Tabs);
 
 		const results = qs.search("qk");
 		const [firstItem] = results;

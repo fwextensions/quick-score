@@ -11,7 +11,7 @@ export class QuickScore {
 	 * the list is not a flat array of strings, a `keys` array must be supplied
 	 * via the second parameter.  The `items` array is not modified by QuickScore.
 	 *
-	 * @param {Array<string|object> | object} [options] - If the `items` parameter
+	 * @param {Array<string|object>|object} [options] - If the `items` parameter
 	 * is an array of flat strings, the `options` parameter can be left out.  If
 	 * it is a list of objects containing keys that should be scored, the
 	 * `options` parameter must either be an array of key names or an object
@@ -92,29 +92,23 @@ export class QuickScore {
 		items = [],
 		options = {})
 	{
-		let optionsValue = options;
-
-		if (Array.isArray(options)) {
-			optionsValue = {
-				keys: options
-			};
-		}
-
 		const {
 			scorer = quickScore,
-			transformString = this.transformString,
+			transformString = toLocaleLowerCase,
 			keys = [],
 			sortKey = "",
 			minimumScore = 0,
 			config
-		} = optionsValue;
+		} = Array.isArray(options)
+			? { keys: options }
+			: options;
 
 		this.scorer = scorer;
 		this.minimumScore = minimumScore;
 		this.config = config;
-		this.transformString = transformString;
+		this.transformStringFunc = transformString;
 
-		if (typeof scorer.createConfig == "function") {
+		if (typeof scorer.createConfig === "function") {
 				// let the scorer fill out the config with default values
 			this.config = scorer.createConfig(config);
 		}
@@ -131,7 +125,9 @@ export class QuickScore {
 	 * Scores the instance's items against the `query` and sorts them from
 	 * highest to lowest.
 	 *
-	 * @param {string} query - The string to score each item against.
+	 * @param {string} query - The string to score each item against.  The
+	 * instance's `transformString()` function is called on this string before
+	 * it's matched against each item.
 	 *
 	 * @returns {Array<object>} When the instance's `items` are flat strings,
 	 * the result objects contain the following properties:
@@ -360,6 +356,16 @@ export class QuickScore {
 	}
 
 
+	/**
+	 * Gets an item's key, possibly at a nested path.
+	 *
+	 * @private
+	 * @param {object} item - An object with multiple string properties.
+	 * @param {object|string} key - A key object with
+	 * the name of the string to get from `item`, or a plain string when all
+	 * keys on an item are being matched.
+	 * @returns {string}
+	 */
 	getItemString(
 		item,
 		key)
@@ -376,13 +382,29 @@ export class QuickScore {
 	}
 
 
+	/**
+	 * Transforms a string into a canonical form for scoring.
+	 *
+	 * @private
+	 * @param {string} string - The string to transform.
+	 * @returns {string}
+	 */
 	transformString(
 		string)
 	{
-		return string.toLocaleLowerCase();
+		return this.transformStringFunc(string);
 	}
 
 
+	/**
+	 * Compares two items based on their scores, or on their `sortKey` if the
+	 * scores are identical.
+	 *
+	 * @private
+	 * @param {object} a - First item.
+	 * @param {object} b - Second item.
+	 * @returns {number}
+	 */
 	compareScoredStrings(
 		a,
 		b)
@@ -418,4 +440,18 @@ export class QuickScore {
 			return b.score - a.score;
 		}
 	}
+}
+
+
+/**
+ * Default function for transforming each string to be searched.
+ *
+ * @private
+ * @param {string} string - The string to transform.
+ * @returns {string} The transformed string.
+ */
+function toLocaleLowerCase(
+	string)
+{
+	return string.toLocaleLowerCase();
 }

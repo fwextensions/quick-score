@@ -57,16 +57,15 @@
       "./test/setup.js"
     ]
   },
-  "dependencies": {},
   "devDependencies": {
-    "@babel/core": "^7.12.10",
-    "@babel/preset-env": "^7.12.11",
+    "@babel/core": "^7.13.10",
+    "@babel/preset-env": "^7.13.12",
     "benchmark": "^2.1.4",
-    "eslint": "^7.17.0",
+    "eslint": "^7.22.0",
     "jest": "^26.6.3",
     "jsdoc": "^3.6.6",
     "rimraf": "^3.0.2",
-    "rollup": "^2.35.1",
+    "rollup": "^2.42.4",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-babel-minify": "^10.0.0",
     "rollup-plugin-node-resolve": "^5.2.0"
