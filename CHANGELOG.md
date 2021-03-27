@@ -1,10 +1,21 @@
 # Changelog
 
+## [0.0.11](https://github.com/fwextensions/quick-score/releases/tag/v0.0.11) - 2021-03-26
+
+### Added
+
+- Passing an empty array in the `keys` parameter will cause all of the keys on an item to be cached and searched, without having to specify each one.
+- Paths to nested keys in the `keys` array can be specified as arrays of strings, instead of a dot-delimited path in a single string.  Wrapping a single string in an array will cause any dots it contains to not be treated as a path. 
+- A new `sortKey` option can be used to specify on which key to sort identically-scored items, if a key other than the first one in `keys` is desired.
+- A new `scoreValue` field is returned in the results from `search()`, which provides the string pointed to be `scoreKey`.  This makes it easier to access the string when it's nested.
+
+
 ## [0.0.10](https://github.com/fwextensions/quick-score/releases/tag/v0.0.10) - 2021-01-02
 
 ### Added
 
 - A new `transformString` option to the `QuickScore` constructor can be used to ignore diacritics and accents when searching.
+
 
 ### Fixed
 

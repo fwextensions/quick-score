@@ -11,7 +11,7 @@
 
 QuickScore improves on the original Quicksilver algorithm by tuning the scoring for long strings, such as webpage titles or URLs, so that the order of the search results makes more sense.  It's used by the [QuicKey extension for Chrome](https://chrome.google.com/webstore/detail/quickey-%E2%80%93-the-quick-tab-s/ldlghkoiihaelfnggonhjnfiabmaficg) to enable users to easily find an open tab via search.
 
-QuickScore is fast, dependency-free, and is less than 2KB when minified and gzipped.
+QuickScore is fast, dependency-free, and is just 2KB when minified and gzipped.
 
 
 ## Demo
