@@ -222,11 +222,11 @@ module.exports = {
 		"no-with": "error",
 		"nonblock-statement-body-position": "error",
 		"object-curly-newline": "error",
-		"object-curly-spacing": [
+		"object-curly-spacing": "off",
+		"object-property-newline": [
 			"error",
-			"never"
+			{ "allowAllPropertiesOnSameLine": true }
 		],
-		"object-property-newline": "error",
 		"object-shorthand": [2, "properties"],
 		"one-var": "off",
 		"one-var-declaration-per-line": "error",
@@ -236,7 +236,8 @@ module.exports = {
 		],
 		"operator-linebreak": [
 			"error",
-			"after"
+			"after",
+			{ "overrides": { "?": "ignore", ":": "ignore" } }
 		],
 		"padded-blocks": "off",
 		"padding-line-between-statements": "error",
