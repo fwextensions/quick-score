@@ -160,6 +160,36 @@ describe("Search ranges", function() {
 });
 
 
+describe("Edge cases", () => {
+	test("16-character edge-case query should return a score", () => {
+		const maxQueryLength = 16;
+		const alphabet = "abcdefghijklmnopqrstuvwxyz";
+		const goodQuery = alphabet.slice(0, maxQueryLength);
+		const goodString = goodQuery.split("").join("|") + goodQuery.slice(0, -1) + "@";
+		const tooLongQuery = alphabet.slice(0, maxQueryLength + 1);
+		const tooLongString = tooLongQuery.split("").join("|") + tooLongQuery.slice(0, -1) + "@";
+		const unlimitedIterationsConfig = quickScore.createConfig({ maxIterations: Infinity });
+
+			// both strings include almost all of the query as a sequence at the
+			// end of the string, and the entire query separated by | at the
+			// beginning.  this will generate a worst-case 2^queryLength number
+			// of loops before a match is found and a score returned.  the
+			// goodQuery will fit within config.maxIterations, but tooLongQuery
+			// will hit the limit and return 0, even though a match would be
+			// found if it was allowed to continue looping.
+		expect(quickScore(goodString, goodQuery)).toBeNearly(.06526);
+		expect(quickScore(tooLongString, tooLongQuery)).toBe(0);
+		expect(quickScore(tooLongString, tooLongQuery, undefined, undefined,
+			undefined, unlimitedIterationsConfig)).toBeNearly(.06126);
+	});
+
+	test("quickScore() returns 0", () => {
+			// all the parameters have default values
+		expect(quickScore()).toBe(0);
+	});
+})
+
+
 // these older scores, from not dividing the reduction of the remaining score
 // by half, match what the old NS Quicksilver code returns.  the scores were
 // changed in TestQSSense.m in this commit:

@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.12](https://github.com/fwextensions/quick-score/releases/tag/v0.0.12) - 2021-04-24
+
+### Fixed
+
+- Limit the number of loops inside the `quickScore()` function so that long, nearly-matching queries don't take too long before returning a 0 score.  Added `config.maxIterations` to control the number of loops.
+- Update `devDependencies` to latest packages.
+
+
 ## [0.0.11](https://github.com/fwextensions/quick-score/releases/tag/v0.0.11) - 2021-03-26
 
 ### Added

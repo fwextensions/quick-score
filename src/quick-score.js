@@ -43,11 +43,13 @@ export function quickScore(
 	config = DefaultConfig,
 	stringRange = new Range(0, string.length))
 {
-	if (!query) {
+	let iterations = 0;
+
+	if (query) {
+		return calcScore(stringRange, new Range(0, query.length), new Range());
+	} else {
 		return config.emptyQueryScore;
 	}
-
-	return calcScore(stringRange, new Range(0, query.length), new Range());
 
 
 	function calcScore(
@@ -58,15 +60,25 @@ export function quickScore(
 		if (!queryRange.length) {
 				// deduct some points for all remaining characters
 			return config.ignoredScore;
-		}
-
-		if (queryRange.length > searchRange.length) {
+		} else if (queryRange.length > searchRange.length) {
 			return 0;
 		}
 
 		const initialMatchesLength = matches && matches.length;
 
 		for (let i = queryRange.length; i > 0; i--) {
+			if (iterations > config.maxIterations) {
+					// a long query that matches the string except for the last
+					// character can generate 2^queryLength iterations of this
+					// loop before returning 0, so short-circuit that when we've
+					// seen too many iterations (bit of an ugly kludge, but it
+					// avoids locking up the UI if the user somehow types an
+					// edge-case query)
+				return 0;
+			}
+
+			iterations++;
+
 			const querySubstring = transformedQuery.substring(queryRange.location, queryRange.location + i);
 				// reduce the length of the search range by the number of chars
 				// we're skipping in the query, to make sure there's enough string
@@ -163,16 +175,15 @@ quickScore.createConfig = createConfig;
 
 function getRangeOfSubstring(
 	string,
-	substring,
+	query,
 	searchRange)
 {
-	const stringToSearch = string.substring(searchRange.location, searchRange.max());
-	const subStringIndex = stringToSearch.indexOf(substring);
+	const index = string.indexOf(query, searchRange.location);
 	const result = new Range();
 
-	if (subStringIndex > -1) {
-		result.location = subStringIndex + searchRange.location;
-		result.length = substring.length;
+	if (index > -1 && index < searchRange.max()) {
+		result.location = index;
+		result.length = query.length;
 	}
 
 	return result;

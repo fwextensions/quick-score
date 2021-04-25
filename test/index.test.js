@@ -5,7 +5,7 @@ describe("Exported functions test", function() {
 	test.each([
 		["QuickScore", 0, QuickScore],
 		["quickScore", 0, quickScore],
-		["Range", 2, Range]
+		["Range", 0, Range]
 	])("%s() should have %i arguments", (name, arity, fn) => {
 		expect(typeof fn).toBe("function");
 		expect(fn.length).toBe(arity);

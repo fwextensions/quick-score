@@ -9,16 +9,11 @@ export class Range {
 	 * @param {number} [length=0] - Number of characters in the range.
 	 */
 	constructor(
-		location,
-		length)
+		location = -1,
+		length = 0)
 	{
-		if (typeof location == "number") {
-			this.location = location;
-			this.length = length;
-		} else {
-			this.location = -1;
-			this.length = 0;
-		}
+		this.location = location;
+		this.length = length;
 	}
 
 

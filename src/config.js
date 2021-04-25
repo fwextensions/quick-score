@@ -12,7 +12,11 @@ const BaseConfigDefaults = {
 	})(),
 	ignoredScore: 0.9,
 	skippedScore: 0.15,
-	emptyQueryScore: 0
+	emptyQueryScore: 0,
+		// long, nearly-matching queries can generate up to 2^queryLength loops,
+		// so support worst-case queries up to 16 characters and then give up
+		// and return 0 for longer queries that may or may not actually match
+	maxIterations: Math.pow(2, 16)
 };
 const QSConfigDefaults = {
 	longStringLength: 150,
