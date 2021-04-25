@@ -143,7 +143,8 @@ export class QuickScore {
 	 * - `score`: the highest score from among the individual key scores
 	 * - `scoreKey`: the name of the key with the highest score, which will be
 	 *   an empty string if they're all zero
-	 * - `scoreValue`: the value of the key with the highest score
+	 * - `scoreValue`: the value of the key with the highest score, which makes
+	 *   it easier to access if it's a nested string
 	 * - `scores`: a hash of the individual scores for each key
 	 * - `matches`: a hash of arrays that specify the character ranges of the
 	 *   query match for each key

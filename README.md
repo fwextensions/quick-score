@@ -142,10 +142,11 @@ Each item in the results array has a few more properties when matching against o
 * `item`: the object that was scored
 * `score`: the highest score from among the individual key scores
 * `scoreKey`: the name of the key with the highest score, which will be an empty string if they're all zero
+* `scoreValue`: the value of the key with the highest score, which makes it easier to access if it's a nested string
 * `scores`: a hash of the individual scores for each key
 * `matches`: a hash of arrays that specify the character ranges of the query match for each key
 
-When two items have the same score, they're sorted alphabetically and case-insensitively on the first key in the keys array.  In the example above, that would be `title`.
+When two items have the same score, they're sorted alphabetically and case-insensitively on the key specified by the `sortKey` option, which defaults to the first item in the keys array.  In the example above, that would be `title`.
 
 Each result item also has a `_` property, which caches transformed versions of the item's strings, and might contain additional internal metadata in the future.  It can be ignored.
 
@@ -185,7 +186,7 @@ Many search interfaces highlight the letters in each item that match what the us
 This function is an example of how an item could be highlighted using React.  It surrounds each sequence of matching letters in a `<mark>` tag and then returns the full string in a `<span>`.  You could then style the `<mark>` tag to be bold or a different color to highlight the matches.  (Something similar could be done by concatenating plain strings of HTML tags, though you'll need to be careful to escape the substrings.)
 
 ```jsx
-function highglight(string, matches) {
+function highlight(string, matches) {
     const substrings = [];
     let previousEnd = 0;
 
