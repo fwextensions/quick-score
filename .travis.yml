@@ -3,6 +3,12 @@ language: node_js
 node_js:
   - node
 
+os: linux
+arch:
+  - arm64
+#  - ppc64le
+#  - s390x
+
 cache:
   directories:
     - node_modules
