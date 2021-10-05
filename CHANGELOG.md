@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.0.13](https://github.com/fwextensions/quick-score/releases/tag/v0.0.13) - 2021-10-05
+
+### Fixed
+
+- Update `devDependencies` to the latest minor versions.
+- Run npm audit fix to remove vulnerabilities.
+- Update .travis.yml to enable partner queue builds.
+- Add GitHub code analysis workflow.
+
+
 ## [0.0.12](https://github.com/fwextensions/quick-score/releases/tag/v0.0.12) - 2021-04-24
 
 ### Fixed
