@@ -2,12 +2,10 @@
 
 > `quick-score` is a JavaScript string-scoring and fuzzy-matching library based on the Quicksilver algorithm, designed for smart auto-complete.
 
-[![Build Status][build-badge]][build]
 [![Code Coverage][coverage-badge]][coverage]
-[![Dependencies][dependencies-badge]][dependencies]
+[![Build Status][build-badge]][build]
 [![Minzip Size][size-badge]][size]
 [![MIT License][license-badge]][license]
-<!--[![Package][package-badge]][package]-->
 
 QuickScore improves on the original Quicksilver algorithm by tuning the scoring for long strings, such as webpage titles or URLs, so that the order of the search results makes more sense.  It's used by the [QuicKey extension for Chrome](https://chrome.google.com/webstore/detail/quickey-%E2%80%93-the-quick-tab-s/ldlghkoiihaelfnggonhjnfiabmaficg) to enable users to easily find an open tab via search.
 
@@ -35,7 +33,7 @@ Or you can load a particular release of the minified script directly from `unpkg
     console.log(quickScore.quickScore("thought", "gh"));
 </script>
 ```
- 
+
 
 ## Usage
 
@@ -153,12 +151,12 @@ Each result item also has a `_` property, which caches transformed versions of t
 
 ### Ignoring diacritics and accents when scoring
 
-If the strings you're matching against contain diacritics on some of the letters, like `à` or `ç`, you may want to count a match even when the query string contains the unaccented forms of those letters.  The QuickScore library doesn't contain support for this by default, since it's only needed with certain strings and the code to remove accents would triple its size.  But it's easy to combine  QuickScore with other libraries to ignore diacritics. 
+If the strings you're matching against contain diacritics on some of the letters, like `à` or `ç`, you may want to count a match even when the query string contains the unaccented forms of those letters.  The QuickScore library doesn't contain support for this by default, since it's only needed with certain strings and the code to remove accents would triple its size.  But it's easy to combine  QuickScore with other libraries to ignore diacritics.
 
 One example is the [latinize](https://github.com/dundalek/latinize) [npm package](https://www.npmjs.com/package/latinize), which will strip accents from a string and can be used in a `transformString()` function that's passed as an option to the [QuickScore constructor](https://fwextensions.github.io/quick-score/QuickScore.html#QuickScore).  This function takes a `string` parameter and returns a transformed version of that string:
 
 ```js
-// including latinize.js on the page creates a global latinize() function 
+// including latinize.js on the page creates a global latinize() function
 import {QuickScore} from "quick-score";
 
 const items = ["Café", "Cafeteria"];
@@ -217,11 +215,11 @@ See the [API docs](https://fwextensions.github.io/quick-score/) for a full descr
 [MIT](./LICENSE) © [John Dunning](https://github.com/fwextensions)
 
 
-[build-badge]: https://img.shields.io/travis/com/fwextensions/quick-score.svg?style=flat-square
-[build]: https://travis-ci.com/fwextensions/quick-score
-[coverage-badge]: https://img.shields.io/codecov/c/github/fwextensions/quick-score.svg?style=flat-square 
+[build-badge]: https://github.com/fwextensions/quick-score/actions/workflows/gh-pages.yml/badge.svg?style=flat-square
+[build]: https://github.com/fwextensions/quick-score/actions/workflows/gh-pages.yml
+[coverage-badge]: https://img.shields.io/codecov/c/github/fwextensions/quick-score.svg?style=flat-square
 [coverage]: https://codecov.io/gh/fwextensions/quick-score
-[dependencies-badge]: https://img.shields.io/david/fwextensions/quick-score.svg?style=flat-square
+[dependencies-badge]: https://img.shields.io/hackage-deps/v/quick-score?style=flat-square
 [dependencies]: https://www.npmjs.com/package/quick-score
 [license-badge]: https://img.shields.io/npm/l/quick-score.svg?style=flat-square
 [license]: https://github.com/fwextensions/quick-score/blob/master/LICENSE
