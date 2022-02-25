@@ -215,8 +215,8 @@ See the [API docs](https://fwextensions.github.io/quick-score/) for a full descr
 [MIT](./LICENSE) © [John Dunning](https://github.com/fwextensions)
 
 
-[build-badge]: https://img.shields.io/travis/com/fwextensions/quick-score.svg?style=flat-square
-[build]: https://travis-ci.com/fwextensions/quick-score
+[build-badge]: https://github.com/fwextensions/quick-score/actions/workflows/gh-pages.yml/badge.svg?style=flat-square
+[build]: https://github.com/fwextensions/quick-score/actions/workflows/gh-pages.yml
 [coverage-badge]: https://img.shields.io/codecov/c/github/fwextensions/quick-score.svg?style=flat-square
 [coverage]: https://codecov.io/gh/fwextensions/quick-score
 [dependencies-badge]: https://img.shields.io/hackage-deps/v/quick-score?style=flat-square
