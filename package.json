@@ -28,7 +28,7 @@
     "lib"
   ],
   "scripts": {
-    "prebuild": "npm test",
+    "prebuild": "npm run test:coverage",
     "build": "npm run build:lib && npm run build:docs",
     "build:lib": "rimraf dist lib && rollup -c",
     "build:docs": "rimraf docs && jsdoc -c jsdoc/config.json",
@@ -58,14 +58,14 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
-    "@babel/preset-env": "^7.15.6",
+    "@babel/core": "^7.17.5",
+    "@babel/preset-env": "^7.16.11",
     "benchmark": "^2.1.4",
-    "eslint": "^7.32.0",
-    "jest": "^26.6.3",
-    "jsdoc": "^3.6.7",
+    "eslint": "^8.9.0",
+    "jest": "^27.5.1",
+    "jsdoc": "^3.6.10",
     "rimraf": "^3.0.2",
-    "rollup": "^2.58.0",
+    "rollup": "^2.68.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-babel-minify": "^10.0.0",
     "rollup-plugin-node-resolve": "^5.2.0"
