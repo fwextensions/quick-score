@@ -11,7 +11,7 @@ export class QuickScore {
 	 * the list is not a flat array of strings, a `keys` array must be supplied
 	 * via the second parameter.  The `items` array is not modified by QuickScore.
 	 *
-	 * @param {Array<string|object>|object} [options] - If the `items` parameter
+	 * @param {Array<string>|object} [options] - If the `items` parameter
 	 * is an array of flat strings, the `options` parameter can be left out.  If
 	 * it is a list of objects containing keys that should be scored, the
 	 * `options` parameter must either be an array of key names or an object
@@ -318,7 +318,7 @@ export class QuickScore {
 	 * strings specified by the `keys` parameter to the constructor, using the
 	 * `transformString` option (which defaults to `toLocaleLowerCase()`).
 	 *
-	 * @param {Array<string> | Array<object>} items - List of items to score.
+	 * @param {(string|object)[]} items - List of items to score.
 	 */
 	setItems(
 		items)

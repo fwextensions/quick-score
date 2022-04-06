@@ -1,5 +1,6 @@
 import babel from "rollup-plugin-babel";
 import minify from "rollup-plugin-babel-minify";
+import dts from "rollup-plugin-dts";
 
 
 const Input = "src/index.js";
@@ -57,5 +58,14 @@ export default [
 				comments: false
 			})
 		]
+	},
+	{
+		// path to your declaration files root
+		input: "./dist-dts/index.d.ts",
+		output: [
+			{ file: "dist/index.d.ts", format: "es" },
+			{ file: "lib/index.d.ts", format: "es" }
+		],
+		plugins: [dts()]
 	}
 ];

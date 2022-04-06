@@ -31,6 +31,7 @@
     "prebuild": "npm run test:coverage",
     "build": "npm run build:lib && npm run build:docs",
     "build:lib": "rimraf dist lib && rollup -c",
+    "build:dts": "rimraf dist-dts && tsc",
     "build:docs": "rimraf docs && jsdoc -c jsdoc/config.json",
     "prepare": "npm run build:lib",
     "pretest": "eslint src",
@@ -68,6 +69,8 @@
     "rollup": "^2.68.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-babel-minify": "^10.0.0",
-    "rollup-plugin-node-resolve": "^5.2.0"
+    "rollup-plugin-dts": "^4.2.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "typescript": "^4.6.3"
   }
 }

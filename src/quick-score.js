@@ -35,8 +35,8 @@ import {createConfig, DefaultConfig} from "./config";
  * @returns {number}
  */
 export function quickScore(
-	string = "",
-	query = "",
+	string,
+	query,
 	matches,
 	transformedString = string.toLocaleLowerCase(),
 	transformedQuery = query.toLocaleLowerCase(),
@@ -101,7 +101,7 @@ export function quickScore(
 			fullMatchedRange.max(matchedRange.max());
 
 			if (matches) {
-				matches.push([matchedRange.location, matchedRange.max()]);
+				matches.push(matchedRange.toArray());
 			}
 
 			const remainingSearchRange = new Range(matchedRange.max(), searchRange.max() - matchedRange.max());
