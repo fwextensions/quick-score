@@ -273,7 +273,9 @@ export class QuickScore {
 		keys,
 		sortKey = "")
 	{
-		this.keys = [].concat(keys);
+			// create a shallow copy of the keys array so that changes to its
+			// order outside of this instance won't affect searching
+		this.keys = keys.slice(0);
 		this.sortKey = sortKey;
 
 		if (this.keys.length) {
@@ -321,7 +323,9 @@ export class QuickScore {
 	setItems(
 		items)
 	{
-		const itemArray = [].concat(items);
+			// create a shallow copy of the items array so that changes to its
+			// order outside of this instance won't affect searching
+		const itemArray = items.slice(0);
 		const itemCount = itemArray.length;
 		const transformedItems = [];
 		const sharedKeys = this.keys;
