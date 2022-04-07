@@ -126,25 +126,22 @@ describe("Word separator matches", function() {
 
 
 describe("Zero scores", function() {
-	test.each([
-		["foo", "foobar", 0],
-		["", "foobar", 0],
-		[undefined, undefined, 0],
-		["foobar", "", 0]
-	])(ScoreTestTitle, (string, query, expectedScore) => {
-		expect(quickScore(string, query)).toBe(expectedScore);
+	const stringsQueries = [
+		["foo", "foobar"],
+		["", "foobar"],
+		["foobar", ""],
+		["", ""]
+	];
+
+	test.each(stringsQueries)(ScoreTestTitle, (string, query) => {
+		expect(quickScore(string, query)).toBe(0);
 	});
 
 		// do the same test with the QuicksilverConfig, which returns .9 for
 		// empty queries
-	test.each([
-		["foo", "foobar", 0],
-		["", "foobar", 0],
-		[undefined, undefined, .9],
-		["foobar", "", .9]
-	])(ScoreTestTitle, (string, query, expectedScore) => {
+	test.each(stringsQueries)(ScoreTestTitle, (string, query) => {
 		expect(quickScore(string, query, undefined, undefined, undefined,
-			QuicksilverConfig)).toBe(expectedScore);
+			QuicksilverConfig)).toBe(.9);
 	});
 });
 
@@ -183,9 +180,10 @@ describe("Edge cases", () => {
 			undefined, unlimitedIterationsConfig)).toBeNearly(.06126);
 	});
 
-	test("quickScore() returns 0", () => {
+	test("quickScore() with undefined params throws", () => {
 			// all the parameters have default values
-		expect(quickScore()).toBe(0);
+		expect(() => quickScore()).toThrow();
+		expect(() => quickScore(undefined, undefined)).toThrow();
 	});
 })
 
