@@ -90,7 +90,7 @@ The `results` array is a list of objects that represent the results of matching 
 
 * `item`: the string that was scored
 * `score`: the floating point score of the string for the current query
-* `matches`: an array of arrays that specifies the character ranges where the query matched the string
+* `matches`: an array of arrays that specify the character ranges where the query matched the string
 
 This array could then be used to render a list of matching results as the user types a query.
 

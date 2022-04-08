@@ -10,10 +10,10 @@ type ItemKey = (KeyName | { name: KeyName, scorer: ScorerFunction });
 
 interface Options {
 	keys?: ItemKey[],
-	scorer?: ScorerFunction,
 	sortKey?: string,
 	minimumScore?: number,
 	transformString?: TransformStringFunction,
+	scorer?: ScorerFunction,
 	config?: Config
 }
 
@@ -27,7 +27,7 @@ interface ObjectResult<T> {
 	item: T,
 	score: number,
 	scoreKey: string,
-	scoreValue: unknown,
+	scoreValue: string,
 	scores: { [k: string]: number },
 	matches: { [k: string]: number },
 	_: unknown
@@ -47,7 +47,7 @@ class QuickScore<T = string> {
 	 * the list is not a flat array of strings, a `keys` array must be supplied
 	 * via the second parameter.  The `items` array is not modified by QuickScore.
 	 *
-	 * @param {Array<string>|object} [options] - If the `items` parameter
+	 * @param {Array<string|object>|object} [options] - If the `items` parameter
 	 * is an array of flat strings, the `options` parameter can be left out.  If
 	 * it is a list of objects containing keys that should be scored, the
 	 * `options` parameter must either be an array of key names or an object
@@ -73,18 +73,7 @@ class QuickScore<T = string> {
 	 * Instead of a string or string array, an item in `keys` can also be passed
 	 * as a `{name, scorer}` object, which lets you specify a different scoring
 	 * function for each key.  The scoring function should behave as described
-	 * next.
-	 *
-	 * @param {function(string, string, array?): number} [options.scorer] -
-	 * An optional function that takes `string` and `query` parameters and
-	 * returns a floating point number between 0 and 1 that represents how
-	 * well the `query` matches the `string`.  It defaults to the
-	 * [quickScore()]{@link quickScore} function in this library.
-	 *
-	 * If the function gets a third `matches` parameter, it should fill the
-	 * passed-in array with indexes corresponding to where the query
-	 * matches the string, as described in the [search()]{@link QuickScore#search}
-	 * method.
+	 * below in the `scorer` option.
 	 *
 	 * @param {string} [options.sortKey=options.keys[0]] - An optional key name
 	 * that will be used to sort items with identical scores.  Defaults to the
@@ -118,8 +107,19 @@ class QuickScore<T = string> {
 	 * this to use a custom `transformString()` function:
 	 * `{ transformString: s => latinize(s.toLocaleLowerCase()) }`
 	 *
-	 * @param {object} [options.config] - An optional object that can be passed
-	 * to the scorer function to further customize it's behavior.  If the
+	 * @param {function(string, string, array?): number} [options.scorer] -
+	 * An optional function that takes `string` and `query` parameters and
+	 * returns a floating point number between 0 and 1 that represents how
+	 * well the `query` matches the `string`.  It defaults to the
+	 * [quickScore()]{@link quickScore} function in this library.
+	 *
+	 * If the function gets a third `matches` parameter, it should fill the
+	 * passed-in array with indexes corresponding to where the query
+	 * matches the string, as described in the [search()]{@link QuickScore#search}
+	 * method.
+	 *
+	 * @param {object} [options.config] - An optional object that is passed to
+	 * the scorer function to further customize its behavior.  If the
 	 * `scorer` function has a `createConfig()` method on it, the `QuickScore`
 	 * instance will call that with the `config` value and store the result.
 	 * This can be used to extend the `config` parameter with default values.

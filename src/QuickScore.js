@@ -7,11 +7,25 @@ import {quickScore} from "./quick-score";
  */
 export class QuickScore {
 	/**
+	 * @memberOf QuickScore.prototype
+	 * @member {Array<object>} items - The array of items to search, which
+	 * should only be modified via the [setItems()]{@link QuickScore#setItems}
+	 * method.
+	 * @readonly
+	 */
+
+	/**
+	 * @memberOf QuickScore.prototype
+	 * @member {Array<string|object>} keys - Array of keys to search.
+	 * @readonly
+	 */
+
+	/**
 	 * @param {Array<string|object>} [items] - The list of items to score.  If
 	 * the list is not a flat array of strings, a `keys` array must be supplied
 	 * via the second parameter.  The `items` array is not modified by QuickScore.
 	 *
-	 * @param {Array<string>|object} [options] - If the `items` parameter
+	 * @param {Array<string|object>|Options} [options] - If the `items` parameter
 	 * is an array of flat strings, the `options` parameter can be left out.  If
 	 * it is a list of objects containing keys that should be scored, the
 	 * `options` parameter must either be an array of key names or an object
@@ -39,17 +53,6 @@ export class QuickScore {
 	 * function for each key.  The scoring function should behave as described
 	 * next.
 	 *
-	 * @param {function(string, string, array?): number} [options.scorer] -
-	 * An optional function that takes `string` and `query` parameters and
-	 * returns a floating point number between 0 and 1 that represents how
-	 * well the `query` matches the `string`.  It defaults to the
-	 * [quickScore()]{@link quickScore} function in this library.
-	 *
-	 * If the function gets a third `matches` parameter, it should fill the
-	 * passed-in array with indexes corresponding to where the query
-	 * matches the string, as described in the [search()]{@link QuickScore#search}
-	 * method.
-	 *
 	 * @param {string} [options.sortKey=options.keys[0]] - An optional key name
 	 * that will be used to sort items with identical scores.  Defaults to the
 	 * name of the first item in the `keys` parameter.  If `sortKey` points to
@@ -58,13 +61,13 @@ export class QuickScore {
 	 *
 	 * @param {number} [options.minimumScore=0] - An optional value that
 	 * specifies the minimum score an item must have to appear in the results
-	 * array returned from [search()]{@link QuickScore#search}.  Defaults to `0`,
+	 * returned from [search()]{@link QuickScore#search}.  Defaults to `0`,
 	 * so items that don't match the full `query` will not be returned.  This
 	 * value is ignored if the `query` is empty or undefined, in which case all
 	 * items are returned, sorted alphabetically and case-insensitively on the
 	 * `sortKey`, if any.
 	 *
-	 * @param {function(string): string} [options.transformString] -
+	 * @param {TransformStringFunction} [options.transformString] -
 	 * An optional function that takes a `string` parameter and returns a
 	 * transformed version of that string.  This function will be called on each
 	 * of the searchable keys in the `items` array as well as on the `query`
@@ -82,8 +85,19 @@ export class QuickScore {
 	 * this to use a custom `transformString()` function:
 	 * `{ transformString: s => latinize(s.toLocaleLowerCase()) }`
 	 *
+	 * @param {ScorerFunction} [options.scorer] -
+	 * An optional function that takes `string` and `query` parameters and
+	 * returns a floating point number between 0 and 1 that represents how
+	 * well the `query` matches the `string`.  It defaults to the
+	 * [quickScore()]{@link quickScore} function in this library.
+	 *
+	 * If the function gets a third `matches` parameter, it should fill the
+	 * passed-in array with indexes corresponding to where the query
+	 * matches the string, as described in the [search()]{@link QuickScore#search}
+	 * method.
+	 *
 	 * @param {object} [options.config] - An optional object that can be passed
-	 * to the scorer function to further customize it's behavior.  If the
+	 * to the scorer function to further customize its behavior.  If the
 	 * `scorer` function has a `createConfig()` method on it, the `QuickScore`
 	 * instance will call that with the `config` value and store the result.
 	 * This can be used to extend the `config` parameter with default values.
@@ -129,12 +143,12 @@ export class QuickScore {
 	 * instance's `transformString()` function is called on this string before
 	 * it's matched against each item.
 	 *
-	 * @returns {Array<object>} When the instance's `items` are flat strings,
+	 * @returns {object[]} When the instance's `items` are flat strings,
 	 * the result objects contain the following properties:
 	 *
 	 * - `item`: the string that was scored
 	 * - `score`: the floating point score of the string for the current query
-	 * - `matches`: an array of arrays that specifies the character ranges
+	 * - `matches`: an array of arrays that specify the character ranges
 	 *   where the query matched the string
 	 *
 	 * When the `items` are objects, the result objects contain:
@@ -318,7 +332,7 @@ export class QuickScore {
 	 * strings specified by the `keys` parameter to the constructor, using the
 	 * `transformString` option (which defaults to `toLocaleLowerCase()`).
 	 *
-	 * @param {(string|object)[]} items - List of items to score.
+	 * @param {Array<string|object>} items - List of items to score.
 	 */
 	setItems(
 		items)

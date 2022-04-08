@@ -29,10 +29,11 @@ import {createConfig, DefaultConfig} from "./config";
  * `quickScore` algorithm behaves.
  *
  * @param {Range} [stringRange] - The range of characters in `string` that should
- * be checked for matches against `query`.  Defaults to all of the `string`
+ * be checked for matches against `query`.  Defaults to the entire `string`
  * parameter.
  *
- * @returns {number}
+ * @returns {number} - A number between 0 and 1 that represents how well the
+ * `query` matches the `string`.
  */
 export function quickScore(
 	string,
