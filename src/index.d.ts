@@ -29,8 +29,8 @@ interface ObjectResult<T> {
 	scoreKey: string,
 	scoreValue: string,
 	scores: { [k: string]: number },
-	matches: { [k: string]: number },
-	_: unknown
+	matches: { [k: string]: RangeArray[] },
+	_?: unknown
 }
 
 type Result<T> = T extends string

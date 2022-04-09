@@ -468,7 +468,7 @@ export class QuickScore {
  *
  * @private
  * @param {string} string  The string to transform.
- * @returns {string} The transformed string.
+ * @returns {string}  The transformed string.
  */
 function toLocaleLowerCase(
 	string)
