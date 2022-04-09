@@ -68,7 +68,7 @@ export class Range {
 	/**
 	 * Returns an array of the range's start and end indexes.
 	 *
-	 * @returns {RangeArray}
+	 * @returns {RangeTuple}
 	 */
 	toArray()
 	{

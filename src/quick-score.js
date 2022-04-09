@@ -9,7 +9,7 @@ import {createConfig, DefaultConfig} from "./config";
  *
  * @param {string} query  The query string to score the `string` parameter against.
  *
- * @param {Array<RangeArray>} [matches]  If supplied, `quickScore()` will push onto
+ * @param {Array<RangeTuple>} [matches]  If supplied, `quickScore()` will push onto
  * `matches` an array with start and end indexes for each substring range of
  * `string` that matches `query`.  These indexes can be used to highlight the
  * matching characters in an auto-complete UI.

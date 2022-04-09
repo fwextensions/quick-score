@@ -4,15 +4,15 @@ export * from "./config";
 export {Range} from "./range";
 
 /**
- * @typedef {Array<number>} RangeArray  An array containing a range's
- * start and end indexes.
+ * @typedef {Array<number>} RangeTuple  A tuple containing a range's start and
+ * end indexes.
  *
  * @property {number} 0  Start index.
  * @property {number} 1  End index.
  */
 
 /**
- * @typedef {function(string, string, Array<RangeArray>?): number} ScorerFunction
+ * @typedef {function(string, string, Array<RangeTuple>?): number} ScorerFunction
  * A function that takes `string` and `query` parameters and returns a floating
  * point number between 0 and 1 that represents how well the `query` matches the
  * `string`.  It defaults to the [quickScore()]{@link quickScore} function in
@@ -24,8 +24,8 @@ export {Range} from "./range";
  *
  * @param {string} string  The string to score.
  * @param {string} query  The query string to score the `string` parameter against.
- * @param {Array<RangeArray>} [matches]  If supplied, the function should push
- * onto `matches` an array with start and end indexes for each substring range
+ * @param {Array<RangeTuple>} [matches]  If supplied, the function should push
+ * onto `matches` a tuple with start and end indexes for each substring range
  * of `string` that matches `query`.
  * @returns {number}  A number between 0 and 1 that represents how well the
  * `query` matches the `string`.
@@ -81,7 +81,7 @@ export {Range} from "./range";
  * @property {string} item  The string that was scored.
  * @property {number} score  The floating point score of the string for the
  * current query.
- * @property {Array<RangeArray>} matches  An array of arrays that specify the
+ * @property {Array<RangeTuple>} matches  An array of tuples that specify the
  * character ranges where the query matched the string.
  */
 

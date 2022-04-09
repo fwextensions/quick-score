@@ -20,7 +20,7 @@ interface Options {
 interface StringResult {
 	item: string,
 	score: number,
-	matches: RangeArray[],
+	matches: RangeTuple[],
 }
 
 interface ObjectResult<T> {
@@ -29,7 +29,7 @@ interface ObjectResult<T> {
 	scoreKey: string,
 	scoreValue: string,
 	scores: { [k: string]: number },
-	matches: { [k: string]: RangeArray[] },
+	matches: { [k: string]: RangeTuple[] },
 	_?: unknown
 }
 
@@ -234,11 +234,11 @@ class Range {
 	isValid(): boolean;
 
 	/**
-	 * Returns an array of the range's start and end indexes.
+	 * Returns a tuple of the range's start and end indexes.
 	 *
-	 * @returns {RangeArray}
+	 * @returns {RangeTuple}
 	 */
-	toArray(): RangeArray;
+	toArray(): RangeTuple;
 
 	/**
 	 * Returns a string representation of the range's open interval.
@@ -248,7 +248,7 @@ class Range {
 	toString(): string;
 }
 
-type RangeArray = [number, number];
+type RangeTuple = [number, number];
 
 
 interface ConfigOptions {
@@ -311,8 +311,8 @@ const QuicksilverConfig: Config;
  *
  * @param {string} query  The query string to score the `string` parameter against.
  *
- * @param {Array<RangeArray>} [matches]  If supplied, `quickScore()` will push onto
- * `matches` an array with start and end indexes for each substring range of
+ * @param {Array<RangeTuple>} [matches]  If supplied, `quickScore()` will push
+ * onto `matches` a tuple with start and end indexes for each substring range of
  * `string` that matches `query`.  These indexes can be used to highlight the
  * matching characters in an auto-complete UI.
  *
@@ -340,7 +340,7 @@ const QuicksilverConfig: Config;
 function quickScore(
 	string: string,
 	query: string,
-	matches?: RangeArray[],
+	matches?: RangeTuple[],
 	transformedString?: string,
 	transformedQuery?: string,
 	config?: Config,
