@@ -8,7 +8,7 @@ import {quickScore} from "./quick-score";
 export class QuickScore {
 	/**
 	 * @memberOf QuickScore.prototype
-	 * @member {Array<object>} items - The array of items to search, which
+	 * @member {Array<object>} items  The array of items to search, which
 	 * should only be modified via the [setItems()]{@link QuickScore#setItems}
 	 * method.
 	 * @readonly
@@ -16,24 +16,25 @@ export class QuickScore {
 
 	/**
 	 * @memberOf QuickScore.prototype
-	 * @member {Array<string|object>} keys - Array of keys to search.
+	 * @member {Array<ItemKey>} keys  The keys to search on each item, which
+	 * should only be modified via the [setItems()]{@link QuickScore#setKeys}
+	 * method.
 	 * @readonly
 	 */
 
 	/**
-	 * @param {Array<string|object>} [items] - The list of items to score.  If
+	 * @param {Array<string|object>} [items]  The list of items to score.  If
 	 * the list is not a flat array of strings, a `keys` array must be supplied
 	 * via the second parameter.  The `items` array is not modified by QuickScore.
 	 *
-	 * @param {Array<string|object>|Options} [options] - If the `items` parameter
+	 * @param {Array<ItemKey>|Options} [options]  If the `items` parameter
 	 * is an array of flat strings, the `options` parameter can be left out.  If
 	 * it is a list of objects containing keys that should be scored, the
 	 * `options` parameter must either be an array of key names or an object
 	 * containing a `keys` property.
 	 *
-	 * @param {Array<string|string[]|{name: string, scorer: function}>} [options.keys] -
-	 * In the simplest case, an array of key names to score on the objects in
-	 * the `items` array.
+	 * @param {Array<ItemKey>} [options.keys]  In the simplest case, an array of
+	 * key names to score on the objects in the `items` array.
 	 *
 	 * The key names can point to a nested key by passing either a dot-delimited
 	 * string or an array of sub-keys that specify the path to the value.  So a
@@ -53,13 +54,13 @@ export class QuickScore {
 	 * function for each key.  The scoring function should behave as described
 	 * next.
 	 *
-	 * @param {string} [options.sortKey=options.keys[0]] - An optional key name
+	 * @param {string} [options.sortKey=options.keys[0]]  An optional key name
 	 * that will be used to sort items with identical scores.  Defaults to the
 	 * name of the first item in the `keys` parameter.  If `sortKey` points to
 	 * a nested key, use a dot-delimited string instead of an array to specify
 	 * the path.
 	 *
-	 * @param {number} [options.minimumScore=0] - An optional value that
+	 * @param {number} [options.minimumScore=0]  An optional value that
 	 * specifies the minimum score an item must have to appear in the results
 	 * returned from [search()]{@link QuickScore#search}.  Defaults to `0`,
 	 * so items that don't match the full `query` will not be returned.  This
@@ -67,10 +68,10 @@ export class QuickScore {
 	 * items are returned, sorted alphabetically and case-insensitively on the
 	 * `sortKey`, if any.
 	 *
-	 * @param {TransformStringFunction} [options.transformString] -
-	 * An optional function that takes a `string` parameter and returns a
-	 * transformed version of that string.  This function will be called on each
-	 * of the searchable keys in the `items` array as well as on the `query`
+	 * @param {TransformStringFunction} [options.transformString]  An optional
+	 * function that takes a `string` parameter and returns a transformed
+	 * version of that string.  This function will be called on each of the
+	 * searchable keys in the `items` array as well as on the `query`
 	 * parameter to the `search()` method.  The default function calls
 	 * `toLocaleLowerCase()` on each string, for a case-insensitive search.  The
 	 * result of this function is cached for each searchable key on each item.
@@ -85,19 +86,19 @@ export class QuickScore {
 	 * this to use a custom `transformString()` function:
 	 * `{ transformString: s => latinize(s.toLocaleLowerCase()) }`
 	 *
-	 * @param {ScorerFunction} [options.scorer] -
-	 * An optional function that takes `string` and `query` parameters and
-	 * returns a floating point number between 0 and 1 that represents how
-	 * well the `query` matches the `string`.  It defaults to the
-	 * [quickScore()]{@link quickScore} function in this library.
+	 * @param {ScorerFunction} [options.scorer]  An optional function that takes
+	 * `string` and `query` parameters and returns a floating point number
+	 * between 0 and 1 that represents how well the `query` matches the
+	 * `string`.  It defaults to the [quickScore()]{@link quickScore} function
+	 * in this library.
 	 *
 	 * If the function gets a third `matches` parameter, it should fill the
 	 * passed-in array with indexes corresponding to where the query
 	 * matches the string, as described in the [search()]{@link QuickScore#search}
 	 * method.
 	 *
-	 * @param {object} [options.config] - An optional object that can be passed
-	 * to the scorer function to further customize its behavior.  If the
+	 * @param {Config} [options.config]  An optional object that is passed to
+	 * the scorer function to further customize its behavior.  If the
 	 * `scorer` function has a `createConfig()` method on it, the `QuickScore`
 	 * instance will call that with the `config` value and store the result.
 	 * This can be used to extend the `config` parameter with default values.
@@ -139,12 +140,12 @@ export class QuickScore {
 	 * Scores the instance's items against the `query` and sorts them from
 	 * highest to lowest.
 	 *
-	 * @param {string} query - The string to score each item against.  The
+	 * @param {string} query  The string to score each item against.  The
 	 * instance's `transformString()` function is called on this string before
 	 * it's matched against each item.
 	 *
-	 * @returns {object[]} When the instance's `items` are flat strings,
-	 * the result objects contain the following properties:
+	 * @returns {Array<StringResult|ObjectResult>}  When the instance's `items`
+	 * are flat strings, the result objects contain the following properties:
 	 *
 	 * - `item`: the string that was scored
 	 * - `score`: the floating point score of the string for the current query
@@ -274,13 +275,13 @@ export class QuickScore {
 
 
 	/**
-	 * Sets the `keys` configuration.  `setItems()` must be called after changing
-	 * the keys so that the items' transformed strings get cached.
+	 * Sets the `keys` configuration.  `setItems()` must be called after
+	 * changing the keys so that the items' transformed strings get cached.
 	 *
-	 * @param {Array<string> | Array<object>} keys - List of keys to score, as
-	 * either strings or `{name, scorer}` objects.
+	 * @param {Array<ItemKey>} keys  List of keys to score, as either strings
+	 * or `{name, scorer}` objects.
 	 *
-	 * @param {string} [sortKey=keys[0]] - Name of key on which to sort
+	 * @param {string} [sortKey=keys[0]]  Name of key on which to sort
 	 * identically scored items.  Defaults to the first `keys` item.
 	 */
 	setKeys(
@@ -332,7 +333,7 @@ export class QuickScore {
 	 * strings specified by the `keys` parameter to the constructor, using the
 	 * `transformString` option (which defaults to `toLocaleLowerCase()`).
 	 *
-	 * @param {Array<string|object>} items - List of items to score.
+	 * @param {Array<string|object>} items  List of items to score.
 	 */
 	setItems(
 		items)
@@ -379,8 +380,8 @@ export class QuickScore {
 	 * Gets an item's key, possibly at a nested path.
 	 *
 	 * @private
-	 * @param {object} item - An object with multiple string properties.
-	 * @param {object|string} key - A key object with
+	 * @param {object} item  An object with multiple string properties.
+	 * @param {object|string} key  A key object with
 	 * the name of the string to get from `item`, or a plain string when all
 	 * keys on an item are being matched.
 	 * @returns {string}
@@ -405,7 +406,7 @@ export class QuickScore {
 	 * Transforms a string into a canonical form for scoring.
 	 *
 	 * @private
-	 * @param {string} string - The string to transform.
+	 * @param {string} string  The string to transform.
 	 * @returns {string}
 	 */
 	transformString(
@@ -420,8 +421,8 @@ export class QuickScore {
 	 * scores are identical.
 	 *
 	 * @private
-	 * @param {object} a - First item.
-	 * @param {object} b - Second item.
+	 * @param {object} a  First item.
+	 * @param {object} b  Second item.
 	 * @returns {number}
 	 */
 	compareScoredStrings(
@@ -466,7 +467,7 @@ export class QuickScore {
  * Default function for transforming each string to be searched.
  *
  * @private
- * @param {string} string - The string to transform.
+ * @param {string} string  The string to transform.
  * @returns {string} The transformed string.
  */
 function toLocaleLowerCase(

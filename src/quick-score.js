@@ -5,34 +5,34 @@ import {createConfig, DefaultConfig} from "./config";
 /**
  * Scores a string against a query.
  *
- * @param {string} string - The string to score.
+ * @param {string} string  The string to score.
  *
- * @param {string} query - The query string to score the `string` parameter against.
+ * @param {string} query  The query string to score the `string` parameter against.
  *
- * @param {Array} [matches] - If supplied, the `quickScore()` will push
- * onto `matches` an array with start and end indexes for each substring range
- * of `string` that matches `query`.  These indexes can be used to highlight the
+ * @param {Array<RangeArray>} [matches]  If supplied, `quickScore()` will push onto
+ * `matches` an array with start and end indexes for each substring range of
+ * `string` that matches `query`.  These indexes can be used to highlight the
  * matching characters in an auto-complete UI.
  *
- * @param {string} [transformedString] - A transformed version of the string that
+ * @param {string} [transformedString]  A transformed version of the string that
  * will be used for matching.  This defaults to a lowercase version of `string`,
  * but it could also be used to match against a string with all the diacritics
  * removed, so an unaccented character in the query would match an accented one
  * in the string.
  *
- * @param {string} [transformedQuery] - A transformed version of `query`.  The
+ * @param {string} [transformedQuery]  A transformed version of `query`.  The
  * same transformation applied to `transformedString` should be applied to this
  * parameter, or both can be left as `undefined` for the default lowercase
  * transformation.
  *
- * @param {object} [config] - A configuration object that can modify how the
+ * @param {object} [config]  A configuration object that can modify how the
  * `quickScore` algorithm behaves.
  *
- * @param {Range} [stringRange] - The range of characters in `string` that should
+ * @param {Range} [stringRange]  The range of characters in `string` that should
  * be checked for matches against `query`.  Defaults to the entire `string`
  * parameter.
  *
- * @returns {number} - A number between 0 and 1 that represents how well the
+ * @returns {number}  A number between 0 and 1 that represents how well the
  * `query` matches the `string`.
  */
 export function quickScore(

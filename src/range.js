@@ -5,8 +5,18 @@
  */
 export class Range {
 	/**
-	 * @param {number} [location=-1] - Starting index of the range.
-	 * @param {number} [length=0] - Number of characters in the range.
+	 * @memberOf Range.prototype
+	 * @member {number} location  Starting index of the range.
+	 */
+
+	/**
+	 * @memberOf Range.prototype
+	 * @member {number} length  Number of characters in the range.
+	 */
+
+	/**
+	 * @param {number} [location=-1]  Starting index of the range.
+	 * @param {number} [length=0]  Number of characters in the range.
 	 */
 	constructor(
 		location = -1,
@@ -23,11 +33,12 @@ export class Range {
 	 * immediately after the last one in the range.
 	 *
 	 * @returns {number}
-	 *//**
+	 */
+	/**
 	 * Sets the end index of the range, which indicates the character
 	 * immediately after the last one in the range.
 	 *
-	 * @param {number} [value] - End of the range.
+	 * @param {number} [value]  End of the range.
 	 *
 	 * @returns {number}
 	 */
@@ -57,7 +68,7 @@ export class Range {
 	/**
 	 * Returns an array of the range's start and end indexes.
 	 *
-	 * @returns {number[]}
+	 * @returns {RangeArray}
 	 */
 	toArray()
 	{
