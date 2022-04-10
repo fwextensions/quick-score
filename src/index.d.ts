@@ -17,7 +17,7 @@
  * @returns {number}  A number between 0 and 1 that represents how well the
  * `query` matches the `string`.
  */
-type ScorerFunction = (string: string, query: string, matches?: [number, number][]) => number;
+export type ScorerFunction = (string: string, query: string, matches?: [number, number][]) => number;
 
 /**
  * @typedef {function(string): string} TransformStringFunction  A function that
@@ -26,14 +26,14 @@ type ScorerFunction = (string: string, query: string, matches?: [number, number]
  * @param {string} string  The string to be transformed.
  * @returns {string}  The string with the transform applied to it.
  */
-type TransformStringFunction = (string: string) => string;
+export type TransformStringFunction = (string: string) => string;
 
 /**
  * @typedef {string|string[]} KeyName  A reference to an item's key to search.
  * The key names can point to a nested key by passing either a dot-delimited
  * string or an array of sub-keys that specify the path to the value.
  */
-type KeyName = string | string[];
+export type KeyName = string | string[];
 
 /**
  * @typedef {KeyName|{name: KeyName, scorer: ScorerFunction}} ItemKey  A
@@ -44,7 +44,7 @@ type KeyName = string | string[];
  * @property {ScorerFunction} [scorer]  The function that will be used to score
  * the named string.
  */
-type ItemKey = (KeyName | { name: KeyName, scorer: ScorerFunction });
+export type ItemKey = (KeyName | { name: KeyName, scorer: ScorerFunction });
 
 /**
  * @typedef {object} Options  An object specifying various options that can
@@ -64,7 +64,7 @@ type ItemKey = (KeyName | { name: KeyName, scorer: ScorerFunction });
  * @property {Config} [config]  An object that is passed to the scorer function
  * to further customize its behavior.
  */
-interface Options {
+export interface Options {
 	keys?: ItemKey[],
 	sortKey?: string,
 	minimumScore?: number,
@@ -83,7 +83,7 @@ interface Options {
  * @property {Array<RangeTuple>} matches  An array of tuples that specify the
  * character ranges where the query matched the string.
  */
-interface StringResult {
+export interface StringResult {
 	item: string,
 	score: number,
 	matches: RangeTuple[],
@@ -105,7 +105,7 @@ interface StringResult {
  * @property {object} _  An internal cache of the transformed versions of this
  * item's strings and other metadata, which can be ignored.
  */
-interface ObjectResult<T> {
+export interface ObjectResult<T> {
 	item: T,
 	score: number,
 	scoreKey: string,
@@ -115,7 +115,7 @@ interface ObjectResult<T> {
 	_?: unknown
 }
 
-type Result<T> = T extends string
+export type Result<T> = T extends string
 	? StringResult
 	: ObjectResult<T>;
 
@@ -337,10 +337,10 @@ export class Range {
  * @property {number} 0  Start index.
  * @property {number} 1  End index.
  */
-type RangeTuple = [number, number];
+export type RangeTuple = [number, number];
 
 
-interface ConfigOptions {
+export interface ConfigOptions {
 	wordSeparators?: string,
 	uppercaseLetters?: string,
 	ignoredScore?: number,
@@ -349,7 +349,7 @@ interface ConfigOptions {
 	maxIterations?: number,
 }
 
-interface QSConfigOptions extends ConfigOptions {
+export interface QSConfigOptions extends ConfigOptions {
 	longStringLength: number,
 	maxMatchStartPct: number,
 	minMatchDensityPct: number,
