@@ -60,7 +60,6 @@ export default [
 		]
 	},
 	{
-		// path to your declaration files root
 		input: "./src/index.d.ts",
 		output: [
 			{ file: "dist/index.d.ts", format: "es" },

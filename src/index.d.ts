@@ -1,13 +1,69 @@
-declare module "quick-score" {
-
+/**
+ * @typedef {function(string, string, Array<RangeTuple>?): number} ScorerFunction
+ * A function that takes `string` and `query` parameters and returns a floating
+ * point number between 0 and 1 that represents how well the `query` matches the
+ * `string`.  It defaults to the [quickScore()]{@link quickScore} function in
+ * this library.
+ *
+ * If the function gets a third `matches` parameter, it should fill the passed-in
+ * array with indexes corresponding to where the query matches the string, as
+ * described in the [search()]{@link QuickScore#search} method.
+ *
+ * @param {string} string  The string to score.
+ * @param {string} query  The query string to score the `string` parameter against.
+ * @param {Array<RangeTuple>} [matches]  If supplied, the function should push
+ * onto `matches` a tuple with start and end indexes for each substring range
+ * of `string` that matches `query`.
+ * @returns {number}  A number between 0 and 1 that represents how well the
+ * `query` matches the `string`.
+ */
 type ScorerFunction = (string: string, query: string, matches?: [number, number][]) => number;
 
+/**
+ * @typedef {function(string): string} TransformStringFunction  A function that
+ * takes a `string` parameter and returns a transformed version of that string.
+ *
+ * @param {string} string  The string to be transformed.
+ * @returns {string}  The string with the transform applied to it.
+ */
 type TransformStringFunction = (string: string) => string;
 
+/**
+ * @typedef {string|string[]} KeyName  A reference to an item's key to search.
+ * The key names can point to a nested key by passing either a dot-delimited
+ * string or an array of sub-keys that specify the path to the value.
+ */
 type KeyName = string | string[];
 
+/**
+ * @typedef {KeyName|{name: KeyName, scorer: ScorerFunction}} ItemKey  A
+ * reference to an item's key to search.  This type can also include a custom
+ * scoring function to use for the given key.
+ *
+ * @property {KeyName} [name]  The name of a key to search.
+ * @property {ScorerFunction} [scorer]  The function that will be used to score
+ * the named string.
+ */
 type ItemKey = (KeyName | { name: KeyName, scorer: ScorerFunction });
 
+/**
+ * @typedef {object} Options  An object specifying various options that can
+ * customize QuickScore's scoring behavior.
+ *
+ * @property {Array<ItemKey>} [keys]  An array that specifies which keys to
+ * search.
+ * @property {string} [sortKey]  The name of the key that will be used to sort
+ * items with identical scores.
+ * @property {number} [minimumScore]  The minimum score an item must have to
+ * appear in the results returned from `search()`.
+ * @property {TransformStringFunction} [transformString]  A function that takes
+ * a `string` parameter and returns a transformed version of that string.
+ * @property {ScorerFunction} [scorer]  A function that takes `string` and
+ * `query` parameters and returns a floating point number between 0 and 1 that
+ * represents how well the `query` matches the `string`.
+ * @property {Config} [config]  An object that is passed to the scorer function
+ * to further customize its behavior.
+ */
 interface Options {
 	keys?: ItemKey[],
 	sortKey?: string,
@@ -17,12 +73,38 @@ interface Options {
 	config?: Config
 }
 
+/**
+ * @typedef {object} StringResult  An object representing the results of scoring
+ * an `items` array that contains strings.
+ *
+ * @property {string} item  The string that was scored.
+ * @property {number} score  The floating point score of the string for the
+ * current query.
+ * @property {Array<RangeTuple>} matches  An array of tuples that specify the
+ * character ranges where the query matched the string.
+ */
 interface StringResult {
 	item: string,
 	score: number,
 	matches: RangeTuple[],
 }
 
+/**
+ * @typedef {object} ObjectResult  An object representing the results of scoring
+ * an `items` array that contains objects.
+ *
+ * @property {object} item  The object that was scored.
+ * @property {number} score  The highest score from among the individual key scores.
+ * @property {string} scoreKey  The name of the key with the highest score,
+ * which will be an empty string if they're all zero.
+ * @property {string} scoreValue  The value of the key with the highest score,
+ * which makes it easier to access if it's a nested string.
+ * @property {object} scores  A hash of the individual scores for each key.
+ * @property {object} matches  A hash of arrays that specify the character
+ * ranges of the query match for each key.
+ * @property {object} _  An internal cache of the transformed versions of this
+ * item's strings and other metadata, which can be ignored.
+ */
 interface ObjectResult<T> {
 	item: T,
 	score: number,
@@ -41,9 +123,9 @@ type Result<T> = T extends string
  * A class for scoring and sorting a list of items against a query string.  Each
  * item receives a floating point score between `0` and `1`.
  */
-class QuickScore<T> {
+export class QuickScore<T> {
 	/**
-	 * @param {Array<string|object>} [items]  The list of items to score.  If
+	 * @param {Array<T>} [items]  The list of items to score.  If
 	 * the list is not a flat array of strings, a `keys` array must be supplied
 	 * via the second parameter.  The `items` array is not modified by QuickScore.
 	 *
@@ -136,7 +218,7 @@ class QuickScore<T> {
 	 * instance's `transformString()` function is called on this string before
 	 * it's matched against each item.
 	 *
-	 * @returns {Array<StringResult|ObjectResult>} When the instance's `items`
+	 * @returns {Array<Result<T>>} When the instance's `items`
 	 * are flat strings, the result objects contain the following properties:
 	 *
 	 * - `item`: the string that was scored
@@ -201,7 +283,7 @@ class QuickScore<T> {
  * property and `max()` value can be used as arguments for the `substring()`
  * method to extract a range of characters.
  */
-class Range {
+export class Range {
 	/**
 	 * @param {number} [location=-1] - Starting index of the range.
 	 * @param {number} [length=0] - Number of characters in the range.
@@ -248,6 +330,13 @@ class Range {
 	toString(): string;
 }
 
+/**
+ * @typedef {Array<number>} RangeTuple  A tuple containing a range's start and
+ * end indexes.
+ *
+ * @property {number} 0  Start index.
+ * @property {number} 1  End index.
+ */
 type RangeTuple = [number, number];
 
 
@@ -268,7 +357,7 @@ interface QSConfigOptions extends ConfigOptions {
 	beginningOfStringPct: number
 }
 
-class Config {
+export class Config {
 	constructor(options: ConfigOptions);
 
 	useSkipReduction(
@@ -293,15 +382,15 @@ class Config {
 	): number;
 }
 
-class QuickScoreConfig extends Config { }
+export class QuickScoreConfig extends Config { }
 
-function createConfig(
+export function createConfig(
 	options: Config | ConfigOptions | QSConfigOptions
 ): Config;
 
-const DefaultConfig: QuickScoreConfig;
-const BaseConfig: Config;
-const QuicksilverConfig: Config;
+export const DefaultConfig: QuickScoreConfig;
+export const BaseConfig: Config;
+export const QuicksilverConfig: Config;
 
 
 /**
@@ -337,7 +426,7 @@ const QuicksilverConfig: Config;
  * @returns {number}  A number between 0 and 1 that represents how well the
  * `query` matches the `string`.
  */
-function quickScore(
+export function quickScore(
 	string: string,
 	query: string,
 	matches?: RangeTuple[],
@@ -347,8 +436,6 @@ function quickScore(
 	stringRange?: Range
 ): number;
 
-namespace quickScore {
+export namespace quickScore {
 	export { createConfig };
-}
-
 }
