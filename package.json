@@ -1,6 +1,6 @@
 {
   "name": "quick-score",
-  "version": "0.0.14",
+  "version": "0.1.0",
   "description": "A JavaScript string-scoring and fuzzy-matching library based on the Quicksilver algorithm, designed for smart auto-complete.",
   "keywords": [
     "string",
@@ -23,6 +23,7 @@
   "bugs": "https://github.com/fwextensions/quick-score/issues",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
+  "types": "lib/index.d.ts",
   "files": [
     "dist",
     "lib"
@@ -31,6 +32,7 @@
     "prebuild": "npm run test:coverage",
     "build": "npm run build:lib && npm run build:docs",
     "build:lib": "rimraf dist lib && rollup -c",
+    "build:dts": "rimraf dist-dts && tsc",
     "build:docs": "rimraf docs && jsdoc -c jsdoc/config.json",
     "prepare": "npm run build:lib",
     "pretest": "eslint src",
@@ -58,16 +60,18 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.17.5",
+    "@babel/core": "^7.17.9",
     "@babel/preset-env": "^7.16.11",
     "benchmark": "^2.1.4",
-    "eslint": "^8.9.0",
+    "eslint": "^8.13.0",
     "jest": "^27.5.1",
     "jsdoc": "^3.6.10",
     "rimraf": "^3.0.2",
-    "rollup": "^2.68.0",
+    "rollup": "^2.70.2",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-babel-minify": "^10.0.0",
-    "rollup-plugin-node-resolve": "^5.2.0"
+    "rollup-plugin-dts": "^4.2.1",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "typescript": "^4.6.3"
   }
 }

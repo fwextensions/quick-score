@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist-dts",
+    "target": "es2018",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "baseUrl": "src",
+    "allowJs": true,
+    "strict": true,
+  },
+  "include": ["src/index.js"]
+}

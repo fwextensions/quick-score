@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.1.0](https://github.com/fwextensions/quick-score/releases/tag/v0.1.0) - 2022-04-19
+
+### Added
+
+- Add TypeScript support via `index.d.ts` declaration file, and add `types` field to `package.json`.
+- Update JSDocs to include type information.
+
+### Changed
+
+- Don't concat the parameters to `setItems()` and `setKeys()` with an empty array.  Call `.slice()` instead to create a copy.
+- Don't supply a default value for the `sortKey` parameter in `setKeys()`.
+- Don't supply default values for the `string` and `query` parameters in `quickScore()`.
+
+### Fixed
+
+- Resolve #19 and #20.
+- Remove empty PR trigger in `gh-pages.yml`.
+- Improve API docs styling.
+- Update `devDependencies` to the latest minor versions.
+
+
 ## [0.0.14](https://github.com/fwextensions/quick-score/releases/tag/v0.0.14) - 2022-02-24
 
 ### Fixed
