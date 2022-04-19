@@ -126,22 +126,25 @@ describe("Word separator matches", function() {
 
 
 describe("Zero scores", function() {
-	const stringsQueries = [
-		["foo", "foobar"],
-		["", "foobar"],
-		["foobar", ""],
-		["", ""]
-	];
-
-	test.each(stringsQueries)(ScoreTestTitle, (string, query) => {
-		expect(quickScore(string, query)).toBe(0);
+	test.each([
+		["foo", "foobar", 0],
+		["", "foobar", 0],
+		["foobar", "", 0],
+		["", "", 0]
+	])(ScoreTestTitle, (string, query, expectedScore) => {
+		expect(quickScore(string, query)).toBe(expectedScore);
 	});
 
 		// do the same test with the QuicksilverConfig, which returns .9 for
 		// empty queries
-	test.each(stringsQueries)(ScoreTestTitle, (string, query) => {
+	test.each([
+		["foo", "foobar", 0],
+		["", "foobar", 0],
+		["foobar", "", .9],
+		["", "", .9]
+	])(ScoreTestTitle, (string, query, expectedScore) => {
 		expect(quickScore(string, query, undefined, undefined, undefined,
-			QuicksilverConfig)).toBe(.9);
+			QuicksilverConfig)).toBe(expectedScore);
 	});
 });
 
