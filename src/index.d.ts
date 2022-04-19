@@ -125,6 +125,24 @@ export type Result<T> = T extends string
  */
 export class QuickScore<T> {
 	/**
+	 * @memberOf QuickScore.prototype
+	 * @member {Array<T>} items  The array of items to search, which
+	 * should only be modified via the [setItems()]{@link QuickScore#setItems}
+	 * method.
+	 * @readonly
+	 */
+	items: readonly T[];
+
+	/**
+	 * @memberOf QuickScore.prototype
+	 * @member {Array<ItemKey>} keys  The keys to search on each item, which
+	 * should only be modified via the [setItems()]{@link QuickScore#setKeys}
+	 * method.
+	 * @readonly
+	 */
+	keys: readonly ItemKey[];
+
+	/**
 	 * @param {Array<T>} [items]  The list of items to score.  If
 	 * the list is not a flat array of strings, a `keys` array must be supplied
 	 * via the second parameter.  The `items` array is not modified by QuickScore.

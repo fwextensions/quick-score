@@ -28,7 +28,7 @@ If you prefer to use the built library files directly instead of using `npm`, yo
 Or you can load a particular release of the minified script directly from `unpkg.com`, and then access the library via the `quickScore` global:
 
 ```html
-<script src="https://unpkg.com/quick-score@0.0.7/dist/quick-score.min.js"></script>
+<script src="https://unpkg.com/quick-score@0.0.14/dist/quick-score.min.js"></script>
 <script type="text/javascript">
     console.log(quickScore.quickScore("thought", "gh"));
 </script>
@@ -51,7 +51,7 @@ Or from a property of the CommonJS module:
 const quickScore = require("quick-score").quickScore;
 ```
 
-You can then call `quickScore()` with a `string` and a `query` to score against that string.  It will return a floating point score between `0` and `1`.  A higher score means that string is a better match for the query.  A `1` means the query is the highest match for the string, though the two strings may still differ in case and whitespace characters.
+Then call `quickScore()` with a `string` and a `query` to score against that string.  It will return a floating point score between `0` and `1`.  A higher score means that string is a better match for the query.  A `1` means the query is the highest match for the string, though the two strings may still differ in case and whitespace characters.
 
 ```js
 quickScore("thought", "gh");   // 0.4142857142857143
@@ -71,7 +71,7 @@ import {QuickScore} from "quick-score";
 const qs = new QuickScore(["thought", "giraffe", "GitHub", "hello, Garth"]);
 const results = qs.search("gh");
 
-//=>
+// results =>
 [
     {
         "item": "GitHub",
@@ -83,10 +83,11 @@ const results = qs.search("gh");
         "score": 0.6263888888888888,
         "matches": [[7, 8], [11, 12]]
     },
-    ...
+    // ...
+]
 ```
 
-The `results` array is a list of objects that represent the results of matching the query against each string that was passed to the constructor.  It's sorted high to low on each item's score.  Strings with identical scores are sorted alphabetically and case-insensitively.  In the simple case of scoring bare strings, each item in the results array has three properties:
+The `results` array is a list of [StringResult](https://fwextensions.github.io/quick-score/global.html#StringResult) objects that represent the results of matching the query against each string that was passed to the constructor.  It's sorted high to low on each item's score.  Strings with identical scores are sorted alphabetically and case-insensitively.  In the simple case of scoring bare strings, each item in the results array has three properties:
 
 * `item`: the string that was scored
 * `score`: the floating point score of the string for the current query
@@ -109,12 +110,12 @@ const bookmarks = [
         "title": "Supplying Images - Google Chrome",
         "url": "developer.chrome.com/webstore/images"
     },
-    ...
+    // ...
 ];
 const qs = new QuickScore(bookmarks, ["title", "url"]);
 const results = qs.search("devel");
 
-//=>
+// results =>
 [
     {
         "item": {
@@ -132,10 +133,11 @@ const results = qs.search("devel");
             "url": [[0, 5]]
         }
     },
-    ...
+    // ...
+]
 ```
 
-Each item in the results array has a few more properties when matching against objects:
+When matching against objects, each item in the results array is an [ObjectResult](https://fwextensions.github.io/quick-score/global.html#ObjectResult), with a few additional properties :
 
 * `item`: the object that was scored
 * `score`: the highest score from among the individual key scores
@@ -147,6 +149,11 @@ Each item in the results array has a few more properties when matching against o
 When two items have the same score, they're sorted alphabetically and case-insensitively on the key specified by the `sortKey` option, which defaults to the first item in the keys array.  In the example above, that would be `title`.
 
 Each result item also has a `_` property, which caches transformed versions of the item's strings, and might contain additional internal metadata in the future.  It can be ignored.
+
+
+### TypeScript support
+
+Although the QuickScore codebase is currently written in JavaScript, the package comes with full TypeScript typings.  The generic QuickScore class takes a type parameter based on the type of objects in the `items` array passed to the constructor.  That way, you can access `.item` on the result and get back an object of the same type that you passed in.
 
 
 ### Ignoring diacritics and accents when scoring
@@ -163,7 +170,7 @@ const items = ["Café", "Cafeteria"];
 const qs = new QuickScore(items, { transformString: s => latinize(s).toLowerCase() });
 const results = qs.search("cafe");
 
-//=>
+// results =>
 [
     {
         "item": "Café",
@@ -171,20 +178,21 @@ const results = qs.search("cafe");
         "matches": [[0, 4]],
         "_": "cafe"
     },
-    ...
+    // ...
+]
 ```
 
-`transformString()` will be called on each of the searchable keys in the `items` array as well as on the `query` parameter to the `search()` method.  The default function calls `toLocaleLowerCase()` on each string, for a case-insensitive search.  In the example above, the basic `toLowerCase()` call is sufficient, since `latinize()` will have already stripped the accents.
+`transformString()` will be called on each of the searchable keys in the `items` array as well as on the `query` parameter to the `search()` method.  The default function calls `toLocaleLowerCase()` on each string, for a case-insensitive search.  In the example above, the basic `toLowerCase()` call is sufficient, since `latinize()` will have already stripped any accents.
 
 
 ### Highlighting matched letters
 
 Many search interfaces highlight the letters in each item that match what the user has typed.  The `matches` property of each item in the results array contains information that can be used to highlight those matching letters.
 
-This function is an example of how an item could be highlighted using React.  It surrounds each sequence of matching letters in a `<mark>` tag and then returns the full string in a `<span>`.  You could then style the `<mark>` tag to be bold or a different color to highlight the matches.  (Something similar could be done by concatenating plain strings of HTML tags, though you'll need to be careful to escape the substrings.)
+This functional component is an example of how an item could be highlighted using React.  It surrounds each sequence of matching letters in a `<mark>` tag and then returns the full string in a `<span>`.  You could then style the `<mark>` tag to be bold or a different color to highlight the matches.  (Something similar could be done by concatenating plain strings of HTML tags, though you'll need to be careful to escape the substrings.)
 
 ```jsx
-function highlight(string, matches) {
+function MatchedString({ string, matches }) {
     const substrings = [];
     let previousEnd = 0;
 
@@ -202,7 +210,7 @@ function highlight(string, matches) {
 }
 ```
 
-The [QuickScore demo](https://fwextensions.github.io/quick-score-demo/) uses this approach to highlight the matches, via the [MatchedString](https://github.com/fwextensions/quick-score-demo/blob/master/src/js/MatchedString.js) component.
+The [QuickScore demo](https://fwextensions.github.io/quick-score-demo/) uses this approach to highlight the query matches, via the [MatchedString](https://github.com/fwextensions/quick-score-demo/blob/master/src/js/MatchedString.js) component.
 
 
 ## API

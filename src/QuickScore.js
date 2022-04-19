@@ -25,7 +25,10 @@ export class QuickScore {
 	/**
 	 * @param {Array<string|object>} [items]  The list of items to score.  If
 	 * the list is not a flat array of strings, a `keys` array must be supplied
-	 * via the second parameter.  The `items` array is not modified by QuickScore.
+	 * via the second parameter.  QuickScore makes a shallow copy of the `items`
+	 * array, so changes to it won't have any affect, but changes to the objects
+	 * referenced by the array need to be passed to the instance by a call to
+	 * its [setItems()]{@link QuickScore#setItems} method.
 	 *
 	 * @param {Array<ItemKey>|Options} [options]  If the `items` parameter
 	 * is an array of flat strings, the `options` parameter can be left out.  If
@@ -286,23 +289,23 @@ export class QuickScore {
 	 */
 	setKeys(
 		keys,
-		sortKey = "")
+		sortKey)
 	{
 			// create a shallow copy of the keys array so that changes to its
 			// order outside of this instance won't affect searching
-		this.keys = keys.slice(0);
+		this.keys = keys.slice();
 		this.sortKey = sortKey;
 
 		if (this.keys.length) {
 			const {scorer} = this;
 
 				// associate each key with the scorer function, if it isn't already
-			this.keys = this.keys.map(keyItem => {
+			this.keys = this.keys.map(itemKey => {
 					// items in the keys array should either be a string or
 					// array specifying a key name, or a { name, scorer } object
-				const key = keyItem.length
-					? { name: keyItem, scorer }
-					: keyItem;
+				const key = itemKey.length
+					? { name: itemKey, scorer }
+					: itemKey;
 
 				if (Array.isArray(key.name)) {
 					if (key.name.length > 1) {
@@ -340,7 +343,7 @@ export class QuickScore {
 	{
 			// create a shallow copy of the items array so that changes to its
 			// order outside of this instance won't affect searching
-		const itemArray = items.slice(0);
+		const itemArray = items.slice();
 		const itemCount = itemArray.length;
 		const transformedItems = [];
 		const sharedKeys = this.keys;
