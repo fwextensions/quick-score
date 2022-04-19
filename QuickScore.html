@@ -116,7 +116,10 @@ item receives a floating point score between <code>0</code> and <code>1</code>.<
 
             <td class="description last"><p>The list of items to score.  If
 the list is not a flat array of strings, a <code>keys</code> array must be supplied
-via the second parameter.  The <code>items</code> array is not modified by QuickScore.</p></td>
+via the second parameter.  QuickScore makes a shallow copy of the <code>items</code>
+array, so changes to it won't have any affect, but changes to the objects
+referenced by the array need to be passed to the instance by a call to
+its <a href="QuickScore.html#setItems">setItems()</a> method.</p></td>
         </tr>
 
     
@@ -129,10 +132,10 @@ via the second parameter.  The <code>items</code> array is not modified by Quick
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;(string|object)></span>
+<span class="param-type">Array.&lt;<a href="global.html#ItemKey">ItemKey</a>></span>
 |
 
-<span class="param-type">object</span>
+<span class="param-type"><a href="global.html#Options">Options</a></span>
 
 
             
@@ -192,7 +195,7 @@ containing a <code>keys</code> property.</p>
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;(string|Array.&lt;string>|{name: string, scorer: function()})></span>
+<span class="param-type">Array.&lt;<a href="global.html#ItemKey">ItemKey</a>></span>
 
 
             
@@ -216,8 +219,8 @@ containing a <code>keys</code> property.</p>
                 </td>
             
 
-            <td class="description last"><p>In the simplest case, an array of key names to score on the objects in
-the <code>items</code> array.</p>
+            <td class="description last"><p>In the simplest case, an array of
+key names to score on the objects in the <code>items</code> array.</p>
 <p>The key names can point to a nested key by passing either a dot-delimited
 string or an array of sub-keys that specify the path to the value.  So a
 key <code>name</code> of <code>&quot;foo.bar&quot;</code> would evaluate to <code>&quot;baz&quot;</code> given an object like
@@ -232,50 +235,6 @@ wrap the name in an array, like <code>{ keys: [&quot;ssn&quot;, [&quot;first.nam
 as a <code>{name, scorer}</code> object, which lets you specify a different scoring
 function for each key.  The scoring function should behave as described
 next.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>scorer</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>An optional function that takes <code>string</code> and <code>query</code> parameters and
-returns a floating point number between 0 and 1 that represents how
-well the <code>query</code> matches the <code>string</code>.  It defaults to the
-<a href="global.html#quickScore">quickScore()</a> function in this library.</p>
-<p>If the function gets a third <code>matches</code> parameter, it should fill the
-passed-in array with indexes corresponding to where the query
-matches the string, as described in the <a href="QuickScore.html#search">search()</a>
-method.</p></td>
         </tr>
 
     
@@ -359,7 +318,7 @@ the path.</p></td>
 
             <td class="description last"><p>An optional value that
 specifies the minimum score an item must have to appear in the results
-array returned from <a href="QuickScore.html#search">search()</a>.  Defaults to <code>0</code>,
+returned from <a href="QuickScore.html#search">search()</a>.  Defaults to <code>0</code>,
 so items that don't match the full <code>query</code> will not be returned.  This
 value is ignored if the <code>query</code> is empty or undefined, in which case all
 items are returned, sorted alphabetically and case-insensitively on the
@@ -376,7 +335,7 @@ items are returned, sorted alphabetically and case-insensitively on the
             <td class="type">
             
                 
-<span class="param-type">function</span>
+<span class="param-type"><a href="global.html#TransformStringFunction">TransformStringFunction</a></span>
 
 
             
@@ -400,9 +359,10 @@ items are returned, sorted alphabetically and case-insensitively on the
                 </td>
             
 
-            <td class="description last"><p>An optional function that takes a <code>string</code> parameter and returns a
-transformed version of that string.  This function will be called on each
-of the searchable keys in the <code>items</code> array as well as on the <code>query</code>
+            <td class="description last"><p>An optional
+function that takes a <code>string</code> parameter and returns a transformed
+version of that string.  This function will be called on each of the
+searchable keys in the <code>items</code> array as well as on the <code>query</code>
 parameter to the <code>search()</code> method.  The default function calls
 <code>toLocaleLowerCase()</code> on each string, for a case-insensitive search.  The
 result of this function is cached for each searchable key on each item.</p>
@@ -421,13 +381,13 @@ this to use a custom <code>transformString()</code> function:
 
         <tr>
             
-                <td class="name"><code>config</code></td>
+                <td class="name"><code>scorer</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type"><a href="global.html#ScorerFunction">ScorerFunction</a></span>
 
 
             
@@ -451,8 +411,53 @@ this to use a custom <code>transformString()</code> function:
                 </td>
             
 
-            <td class="description last"><p>An optional object that can be passed
-to the scorer function to further customize it's behavior.  If the
+            <td class="description last"><p>An optional function that takes
+<code>string</code> and <code>query</code> parameters and returns a floating point number
+between 0 and 1 that represents how well the <code>query</code> matches the
+<code>string</code>.  It defaults to the <a href="global.html#quickScore">quickScore()</a> function
+in this library.</p>
+<p>If the function gets a third <code>matches</code> parameter, it should fill the
+passed-in array with indexes corresponding to where the query
+matches the string, as described in the <a href="QuickScore.html#search">search()</a>
+method.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>config</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Config</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>An optional object that is passed to
+the scorer function to further customize its behavior.  If the
 <code>scorer</code> function has a <code>createConfig()</code> method on it, the <code>QuickScore</code>
 instance will call that with the <code>config</code> value and store the result.
 This can be used to extend the <code>config</code> parameter with default values.</p></td>
@@ -556,6 +561,158 @@ This can be used to extend the <code>config</code> parameter with default values
     
 
     
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="items"><span class="type-signature">(readonly) </span>items<span class="type-signature"> :Array.&lt;object></span></h4>
+
+
+
+
+<div class="description">
+    <p>The array of items to search, which
+should only be modified via the <a href="QuickScore.html#setItems">setItems()</a>
+method.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Array.&lt;object></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="QuickScore.js.html">QuickScore.js</a>, <a href="QuickScore.js.html#line9">line 9</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="keys"><span class="type-signature">(readonly) </span>keys<span class="type-signature"> :Array.&lt;<a href="global.html#ItemKey">ItemKey</a>></span></h4>
+
+
+
+
+<div class="description">
+    <p>The keys to search on each item, which
+should only be modified via the <a href="QuickScore.html#setKeys">setItems()</a>
+method.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Array.&lt;<a href="global.html#ItemKey">ItemKey</a>></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="QuickScore.js.html">QuickScore.js</a>, <a href="QuickScore.js.html#line17">line 17</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -566,7 +723,7 @@ This can be used to extend the <code>config</code> parameter with default values
     
 
     
-    <h4 class="name" id="search"><span class="type-signature"></span>search<span class="signature">(query)</span><span class="type-signature"> &rarr; {Array.&lt;object>}</span></h4>
+    <h4 class="name" id="search"><span class="type-signature"></span>search<span class="signature">(query)</span><span class="type-signature"> &rarr; {Array.&lt;(<a href="global.html#ScoredString">ScoredString</a>|<a href="global.html#ScoredObject">ScoredObject</a>)>}</span></h4>
     
 
     
@@ -670,7 +827,7 @@ it's matched against each item.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="QuickScore.js.html">QuickScore.js</a>, <a href="QuickScore.js.html#line167">line 167</a>
+        <a href="QuickScore.js.html">QuickScore.js</a>, <a href="QuickScore.js.html#line188">line 188</a>
     </li></ul></dd>
     
 
@@ -699,15 +856,17 @@ it's matched against each item.</p></td>
 
         
 <div class="param-desc">
-    <p>When the instance's <code>items</code> are flat strings,
-the result objects contain the following properties:</p>
+    <p>When the instance's <code>items</code>
+are flat strings, an array of <a href="global.html#ScoredString"><code>ScoredString</code></a>
+objects containing the following properties is returned:</p>
 <ul>
 <li><code>item</code>: the string that was scored</li>
 <li><code>score</code>: the floating point score of the string for the current query</li>
-<li><code>matches</code>: an array of arrays that specifies the character ranges
+<li><code>matches</code>: an array of arrays that specify the character ranges
 where the query matched the string</li>
 </ul>
-<p>When the <code>items</code> are objects, the result objects contain:</p>
+<p>When the <code>items</code> are objects, an array of <a href="global.html#ScoredObject"><code>ScoredObject</code></a>
+results is returned:</p>
 <ul>
 <li><code>item</code>: the object that was scored</li>
 <li><code>score</code>: the highest score from among the individual key scores</li>
@@ -724,11 +883,12 @@ identical scores are sorted alphabetically and case-insensitively on the
 <code>sortKey</code> option.  Items with scores that are &lt;= the <code>minimumScore</code> option
 (defaults to <code>0</code>) are not returned, unless the <code>query</code> is falsy, in which
 case all of the items are returned, sorted alphabetically.</p>
-<p>The arrays of start and end indices in the <code>matches</code> array can be used as
-parameters to the <code>substring()</code> method to extract the characters from
-each string that match the query.  This can then be used to format the
-matching characters with a different color or style.</p>
-<p>Each result item also has a <code>_</code> property, which caches transformed
+<p>The start and end indices in each <a href="global.html#RangeTuple"><code>RangeTuple</code></a> in the
+<code>matches</code> array can be used as parameters to the <code>substring()</code> method to
+extract the characters from each string that match the query.  This can
+then be used to format the matching characters with a different color or
+style.</p>
+<p>Each <code>ScoredObject</code> item also has a <code>_</code> property, which caches transformed
 versions of the item's strings, and might contain additional internal
 metadata in the future.  It can be ignored.</p>
 </div>
@@ -741,7 +901,7 @@ metadata in the future.  It can be ignored.</p>
     </dt>
     <dd>
         
-<span class="param-type">Array.&lt;object></span>
+<span class="param-type">Array.&lt;(<a href="global.html#ScoredString">ScoredString</a>|<a href="global.html#ScoredObject">ScoredObject</a>)></span>
 
 
     </dd>
@@ -811,10 +971,7 @@ strings specified by the <code>keys</code> parameter to the constructor, using t
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;string></span>
-|
-
-<span class="param-type">Array.&lt;object></span>
+<span class="param-type">Array.&lt;(string|object)></span>
 
 
             
@@ -865,7 +1022,7 @@ strings specified by the <code>keys</code> parameter to the constructor, using t
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="QuickScore.js.html">QuickScore.js</a>, <a href="QuickScore.js.html#line323">line 323</a>
+        <a href="QuickScore.js.html">QuickScore.js</a>, <a href="QuickScore.js.html#line344">line 344</a>
     </li></ul></dd>
     
 
@@ -909,8 +1066,8 @@ strings specified by the <code>keys</code> parameter to the constructor, using t
 
 
 <div class="description">
-    <p>Sets the <code>keys</code> configuration.  <code>setItems()</code> must be called after changing
-the keys so that the items' transformed strings get cached.</p>
+    <p>Sets the <code>keys</code> configuration.  <code>setItems()</code> must be called after
+changing the keys so that the items' transformed strings get cached.</p>
 </div>
 
 
@@ -956,10 +1113,7 @@ the keys so that the items' transformed strings get cached.</p>
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;string></span>
-|
-
-<span class="param-type">Array.&lt;object></span>
+<span class="param-type">Array.&lt;<a href="global.html#ItemKey">ItemKey</a>></span>
 
 
             
@@ -981,8 +1135,8 @@ the keys so that the items' transformed strings get cached.</p>
                 </td>
             
 
-            <td class="description last"><p>List of keys to score, as
-either strings or <code>{name, scorer}</code> objects.</p></td>
+            <td class="description last"><p>List of keys to score, as either strings
+or <code>{name, scorer}</code> objects.</p></td>
         </tr>
 
     
@@ -1063,7 +1217,7 @@ identically scored items.  Defaults to the first <code>keys</code> item.</p></td
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="QuickScore.js.html">QuickScore.js</a>, <a href="QuickScore.js.html#line272">line 272</a>
+        <a href="QuickScore.js.html">QuickScore.js</a>, <a href="QuickScore.js.html#line293">line 293</a>
     </li></ul></dd>
     
 
@@ -1115,7 +1269,7 @@ identically scored items.  Defaults to the first <code>keys</code> item.</p></td
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Thu Apr 07 2022 19:29:57 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Tue Apr 19 2022 20:48:54 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

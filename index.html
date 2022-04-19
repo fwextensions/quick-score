@@ -60,7 +60,7 @@
 </code></pre>
 <p>If you prefer to use the built library files directly instead of using <code>npm</code>, you can download them from <a href="https://unpkg.com/browse/quick-score/dist/">https://unpkg.com/browse/quick-score/dist/</a>.</p>
 <p>Or you can load a particular release of the minified script directly from <code>unpkg.com</code>, and then access the library via the <code>quickScore</code> global:</p>
-<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;https://unpkg.com/quick-score@0.0.7/dist/quick-score.min.js&quot;>&lt;/script>
+<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;https://unpkg.com/quick-score@0.0.14/dist/quick-score.min.js&quot;>&lt;/script>
 &lt;script type=&quot;text/javascript&quot;>
     console.log(quickScore.quickScore(&quot;thought&quot;, &quot;gh&quot;));
 &lt;/script>
@@ -73,7 +73,7 @@
 <p>Or from a property of the CommonJS module:</p>
 <pre class="prettyprint source lang-js"><code>const quickScore = require(&quot;quick-score&quot;).quickScore;
 </code></pre>
-<p>You can then call <code>quickScore()</code> with a <code>string</code> and a <code>query</code> to score against that string.  It will return a floating point score between <code>0</code> and <code>1</code>.  A higher score means that string is a better match for the query.  A <code>1</code> means the query is the highest match for the string, though the two strings may still differ in case and whitespace characters.</p>
+<p>Then call <code>quickScore()</code> with a <code>string</code> and a <code>query</code> to score against that string.  It will return a floating point score between <code>0</code> and <code>1</code>.  A higher score means that string is a better match for the query.  A <code>1</code> means the query is the highest match for the string, though the two strings may still differ in case and whitespace characters.</p>
 <pre class="prettyprint source lang-js"><code>quickScore(&quot;thought&quot;, &quot;gh&quot;);   // 0.4142857142857143
 quickScore(&quot;GitHub&quot;, &quot;gh&quot;);    // 0.9166666666666666
 </code></pre>
@@ -85,7 +85,7 @@ quickScore(&quot;GitHub&quot;, &quot;gh&quot;);    // 0.9166666666666666
 const qs = new QuickScore([&quot;thought&quot;, &quot;giraffe&quot;, &quot;GitHub&quot;, &quot;hello, Garth&quot;]);
 const results = qs.search(&quot;gh&quot;);
 
-//=>
+// results =>
 [
     {
         &quot;item&quot;: &quot;GitHub&quot;,
@@ -97,13 +97,14 @@ const results = qs.search(&quot;gh&quot;);
         &quot;score&quot;: 0.6263888888888888,
         &quot;matches&quot;: [[7, 8], [11, 12]]
     },
-    ...
+    // ...
+]
 </code></pre>
-<p>The <code>results</code> array is a list of objects that represent the results of matching the query against each string that was passed to the constructor.  It's sorted high to low on each item's score.  Strings with identical scores are sorted alphabetically and case-insensitively.  In the simple case of scoring bare strings, each item in the results array has three properties:</p>
+<p>The <code>results</code> array in this example is a list of <a href="https://fwextensions.github.io/quick-score/global.html#ScoredString">ScoredString</a> objects that represent the results of matching the query against each string that was passed to the constructor.  It's sorted high to low on each item's score.  Strings with identical scores are sorted alphabetically and case-insensitively.  In the simple case of scoring bare strings, each <code>ScoredString</code> item has three properties:</p>
 <ul>
 <li><code>item</code>: the string that was scored</li>
 <li><code>score</code>: the floating point score of the string for the current query</li>
-<li><code>matches</code>: an array of arrays that specifies the character ranges where the query matched the string</li>
+<li><code>matches</code>: an array of arrays that specify the character ranges where the query matched the string</li>
 </ul>
 <p>This array could then be used to render a list of matching results as the user types a query.</p>
 <h3>Sorting lists of objects</h3>
@@ -117,12 +118,12 @@ const results = qs.search(&quot;gh&quot;);
         &quot;title&quot;: &quot;Supplying Images - Google Chrome&quot;,
         &quot;url&quot;: &quot;developer.chrome.com/webstore/images&quot;
     },
-    ...
+    // ...
 ];
 const qs = new QuickScore(bookmarks, [&quot;title&quot;, &quot;url&quot;]);
 const results = qs.search(&quot;devel&quot;);
 
-//=>
+// results =>
 [
     {
         &quot;item&quot;: {
@@ -140,9 +141,10 @@ const results = qs.search(&quot;devel&quot;);
             &quot;url&quot;: [[0, 5]]
         }
     },
-    ...
+    // ...
+]
 </code></pre>
-<p>Each item in the results array has a few more properties when matching against objects:</p>
+<p>When matching against objects, each item in the results array is a <a href="https://fwextensions.github.io/quick-score/global.html#ScoredObject">ScoredObject</a>, with a few additional properties :</p>
 <ul>
 <li><code>item</code>: the object that was scored</li>
 <li><code>score</code>: the highest score from among the individual key scores</li>
@@ -152,7 +154,9 @@ const results = qs.search(&quot;devel&quot;);
 <li><code>matches</code>: a hash of arrays that specify the character ranges of the query match for each key</li>
 </ul>
 <p>When two items have the same score, they're sorted alphabetically and case-insensitively on the key specified by the <code>sortKey</code> option, which defaults to the first item in the keys array.  In the example above, that would be <code>title</code>.</p>
-<p>Each result item also has a <code>_</code> property, which caches transformed versions of the item's strings, and might contain additional internal metadata in the future.  It can be ignored.</p>
+<p>Each <code>ScoredObject</code> item also has a <code>_</code> property, which caches transformed versions of the item's strings, and might contain additional internal metadata in the future.  It can be ignored.</p>
+<h3>TypeScript support</h3>
+<p>Although the QuickScore codebase is currently written in JavaScript, the package comes with full TypeScript typings.  The QuickScore class takes a generic type parameter based on the type of objects in the <code>items</code> array passed to the constructor.  That way, you can access <code>.item</code> on the <code>ScoredObject</code> result and get back an object of the same type that you passed in.</p>
 <h3>Ignoring diacritics and accents when scoring</h3>
 <p>If the strings you're matching against contain diacritics on some of the letters, like <code>à</code> or <code>ç</code>, you may want to count a match even when the query string contains the unaccented forms of those letters.  The QuickScore library doesn't contain support for this by default, since it's only needed with certain strings and the code to remove accents would triple its size.  But it's easy to combine  QuickScore with other libraries to ignore diacritics.</p>
 <p>One example is the <a href="https://github.com/dundalek/latinize">latinize</a> <a href="https://www.npmjs.com/package/latinize">npm package</a>, which will strip accents from a string and can be used in a <code>transformString()</code> function that's passed as an option to the <a href="https://fwextensions.github.io/quick-score/QuickScore.html#QuickScore">QuickScore constructor</a>.  This function takes a <code>string</code> parameter and returns a transformed version of that string:</p>
@@ -163,7 +167,7 @@ const items = [&quot;Café&quot;, &quot;Cafeteria&quot;];
 const qs = new QuickScore(items, { transformString: s => latinize(s).toLowerCase() });
 const results = qs.search(&quot;cafe&quot;);
 
-//=>
+// results =>
 [
     {
         &quot;item&quot;: &quot;Café&quot;,
@@ -171,13 +175,14 @@ const results = qs.search(&quot;cafe&quot;);
         &quot;matches&quot;: [[0, 4]],
         &quot;_&quot;: &quot;cafe&quot;
     },
-    ...
+    // ...
+]
 </code></pre>
-<p><code>transformString()</code> will be called on each of the searchable keys in the <code>items</code> array as well as on the <code>query</code> parameter to the <code>search()</code> method.  The default function calls <code>toLocaleLowerCase()</code> on each string, for a case-insensitive search.  In the example above, the basic <code>toLowerCase()</code> call is sufficient, since <code>latinize()</code> will have already stripped the accents.</p>
+<p><code>transformString()</code> will be called on each of the searchable keys in the <code>items</code> array as well as on the <code>query</code> parameter to the <code>search()</code> method.  The default function calls <code>toLocaleLowerCase()</code> on each string, for a case-insensitive search.  In the example above, the basic <code>toLowerCase()</code> call is sufficient, since <code>latinize()</code> will have already stripped any accents.</p>
 <h3>Highlighting matched letters</h3>
 <p>Many search interfaces highlight the letters in each item that match what the user has typed.  The <code>matches</code> property of each item in the results array contains information that can be used to highlight those matching letters.</p>
-<p>This function is an example of how an item could be highlighted using React.  It surrounds each sequence of matching letters in a <code>&lt;mark&gt;</code> tag and then returns the full string in a <code>&lt;span&gt;</code>.  You could then style the <code>&lt;mark&gt;</code> tag to be bold or a different color to highlight the matches.  (Something similar could be done by concatenating plain strings of HTML tags, though you'll need to be careful to escape the substrings.)</p>
-<pre class="prettyprint source lang-jsx"><code>function highlight(string, matches) {
+<p>The functional component below is an example of how an item could be highlighted using React.  It surrounds each sequence of matching letters in a <code>&lt;mark&gt;</code> tag and then returns the full string in a <code>&lt;span&gt;</code>.  You could then style the <code>&lt;mark&gt;</code> tag to be bold or a different color to highlight the matches.  (Something similar could be done by concatenating plain strings of HTML tags, though you'll need to be careful to escape the substrings.)</p>
+<pre class="prettyprint source lang-jsx"><code>function MatchedString({ string, matches }) {
     const substrings = [];
     let previousEnd = 0;
 
@@ -194,7 +199,7 @@ const results = qs.search(&quot;cafe&quot;);
     return &lt;span>{React.Children.toArray(substrings)}&lt;/span>;
 }
 </code></pre>
-<p>The <a href="https://fwextensions.github.io/quick-score-demo/">QuickScore demo</a> uses this approach to highlight the matches, via the <a href="https://github.com/fwextensions/quick-score-demo/blob/master/src/js/MatchedString.js">MatchedString</a> component.</p>
+<p>The <a href="https://fwextensions.github.io/quick-score-demo/">QuickScore demo</a> uses this approach to highlight the query matches, via the <a href="https://github.com/fwextensions/quick-score-demo/blob/master/src/js/MatchedString.js">MatchedString</a> component.</p>
 <h2>API</h2>
 <p>See the <a href="https://fwextensions.github.io/quick-score/">API docs</a> for a full description of the <a href="https://fwextensions.github.io/quick-score/QuickScore.html">QuickScore class</a> and the <a href="https://fwextensions.github.io/quick-score/global.html#quickScore">quickScore function</a>.</p>
 <h2>License</h2>
@@ -215,7 +220,7 @@ const results = qs.search(&quot;cafe&quot;);
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Thu Apr 07 2022 19:29:57 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Tue Apr 19 2022 20:48:54 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>
