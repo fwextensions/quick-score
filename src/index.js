@@ -75,7 +75,7 @@ export {Range} from "./range";
  */
 
 /**
- * @typedef {object} StringResult  An object representing the results of scoring
+ * @typedef {object} ScoredString  An object representing the results of scoring
  * an `items` array that contains strings.
  *
  * @property {string} item  The string that was scored.
@@ -86,7 +86,7 @@ export {Range} from "./range";
  */
 
 /**
- * @typedef {object} ObjectResult  An object representing the results of scoring
+ * @typedef {object} ScoredObject  An object representing the results of scoring
  * an `items` array that contains objects.
  *
  * @property {object} item  The object that was scored.

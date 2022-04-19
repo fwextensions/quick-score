@@ -147,15 +147,17 @@ export class QuickScore {
 	 * instance's `transformString()` function is called on this string before
 	 * it's matched against each item.
 	 *
-	 * @returns {Array<StringResult|ObjectResult>}  When the instance's `items`
-	 * are flat strings, the result objects contain the following properties:
+	 * @returns {Array<ScoredString|ScoredObject>}  When the instance's `items`
+	 * are flat strings, an array of [`ScoredString`]{@link ScoredString}
+	 * objects containing the following properties is returned:
 	 *
 	 * - `item`: the string that was scored
 	 * - `score`: the floating point score of the string for the current query
 	 * - `matches`: an array of arrays that specify the character ranges
 	 *   where the query matched the string
 	 *
-	 * When the `items` are objects, the result objects contain:
+	 * When the `items` are objects, an array of [`ScoredObject`]{@link ScoredObject}
+	 * results is returned:
 	 *
 	 * - `item`: the object that was scored
 	 * - `score`: the highest score from among the individual key scores
@@ -173,12 +175,13 @@ export class QuickScore {
 	 * (defaults to `0`) are not returned, unless the `query` is falsy, in which
 	 * case all of the items are returned, sorted alphabetically.
 	 *
-	 * The arrays of start and end indices in the `matches` array can be used as
-	 * parameters to the `substring()` method to extract the characters from
-	 * each string that match the query.  This can then be used to format the
-	 * matching characters with a different color or style.
+	 * The start and end indices in each [`RangeTuple`]{@link RangeTuple} in the
+	 * `matches` array can be used as parameters to the `substring()` method to
+	 * extract the characters from each string that match the query.  This can
+	 * then be used to format the matching characters with a different color or
+	 * style.
 	 *
-	 * Each result item also has a `_` property, which caches transformed
+	 * Each `ScoredObject` item also has a `_` property, which caches transformed
 	 * versions of the item's strings, and might contain additional internal
 	 * metadata in the future.  It can be ignored.
 	 */

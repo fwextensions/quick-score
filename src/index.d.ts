@@ -74,7 +74,7 @@ export interface Options {
 }
 
 /**
- * @typedef {object} StringResult  An object representing the results of scoring
+ * @typedef {object} ScoredString  An object representing the results of scoring
  * an `items` array that contains strings.
  *
  * @property {string} item  The string that was scored.
@@ -83,14 +83,14 @@ export interface Options {
  * @property {Array<RangeTuple>} matches  An array of tuples that specify the
  * character ranges where the query matched the string.
  */
-export interface StringResult {
+export interface ScoredString {
 	item: string,
 	score: number,
 	matches: RangeTuple[],
 }
 
 /**
- * @typedef {object} ObjectResult  An object representing the results of scoring
+ * @typedef {object} ScoredObject  An object representing the results of scoring
  * an `items` array that contains objects.
  *
  * @property {object} item  The object that was scored.
@@ -105,7 +105,7 @@ export interface StringResult {
  * @property {object} _  An internal cache of the transformed versions of this
  * item's strings and other metadata, which can be ignored.
  */
-export interface ObjectResult<T> {
+export interface ScoredObject<T> {
 	item: T,
 	score: number,
 	scoreKey: string,
@@ -115,9 +115,9 @@ export interface ObjectResult<T> {
 	_?: unknown
 }
 
-export type Result<T> = T extends string
-	? StringResult
-	: ObjectResult<T>;
+export type ScoredResult<T> = T extends string
+	? ScoredString
+	: ScoredObject<T>;
 
 /**
  * A class for scoring and sorting a list of items against a query string.  Each
@@ -236,15 +236,17 @@ export class QuickScore<T> {
 	 * instance's `transformString()` function is called on this string before
 	 * it's matched against each item.
 	 *
-	 * @returns {Array<Result<T>>} When the instance's `items`
-	 * are flat strings, the result objects contain the following properties:
+	 * @returns {Array<ScoredResult<T>>} When the instance's `items`
+	 * are flat strings, an array of `ScoredString` objects containing the
+	 * following properties is returned:
 	 *
 	 * - `item`: the string that was scored
 	 * - `score`: the floating point score of the string for the current query
 	 * - `matches`: an array of arrays that specify the character ranges
 	 *   where the query matched the string
 	 *
-	 * When the `items` are objects, the result objects contain:
+	 * When the `items` are objects, an array of `ScoredObject` results is
+	 * returned:
 	 *
 	 * - `item`: the object that was scored
 	 * - `score`: the highest score from among the individual key scores
@@ -262,16 +264,16 @@ export class QuickScore<T> {
 	 * (defaults to `0`) are not returned, unless the `query` is falsy, in which
 	 * case all of the items are returned, sorted alphabetically.
 	 *
-	 * The arrays of start and end indices in the `matches` array can be used as
-	 * parameters to the `substring()` method to extract the characters from
-	 * each string that match the query.  This can then be used to format the
-	 * matching characters with a different color or style.
+	 * The start and end indices in each `RangeTuple` in the `matches` array
+	 * can be used as parameters to the `substring()` method to extract the
+	 * characters from each string that match the query.  This can then be used
+	 * to format the matching characters with a different color or style.
 	 *
-	 * Each result item also has a `_` property, which caches transformed
+	 * Each `ScoredObject` item also has a `_` property, which caches transformed
 	 * versions of the item's strings, and might contain additional internal
 	 * metadata in the future.  It can be ignored.
 	 */
-	search(query: string): Result<T>[];
+	search(query: string): ScoredResult<T>[];
 
 	/**
 	 * Sets the `keys` configuration.  `setItems()` must be called after

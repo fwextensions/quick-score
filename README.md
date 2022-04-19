@@ -87,7 +87,7 @@ const results = qs.search("gh");
 ]
 ```
 
-The `results` array is a list of [StringResult](https://fwextensions.github.io/quick-score/global.html#StringResult) objects that represent the results of matching the query against each string that was passed to the constructor.  It's sorted high to low on each item's score.  Strings with identical scores are sorted alphabetically and case-insensitively.  In the simple case of scoring bare strings, each item in the results array has three properties:
+The `results` array in this example is a list of [ScoredString](https://fwextensions.github.io/quick-score/global.html#ScoredString) objects that represent the results of matching the query against each string that was passed to the constructor.  It's sorted high to low on each item's score.  Strings with identical scores are sorted alphabetically and case-insensitively.  In the simple case of scoring bare strings, each `ScoredString` item has three properties:
 
 * `item`: the string that was scored
 * `score`: the floating point score of the string for the current query
@@ -137,7 +137,7 @@ const results = qs.search("devel");
 ]
 ```
 
-When matching against objects, each item in the results array is an [ObjectResult](https://fwextensions.github.io/quick-score/global.html#ObjectResult), with a few additional properties :
+When matching against objects, each item in the results array is a [ScoredObject](https://fwextensions.github.io/quick-score/global.html#ScoredObject), with a few additional properties :
 
 * `item`: the object that was scored
 * `score`: the highest score from among the individual key scores
@@ -148,12 +148,12 @@ When matching against objects, each item in the results array is an [ObjectResul
 
 When two items have the same score, they're sorted alphabetically and case-insensitively on the key specified by the `sortKey` option, which defaults to the first item in the keys array.  In the example above, that would be `title`.
 
-Each result item also has a `_` property, which caches transformed versions of the item's strings, and might contain additional internal metadata in the future.  It can be ignored.
+Each `ScoredObject` item also has a `_` property, which caches transformed versions of the item's strings, and might contain additional internal metadata in the future.  It can be ignored.
 
 
 ### TypeScript support
 
-Although the QuickScore codebase is currently written in JavaScript, the package comes with full TypeScript typings.  The generic QuickScore class takes a type parameter based on the type of objects in the `items` array passed to the constructor.  That way, you can access `.item` on the result and get back an object of the same type that you passed in.
+Although the QuickScore codebase is currently written in JavaScript, the package comes with full TypeScript typings.  The QuickScore class takes a generic type parameter based on the type of objects in the `items` array passed to the constructor.  That way, you can access `.item` on the `ScoredObject` result and get back an object of the same type that you passed in.
 
 
 ### Ignoring diacritics and accents when scoring
@@ -189,7 +189,7 @@ const results = qs.search("cafe");
 
 Many search interfaces highlight the letters in each item that match what the user has typed.  The `matches` property of each item in the results array contains information that can be used to highlight those matching letters.
 
-This functional component is an example of how an item could be highlighted using React.  It surrounds each sequence of matching letters in a `<mark>` tag and then returns the full string in a `<span>`.  You could then style the `<mark>` tag to be bold or a different color to highlight the matches.  (Something similar could be done by concatenating plain strings of HTML tags, though you'll need to be careful to escape the substrings.)
+The functional component below is an example of how an item could be highlighted using React.  It surrounds each sequence of matching letters in a `<mark>` tag and then returns the full string in a `<span>`.  You could then style the `<mark>` tag to be bold or a different color to highlight the matches.  (Something similar could be done by concatenating plain strings of HTML tags, though you'll need to be careful to escape the substrings.)
 
 ```jsx
 function MatchedString({ string, matches }) {
