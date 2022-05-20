@@ -224,8 +224,8 @@ export class QuickScore<T> {
 	 * This can be used to extend the `config` parameter with default values.
 	 */
 	constructor(
-		items?: T[],
-		options?: ItemKey[] | Options
+		items?: readonly T[],
+		options?: readonly ItemKey[] | Options
 	);
 
 	/**
@@ -285,7 +285,7 @@ export class QuickScore<T> {
 	 * @param {string} [sortKey=keys[0]]  Name of key on which to sort
 	 * identically scored items.  Defaults to the first `keys` item.
 	 */
-	setKeys(keys: ItemKey[], sortKey?: string): void;
+	setKeys(keys: readonly ItemKey[], sortKey?: string): void;
 
 	/**
 	 * Sets the `items` array and caches a transformed copy of all the item
@@ -294,7 +294,7 @@ export class QuickScore<T> {
 	 *
 	 * @param {T[]} items  List of items to score.
 	 */
-	setItems(items: T[]): void;
+	setItems(items: readonly T[]): void;
 }
 
 
