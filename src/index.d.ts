@@ -83,8 +83,8 @@ export interface Options {
  * @property {Array<RangeTuple>} matches  An array of tuples that specify the
  * character ranges where the query matched the string.
  */
-export interface ScoredString {
-	item: string,
+export interface ScoredString<T> {
+	item: T,
 	score: number,
 	matches: RangeTuple[],
 }
@@ -116,7 +116,7 @@ export interface ScoredObject<T> {
 }
 
 export type ScoredResult<T> = T extends string
-	? ScoredString
+	? ScoredString<T>
 	: ScoredObject<T>;
 
 /**
