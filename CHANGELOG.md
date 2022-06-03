@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.0](https://github.com/fwextensions/quick-score/releases/tag/v0.2.0) - 2022-6-03
+
+### Fixed
+
+- Improve TypeScript compatibility by typing the `QuickScore` array params as `readonly`.
+- Type the `item` key in both `ScoredString` and `ScoredObject` as a generic so `ScoredResult` is more consistent.
+- Update 'devDependencies' to the latest major/minor versions, including Jest 28.
+
+
 ## [0.1.0](https://github.com/fwextensions/quick-score/releases/tag/v0.1.0) - 2022-04-19
 
 ### Added
@@ -9,7 +18,7 @@
 
 ### Changed
 
-- Don't concat the parameters to `setItems()` and `setKeys()` with an empty array.  Call `.slice()` instead to create a copy.
+- Don't concat the parameters to `setItems()` and `setKeys()` with an empty array.  Call `.slice()` instead to create a copy.  This means that passing a single bare string instead of an array to the `QuickScore` constructor will no longer work.
 - Don't supply a default value for the `sortKey` parameter in `setKeys()`.
 - Don't supply default values for the `string` and `query` parameters in `quickScore()`.
 
